@@ -1,6 +1,8 @@
 import logo from './logo.svg';
 import './App.css';
 
+import RoomTest from './components/RoomTest';
+
 function App() {
   return (
     <div className="App">
@@ -17,6 +19,7 @@ function App() {
         >
           Learn React
         </a>
+        <RoomTest />
       </header>
     </div>
   );
