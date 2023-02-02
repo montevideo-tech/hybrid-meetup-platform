@@ -16,7 +16,7 @@ const RoomTest = (props) => {
       setRoom(newRoom);
       setParticipant(newParticipant);
       console.log(newRoom);
-      console.log('ID is:', newRoom.id);
+      console.log('local participants is:', newParticipant);
     } catch (err) {
       console.error(err);
     }
