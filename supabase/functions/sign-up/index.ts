@@ -9,6 +9,9 @@ const corsHeaders = {
 interface User {
   email: String
   password: String
+  username: String
+  // userId: number
+  // role: number
 }
 
 async function singUp(supabaseClient: SupabaseClient, user: User) {
@@ -17,17 +20,23 @@ async function singUp(supabaseClient: SupabaseClient, user: User) {
         password: user.password,
     })
 
-    await supabaseClient.from('user-data').insert({ 
-      email: user.email,
-      username: user.username
-    })
-    
     if(error){
       return new Response(JSON.stringify({ error }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400,
       })
     }
+
+    // if (user.role == 'host'){
+    //   roleId = 2
+    // }
+    
+    await supabaseClient.from('user-data').insert({ 
+      email: user.email,
+      username: user.username
+      // userId: data.user.id,
+      // roleId: roleId
+    })
 
     return new Response(JSON.stringify({ data }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -37,6 +46,10 @@ async function singUp(supabaseClient: SupabaseClient, user: User) {
 
 serve(async (req) => {
   const { url, method } = req
+
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')

@@ -34,6 +34,10 @@ async function singIn(supabaseClient: SupabaseClient, user: User) {
 serve(async (req) => {
   const { url, method } = req
 
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
+
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')

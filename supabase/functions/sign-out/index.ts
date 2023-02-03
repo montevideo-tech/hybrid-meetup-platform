@@ -26,7 +26,11 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')
-    const supabaseClient = createClient(supabaseUrl, supabaseKey)
+    const supabaseClient = createClient(
+      supabaseUrl, 
+      supabaseKey,
+      { global: { headers: { Authorization: req.headers.get('User-Authorization')! } } }
+    )
 
     return singOut(supabaseClient)
 
