@@ -1,28 +1,29 @@
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
-import Person from "@mui/icons-material/Person";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as Yup from "yup";
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import CssBaseline from '@mui/material/CssBaseline';
+import TextField from '@mui/material/TextField';
+import Link from '@mui/material/Link';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Person from '@mui/icons-material/Person';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as Yup from 'yup';
+import authUtils from '../utils/auth';
 
 const SignUp = () => {
   const validationSchema = Yup.object().shape({
-    name: Yup.string().required("Name is required"),
-    email: Yup.string().required("Email is required").email("Email is invalid"),
+    name: Yup.string().required('Name is required'),
+    email: Yup.string().required('Email is required').email('Email is invalid'),
     password: Yup.string()
-      .required("Password is required")
-      .min(6, "Password must be at least 6 characters")
-      .max(40, "Password must not exceed 40 characters"),
+      .required('Password is required')
+      .min(6, 'Password must be at least 6 characters')
+      .max(40, 'Password must not exceed 40 characters'),
     confirmPassword: Yup.string()
-      .required("Confirm Password is required")
-      .oneOf([Yup.ref("password"), null], "Confirm Password does not match"),
+      .required('Confirm Password is required')
+      .oneOf([Yup.ref('password'), null], 'Confirm Password does not match'),
   });
 
   const {
@@ -33,8 +34,8 @@ const SignUp = () => {
     resolver: yupResolver(validationSchema),
   });
 
-  const onSubmit = (data) => {
-    //TODO: Handle submit
+  const onSubmit = async (data) => {
+    await authUtils.singUp(data);
     console.log(JSON.stringify(data, null, 2));
   };
 
@@ -44,12 +45,12 @@ const SignUp = () => {
       <Box
         sx={{
           marginTop: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
         }}
       >
-        <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
           <Person />
         </Avatar>
         <Typography component="h1" variant="h5">
@@ -64,7 +65,7 @@ const SignUp = () => {
             label="Name"
             name="name"
             autoFocus
-            {...register("name")}
+            {...register('name')}
             error={errors.name ? true : false}
           />
           <Typography variant="inherit" color="textSecondary">
@@ -78,7 +79,7 @@ const SignUp = () => {
             label="Email Address"
             name="email"
             autoFocus
-            {...register("email")}
+            {...register('email')}
             error={errors.email ? true : false}
           />
           <Typography variant="inherit" color="textSecondary">
@@ -92,7 +93,7 @@ const SignUp = () => {
             label="Password"
             type="password"
             id="password"
-            {...register("password")}
+            {...register('password')}
             error={errors.password ? true : false}
           />
           <Typography variant="inherit" color="textSecondary">
@@ -106,7 +107,7 @@ const SignUp = () => {
             label="Confirm password"
             type="password"
             id="confirmPassword"
-            {...register("confirmPassword")}
+            {...register('confirmPassword')}
             error={errors.confirmPassword ? true : false}
           />
           <Typography variant="inherit" color="textSecondary">
@@ -116,14 +117,14 @@ const SignUp = () => {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
-            onClick={handleSubmit(onSubmit)}
+            onClick={handleSubmit(async (data) => await onSubmit(data))}
           >
             Sign Up
           </Button>
           <Grid container>
             <Grid item>
               <Link href="#" variant="body2">
-                {"Already have an account? Sign In"}
+                {'Already have an account? Sign In'}
               </Link>
             </Grid>
           </Grid>

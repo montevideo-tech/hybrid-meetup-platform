@@ -12,13 +12,6 @@ module.exports = {
   plugins: ['react'],
   rules: {
     'react/jsx-filename-extension': [1, { allow: 'as-needed' }],
-    'react/button-has-type': [
-      enabled,
-      {
-        button: boolean,
-        submit: boolean,
-        reset: boolean,
-      },
-    ],
+    'react/button-has-type': [],
   },
 };
