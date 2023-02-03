@@ -1,4 +1,4 @@
-import { Space, SubscriptionMode } from '@mux/spaces-web';
+import { Space, SubscriptionMode, getUserMedia } from '@mux/spaces-web';
 
 // TODO we should have a config somewhere which tells us what to use
 // TODO wrap MUX SDK according to table in https://github.com/montevideo-tech/hybrid-meetup-platform/issues/14
@@ -56,21 +56,34 @@ class Participant {
 
 export class LocalParticipant extends Participant {
   /**
-   * Publish an array of local tracks to the room.
+   * Publish an array of Tracks to the room.
    *
-   * Returns a promise that resolves to the array of local tracks.
+   * Accepts either and array of wrapped Tracks, or a constraints object.
+   *
+   * Returns a promise that resolves to the array of local wrapped Tracks.
    */
-  async publishTracks(tracks) {
-    const publishedTracks = await this.provider.publishTracks(tracks);
-    return publishedTracks.map((t) => new Track(t));
+  async publishTracks(params) {
+    let tracksToPublish;
+    if (params.tracks) {
+      const { tracks } = params;
+      tracksToPublish = tracks.map((t) => t.provider); // Mux Tracks required to be published
+    } else if (params.constraints) {
+      tracksToPublish = await getUserMedia(params.constraints);
+    } else {
+      throw new Error('Unexpected parameters passes to publishTracks');
+    }
+
+    const publishedTracks = await this.provider.publishTracks(tracksToPublish); // returns Mux Track
+    return publishedTracks.map((t) => new Track(t)); // wrap into our Track
   }
 
   /**
-   * Unpublish a list of local tracks from the room.
+   * Unpublish a list of local wrapped Tracks from the room.
    * The function also stops the tracks.
    */
   unpublishTracks(tracks) {
-    return this.provider.unpublishTracks(tracks, { stop: true });
+    const tracksToUnpublish = tracks.map((t) => t.provider); // Mux Tracks required
+    return this.provider.unpublishTracks(tracksToUnpublish, { stop: true });
   }
 
   /**
@@ -82,7 +95,7 @@ export class LocalParticipant extends Participant {
   }
 
   /**
-   * Update an array of local tracks by replacing the underlying media,
+   * Update an array of local wrapped Tracks by replacing the underlying media,
    * without the need to unpublish and re-publish a track.
    * Useful, for example, to change video feed.
    *
@@ -91,7 +104,8 @@ export class LocalParticipant extends Participant {
    * Returns the array of local tracks that were successfully updated.
    */
   updateTracks(tracks) {
-    const updatedTracks = this.provider.updateTracks(tracks);
+    const tracksToUpdate = tracks.map((t) => t.provider); // Mux Tracks required
+    const updatedTracks = this.provider.updateTracks(tracksToUpdate);
     return updatedTracks.map((t) => new Track(t));
   }
 
@@ -121,5 +135,11 @@ export class Track {
     this.provider = providerTrack;
     this.id = this.provider.id;
     this.muted = this.provider.muted;
+    this.mediaStreamTrack = this.provider.track;
+  }
+
+  // TODO events
+  on(e) { // TEST
+    return this.provider.on(e);
   }
 }
