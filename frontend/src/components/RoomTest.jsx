@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+/* eslint-disable no-use-before-define */
+import React, { useState, useEffect } from 'react';
 
-import { Button } from '@mui/material';
+import { Button, Grid } from '@mui/material';
 
 import { Room } from '../lib/webrtc';
 import { REACT_APP_MUX_SPACE_JWT } from '../lib/constants';
@@ -15,18 +16,46 @@ function RoomTest() {
   const [remoteStreams, setRemoteStreams] = useState([]);
   const [localStream, setLocalStream] = useState();
 
+  useEffect(() => {
+    if (!room) {
+      return;
+    }
+
+    const subscribeToRemoteStreams = async () => {
+      const { remoteParticipants } = room;
+      const rps = Array.from(remoteParticipants.values());
+      await Promise.all(rps.map(async (rp) => {
+        await rp.subscribe();
+      }));
+      console.log('subscribed to remote participant(s)');
+    };
+
+    subscribeToRemoteStreams();
+  }, [room]);
+
   const joinRoom = async () => {
     setLoading(true);
     try {
       const newRoom = new Room(REACT_APP_MUX_SPACE_JWT);
       const newParticipant = await newRoom.join();
 
+      newRoom.on('ParticipantTrackSubscribed', (remoteParticipant, track) => {
+        console.log(remoteParticipant, track);
+        const stream = new MediaStream();
+        stream.addTrack(track.track); // TODO properly wrap this
+        console.log(stream);
+        setRemoteStreams([...remoteStreams, stream]);
+      });
+
+      newRoom.on('ParticipantJoined', (p) => console.log('joined', p));
+      newRoom.on('ParticipantLeft', (p) => console.log('left', p));
+
       setRoom(newRoom);
       setParticipant(newParticipant);
       console.log(newRoom);
-      console.log('local participants is:', newParticipant);
     } catch (err) {
       console.error(err);
+      leaveRoom();
     } finally {
       setLoading(false);
     }
@@ -43,7 +72,7 @@ function RoomTest() {
       await room.leave();
       setParticipant(null);
       setLocalStream(null);
-      setRemoteStreams(null);
+      setRemoteStreams([]);
       setRoom(null);
       setSharingMedia(false);
 
@@ -54,10 +83,6 @@ function RoomTest() {
       setLoading(false);
     }
   };
-
-  // const subscribeToRemoteStreams = async () => {
-  //   // TODO
-  // };
 
   const shareMedia = async () => {
     if (!room || !participant) {
@@ -79,11 +104,6 @@ function RoomTest() {
     }
   };
 
-  // TODO test sharing media
-
-  // TODO test subscribing to media
-
-  // TODO try events
   return (
     <>
       {!!participant && (
@@ -98,7 +118,17 @@ function RoomTest() {
             Video
           </Button>
           {!!remoteStreams.length && (
-            <div style={{ display: 'flex' }} />
+            <Grid container>
+              {remoteStreams.map((stream) => (
+                <Grid item key={stream.id}>
+                  <Video
+                    stream={stream}
+                    width={300}
+                    height={150}
+                  />
+                </Grid>
+              ))}
+            </Grid>
           )}
           <Video
             stream={localStream}

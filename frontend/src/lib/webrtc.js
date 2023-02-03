@@ -1,8 +1,12 @@
 /* eslint-disable max-classes-per-file */
-import { Space, SubscriptionMode, getUserMedia } from '@mux/spaces-web';
+import {
+  Space, SubscriptionMode, getUserMedia, SpaceEvent, ParticipantEvent, TrackEvent,
+} from '@mux/spaces-web';
 
 // TODO we should have a config somewhere which tells us what to use
 // wrap MUX SDK according to table in https://github.com/montevideo-tech/hybrid-meetup-platform/issues/14
+
+// TODO properly wrap arguments of event callbacks
 
 export class Track {
   constructor(providerTrack) {
@@ -12,9 +16,19 @@ export class Track {
     this.mediaStreamTrack = this.provider.track;
   }
 
-  // TODO events
-  on(e) { // TEST
-    return this.provider.on(e);
+  /**
+   * Events
+   */
+  on(event, cb) {
+    switch (event) {
+      case 'Muted':
+        this.provider.on(TrackEvent.Muted, cb);
+        break;
+      case 'Unmuted':
+        this.provider.on(TrackEvent.Unmuted, cb);
+        break;
+      default:
+    }
   }
 }
 
@@ -35,7 +49,20 @@ class Participant {
     return tracks.map((t) => new Track(t));
   }
 
-  // TODO events
+  /**
+   * Events
+   */
+  on(event, cb) {
+    switch (event) {
+      case 'StartedSpeaking':
+        this.provider.on(ParticipantEvent.StartedSpeaking, cb);
+        break;
+      case 'StoppedSpeaking':
+        this.provider.on(ParticipantEvent.StoppedSpeaking, cb);
+        break;
+      default:
+    }
+  }
 }
 
 export class LocalParticipant extends Participant {
@@ -93,26 +120,27 @@ export class LocalParticipant extends Participant {
     const updatedTracks = this.provider.updateTracks(tracksToUpdate);
     return updatedTracks.map((t) => new Track(t));
   }
-
-  // TODO events
 }
 
 export class RemoteParticipant extends Participant {
   /**
    * Subscribe to the remote participant's media.
+   *
+   * After this promise resolves you can expect to receive one
+   * SpaceEvent.ParticipantTrackSubscribed event to fire for each RemoteTrack
+   * that this participant has published to the space. Subsequent tracks that
+   * this participant publishes will be automatically subscribed to until unsubscribe is called.
    */
   subscribe() {
     return this.provider.subscribe();
   }
 
   /**
-   * unubscribe from the remote participant's media.
+   * Unubscribe from the remote participant's media.
    */
   unsubscribe() {
     return this.provider.unsubscribe();
   }
-
-  // TODO events
 }
 
 export class Room {
@@ -143,5 +171,21 @@ export class Room {
     return this.provider.leave();
   }
 
-  // TODO events
+  /**
+   * Events
+   */
+  on(event, cb) {
+    switch (event) {
+      case 'ParticipantTrackSubscribed': // TODO perhaps we might want to change the name
+        this.provider.on(SpaceEvent.ParticipantTrackSubscribed, cb);
+        break;
+      case 'ParticipantJoined':
+        this.provider.on(SpaceEvent.ParticipantJoined, cb);
+        break;
+      case 'ParticipantLeft':
+        this.provider.on(SpaceEvent.ParticipantLeft, cb);
+        break;
+      default:
+    }
+  }
 }
