@@ -1,16 +1,19 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
+
+import { Button } from '@mui/material';
 
 import { Room } from '../lib/webrtc';
 import { REACT_APP_MUX_SPACE_JWT } from '../lib/constants';
 
-const RoomTest = (props) => {
+import Video from './Video';
+
+function RoomTest() {
   const [room, setRoom] = useState();
   const [loading, setLoading] = useState(false);
   const [participant, setParticipant] = useState();
   const [sharingMedia, setSharingMedia] = useState(false);
   const [remoteStreams, setRemoteStreams] = useState([]);
-
-  const videoRef = useRef();
+  const [localStream, setLocalStream] = useState();
 
   const joinRoom = async () => {
     setLoading(true);
@@ -38,8 +41,10 @@ const RoomTest = (props) => {
     try {
       await participant.unpublishAllTracks(); // also stops them
       await room.leave();
-      setRoom(null);
       setParticipant(null);
+      setLocalStream(null);
+      setRemoteStreams(null);
+      setRoom(null);
       setSharingMedia(false);
 
       console.log('you left the room');
@@ -50,9 +55,9 @@ const RoomTest = (props) => {
     }
   };
 
-  const subscribeToRemoteStreams = async () => {
-    // TODO
-  };
+  // const subscribeToRemoteStreams = async () => {
+  //   // TODO
+  // };
 
   const shareMedia = async () => {
     if (!room || !participant) {
@@ -62,16 +67,10 @@ const RoomTest = (props) => {
     setLoading(true);
     try {
       // NOTE: this is a workaround the limitations imposed by Mux on creating new Tracks
-      const tracks = await participant.publishTracks({ constraints: { video: true, audio: false } });
+      const tracks = await participant.publishTracks({ constraints: { video: true, audio: true } });
       const stream = new MediaStream();
       tracks.forEach((track) => stream.addTrack(track.mediaStreamTrack));
-
-      if (
-        videoRef.current &&
-        videoRef.current.srcObject !== stream
-      ) {
-        videoRef.current.srcObject = stream;
-      }
+      setLocalStream(stream);
       setSharingMedia(true);
     } catch (err) {
       console.error(err);
@@ -90,21 +89,45 @@ const RoomTest = (props) => {
       {!!participant && (
         <>
           <p>You are a participant in the room!</p>
-          <button style={{ fontSize: 20 }} onClick={shareMedia} disabled={sharingMedia || loading}>Video</button>
+          <Button
+            sx={{ fontSize: 20 }}
+            variant="outlined"
+            onClick={shareMedia}
+            disabled={sharingMedia || loading}
+          >
+            Video
+          </Button>
           {!!remoteStreams.length && (
-            <div style={{ display: 'flex' }}></div>
+            <div style={{ display: 'flex' }} />
           )}
-          <video
-            ref={videoRef}
-            autoPlay
-            style={{ width: 300, height: 150 }}
+          <Video
+            stream={localStream}
+            muted
+            width={300}
+            height={150}
           />
         </>
       )}
-      <button style={{ fontSize: 30 }} onClick={joinRoom} disabled={!!room || loading}>JOIN</button>
-      <button style={{ fontSize: 30, color: 'darkred' }} onClick={leaveRoom} disabled={!room || loading}>LEAVE</button>
+      <Button
+        sx={{ fontSize: 30 }}
+        variant="contained"
+        color="primary"
+        onClick={joinRoom}
+        disabled={!!room || loading}
+      >
+        JOIN
+      </Button>
+      <Button
+        sx={{ fontSize: 30 }}
+        variant="outlined"
+        color="warning"
+        onClick={leaveRoom}
+        disabled={!room || loading}
+      >
+        LEAVE
+      </Button>
     </>
   );
-};
+}
 
 export default RoomTest;

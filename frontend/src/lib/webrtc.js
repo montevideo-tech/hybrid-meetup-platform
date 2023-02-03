@@ -1,37 +1,21 @@
+/* eslint-disable max-classes-per-file */
 import { Space, SubscriptionMode, getUserMedia } from '@mux/spaces-web';
 
 // TODO we should have a config somewhere which tells us what to use
-// TODO wrap MUX SDK according to table in https://github.com/montevideo-tech/hybrid-meetup-platform/issues/14
+// wrap MUX SDK according to table in https://github.com/montevideo-tech/hybrid-meetup-platform/issues/14
 
-export class Room {
-  constructor(jwt) {
-    this.provider = new Space(jwt, {
-      subscriptionMode: SubscriptionMode.Manual,
-    });
-    this.jwt = jwt;
-    this.id = this.provider.spaceId;
-    this.remoteParticipants = this.provider.participants;
-  }
-
-  /**
-   * Join a room.
-   *
-   * Returns the local participant.
-   */
-  async join() {
-    const participant = await this.provider.join();
-    const localParticipant = new LocalParticipant(participant);
-    return localParticipant;
-  }
-
-  /**
-   * Leave a room
-   */
-  leave() {
-    return this.provider.leave();
+export class Track {
+  constructor(providerTrack) {
+    this.provider = providerTrack;
+    this.id = this.provider.id;
+    this.muted = this.provider.muted;
+    this.mediaStreamTrack = this.provider.track;
   }
 
   // TODO events
+  on(e) { // TEST
+    return this.provider.on(e);
+  }
 }
 
 class Participant {
@@ -68,6 +52,7 @@ export class LocalParticipant extends Participant {
       const { tracks } = params;
       tracksToPublish = tracks.map((t) => t.provider); // Mux Tracks required to be published
     } else if (params.constraints) {
+      // TODO handle screen share
       tracksToPublish = await getUserMedia(params.constraints);
     } else {
       throw new Error('Unexpected parameters passes to publishTracks');
@@ -130,16 +115,33 @@ export class RemoteParticipant extends Participant {
   // TODO events
 }
 
-export class Track {
-  constructor(providerTrack) {
-    this.provider = providerTrack;
-    this.id = this.provider.id;
-    this.muted = this.provider.muted;
-    this.mediaStreamTrack = this.provider.track;
+export class Room {
+  constructor(jwt) {
+    this.provider = new Space(jwt, {
+      subscriptionMode: SubscriptionMode.Manual,
+    });
+    this.jwt = jwt;
+    this.id = this.provider.spaceId;
+    this.remoteParticipants = this.provider.participants;
+  }
+
+  /**
+   * Join a room.
+   *
+   * Returns the local participant.
+   */
+  async join() {
+    const participant = await this.provider.join();
+    const localParticipant = new LocalParticipant(participant);
+    return localParticipant;
+  }
+
+  /**
+   * Leave a room
+   */
+  leave() {
+    return this.provider.leave();
   }
 
   // TODO events
-  on(e) { // TEST
-    return this.provider.on(e);
-  }
 }
