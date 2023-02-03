@@ -11,6 +11,7 @@ import Container from "@mui/material/Container";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
+import authUtils from "../utils/auth";
 
 const SignIn = () => {
   const validationSchema = Yup.object().shape({
@@ -26,8 +27,9 @@ const SignIn = () => {
     resolver: yupResolver(validationSchema),
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     //TODO: Handle submit
+    await authUtils.signInWithEmail(data);
     console.log(JSON.stringify(data, null, 2));
   };
 
