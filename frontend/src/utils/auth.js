@@ -1,24 +1,26 @@
+/* eslint-disable no-unused-expressions */
 import mvdTech from '../lib/api';
 
-async function signUp(data, onSuccess = null , onError = null ) {
+async function signUp(data, onSuccess = null, onError = null) {
   const user = {
     email: data.email,
     password: data.password,
   };
 
   try {
-    const response = await mvdTech.post('/sign-up',
-    JSON.stringify({ user }),
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
-        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+    const response = await mvdTech.post(
+      '/sign-up',
+      JSON.stringify({ user }),
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        }
       }
-    }
     )
     onSuccess && onSuccess(response)
   } catch (error) {
-    onError && onError(response)
+    onError && onError(error)
   }
 }
 
@@ -29,17 +31,20 @@ async function signInWithEmail(data, onSuccess = null, onError = null) {
   };
 
   try {
-    const response = await mvdTech.post('/sign-in', JSON.stringify({ user }),
+    const response = await mvdTech.post(
+      '/sign-in',
+      JSON.stringify({ user }),
       {
-      headers: {
-        Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
-        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-      },
-    })
+        headers: {
+          Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
+      }
+    )
     onSuccess && onSuccess(response)
   } catch (error) {
-    onError && onError(response)
-}
+    onError && onError(error)
+  }
 }
 
 // async function signInWithGoogle() {
