@@ -35,7 +35,7 @@ function SignUp() {
   });
 
   const onSubmit = async (data) => {
-    await authUtils.singUp(data);
+    await authUtils.signUp(data);
     console.log(JSON.stringify(data, null, 2));
   };
 

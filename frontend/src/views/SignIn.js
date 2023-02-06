@@ -30,7 +30,6 @@ function SignIn() {
   const onSubmit = async (data) => {
     // TODO: Handle submit
     await authUtils.signInWithEmail(data);
-    console.log(JSON.stringify(data, null, 2));
   };
 
   return (

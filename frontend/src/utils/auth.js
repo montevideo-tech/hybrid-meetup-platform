@@ -1,37 +1,45 @@
-async function singUp(data) {
+import mvdTech from '../lib/api';
+
+async function signUp(data, onSuccess = null , onError = null ) {
   const user = {
     email: data.email,
     password: data.password,
   };
 
-  await fetch('https://yyuyncpblcnwlrfpvenq.functions.supabase.co/sign-up', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${process.env.REACT_APP_TOKEN}`,
-      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-    },
-    body: JSON.stringify({ user }),
-  });
-
-  return data.session.access_token;
+  try {
+    const response = await mvdTech.post('/sign-up',
+    JSON.stringify({ user }),
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+      }
+    }
+    )
+    onSuccess && onSuccess(response)
+  } catch (error) {
+    onError && onError(response)
+  }
 }
 
-async function signInWithEmail(data) {
+async function signInWithEmail(data, onSuccess = null, onError = null) {
   const user = {
     email: data.email,
     password: data.password,
   };
 
-  await fetch('https://yyuyncpblcnwlrfpvenq.functions.supabase.co/sign-in', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${process.env.REACT_APP_TOKEN}`,
-      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-    },
-    body: JSON.stringify({ user }),
-  });
-
-  return data.session.access_token;
+  try {
+    const response = await mvdTech.post('/sign-in', JSON.stringify({ user }),
+      {
+      headers: {
+        Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+      },
+    })
+    onSuccess && onSuccess(response)
+  } catch (error) {
+    onError && onError(response)
+}
 }
 
 // async function signInWithGoogle() {
@@ -49,4 +57,4 @@ async function signInWithEmail(data) {
 //     const { error } = await supabase.auth.signOut();
 // }
 
-export default { signInWithEmail, singUp };
+export default { signInWithEmail, signUp };

@@ -4,7 +4,7 @@ import SignIn from './views/SignIn';
 import SignUp from './views/SignUp';
 
 function App() {
-  return <SignIn />;
+  return <SignUp />;
 }
 
 export default App;
