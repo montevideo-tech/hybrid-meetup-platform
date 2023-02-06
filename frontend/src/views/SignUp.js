@@ -13,7 +13,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import authUtils from '../utils/auth';
 
-const SignUp = () => {
+function SignUp() {
   const validationSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     email: Yup.string().required('Email is required').email('Email is invalid'),
@@ -66,7 +66,7 @@ const SignUp = () => {
             name="name"
             autoFocus
             {...register('name')}
-            error={errors.name ? true : false}
+            error={!!errors.name}
           />
           <Typography variant="inherit" color="textSecondary">
             {errors.name?.message}
@@ -80,7 +80,7 @@ const SignUp = () => {
             name="email"
             autoFocus
             {...register('email')}
-            error={errors.email ? true : false}
+            error={!!errors.email}
           />
           <Typography variant="inherit" color="textSecondary">
             {errors.email?.message}
@@ -94,7 +94,7 @@ const SignUp = () => {
             type="password"
             id="password"
             {...register('password')}
-            error={errors.password ? true : false}
+            error={!!errors.password}
           />
           <Typography variant="inherit" color="textSecondary">
             {errors.password?.message}
@@ -108,7 +108,7 @@ const SignUp = () => {
             type="password"
             id="confirmPassword"
             {...register('confirmPassword')}
-            error={errors.confirmPassword ? true : false}
+            error={!!errors.confirmPassword}
           />
           <Typography variant="inherit" color="textSecondary">
             {errors.confirmPassword?.message}
@@ -124,7 +124,7 @@ const SignUp = () => {
           <Grid container>
             <Grid item>
               <Link href="#" variant="body2">
-                {'Already have an account? Sign In'}
+                Already have an account? Sign In
               </Link>
             </Grid>
           </Grid>
@@ -132,6 +132,6 @@ const SignUp = () => {
       </Box>
     </Container>
   );
-};
+}
 
 export default SignUp;

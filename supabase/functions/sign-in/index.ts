@@ -16,7 +16,6 @@ async function singIn(supabaseClient: SupabaseClient, user: User) {
       email: user.email,
       password: user.password,
     })
-    console.log(data)
     
     if(error){
       return new Response(JSON.stringify({ error }), {

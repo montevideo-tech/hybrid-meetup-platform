@@ -1,6 +1,4 @@
 async function singUp(data) {
-  console.log('sdfsdfdsfsfs');
-  console.log(data);
   const user = {
     email: data.email,
     password: data.password,

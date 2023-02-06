@@ -13,7 +13,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import authUtils from '../utils/auth';
 
-const SignIn = () => {
+function SignIn() {
   const validationSchema = Yup.object().shape({
     email: Yup.string().required('Email is required').email('Email is invalid'),
     password: Yup.string().required('Password is required'),
@@ -28,7 +28,7 @@ const SignIn = () => {
   });
 
   const onSubmit = async (data) => {
-    //TODO: Handle submit
+    // TODO: Handle submit
     await authUtils.signInWithEmail(data);
     console.log(JSON.stringify(data, null, 2));
   };
@@ -60,7 +60,7 @@ const SignIn = () => {
             name="email"
             autoFocus
             {...register('email')}
-            error={errors.email ? true : false}
+            error={!!errors.email}
           />
           <Typography variant="inherit" color="textSecondary">
             {errors.email?.message}
@@ -74,7 +74,7 @@ const SignIn = () => {
             type="password"
             id="password"
             {...register('password')}
-            error={errors.password ? true : false}
+            error={!!errors.password}
           />
           <Typography variant="inherit" color="textSecondary">
             {errors.password?.message}
@@ -90,7 +90,7 @@ const SignIn = () => {
           <Grid container>
             <Grid item>
               <Link href="#" variant="body2">
-                {"Don't have an account? Sign Up"}
+                Don't have an account? Sign Up
               </Link>
             </Grid>
           </Grid>
@@ -98,6 +98,6 @@ const SignIn = () => {
       </Box>
     </Container>
   );
-};
+}
 
 export default SignIn;
