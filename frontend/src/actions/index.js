@@ -17,18 +17,18 @@ export const signInWithEmail = (data, onSuccess = null, onError = null) => async
           Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
           'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
         },
-      }
-    )
+      },
+    );
     dispatch(
       login({
         email: response.data.data.user.email,
-        token: response.data.data.session.access_token
-      })
+        token: response.data.data.session.access_token,
+      }),
     );
-    onSuccess && onSuccess(response)
+    onSuccess && onSuccess(response);
   } catch (error) {
     const signInError = error.response ? error.response?.data?.error?.message : error?.code;
-    onError && onError(signInError)
+    onError && onError(signInError);
   }
 };
 
@@ -46,11 +46,11 @@ export const signUp = (data, onSuccess = null, onError = null) => async () => {
         headers: {
           Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
           'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-        }
-      }
-    )
-    onSuccess && onSuccess(response)
+        },
+      },
+    );
+    onSuccess && onSuccess(response);
   } catch (error) {
-    onError && onError(error)
+    onError && onError(error);
   }
-}
+};

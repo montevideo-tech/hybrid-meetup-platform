@@ -1,4 +1,5 @@
-import { useState } from 'react'
+/* eslint-disable react/jsx-props-no-spreading */
+import React, { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -30,7 +31,7 @@ function SignUp() {
       .oneOf([Yup.ref('password'), null], 'Confirm Password does not match'),
   });
 
-  const [alert, setAlert] = useState({ type: 'success', message: null })
+  const [alert, setAlert] = useState({ type: 'success', message: null });
 
   const {
     register,
@@ -44,15 +45,16 @@ function SignUp() {
 
   const onSubmit = (data) => {
     const onSuccess = () => {
-      setAlert({ type: 'success', message: 'Please verify your email' })
-    }
+      setAlert({ type: 'success', message: 'Please verify your email' });
+    };
     const onError = (error) => {
-      setAlert({ type: 'error', message: `An error occurred: ${error}` })
-    }
+      setAlert({ type: 'error', message: `An error occurred: ${error}` });
+    };
     dispatch(signUp(data, onSuccess, onError));
   };
 
   return (
+    // eslint-disable-next-line react/react-in-jsx-scope
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <Box
@@ -130,7 +132,7 @@ function SignUp() {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
-            onClick={handleSubmit(async (data) => await onSubmit(data))}
+            onClick={handleSubmit(async (data) => onSubmit(data))}
           >
             Sign Up
           </Button>
@@ -142,7 +144,7 @@ function SignUp() {
             </Grid>
           </Grid>
           {alert.message
-              && <Alert severity={alert.type}>{alert.message}</Alert>}
+            && <Alert severity={alert.type}>{alert.message}</Alert>}
         </Box>
       </Box>
     </Container>

@@ -19,8 +19,8 @@ function Root() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setAuth(currentUser)
-  }, [currentUser])
+    setAuth(currentUser);
+  }, [currentUser]);
 
   const handleSignOut = () => {
     // TODO: invalidate token

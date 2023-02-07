@@ -15,12 +15,24 @@ interface User {
 }
 
 async function singUp(supabaseClient: SupabaseClient, user: User) {
+
+  const emailExists = await supabaseClient.from('user-data').select('email').eq('email', user.email)
+  //user already exists
+  if (emailExists.data.length !== 0) {
+    return new Response(JSON.stringify({
+      error: 'User already exists'
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 400,
+    })
+  }
+  else {
     const { data, error } = await supabaseClient.auth.signUp({
-        email: user.email,
-        password: user.password,
+      email: user.email,
+      password: user.password,
     })
 
-    if(error){
+    if (error) {
       return new Response(JSON.stringify({ error }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400,
@@ -30,8 +42,8 @@ async function singUp(supabaseClient: SupabaseClient, user: User) {
     // if (user.role == 'host'){
     //   roleId = 2
     // }
-    
-    await supabaseClient.from('user-data').insert({ 
+
+    await supabaseClient.from('user-data').insert({
       email: user.email,
       username: user.username
       // userId: data.user.id,
@@ -39,9 +51,11 @@ async function singUp(supabaseClient: SupabaseClient, user: User) {
     })
 
     return new Response(JSON.stringify({ data }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
-      })
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 200,
+    })
+  }
+
 }
 
 serve(async (req) => {
@@ -55,7 +69,7 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')
     const supabaseClient = createClient(supabaseUrl, supabaseKey)
-    
+
     const body = await req.json();
     const user = body.user;
     return singUp(supabaseClient, user)
