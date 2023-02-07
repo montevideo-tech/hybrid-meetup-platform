@@ -28,7 +28,7 @@ const router = createBrowserRouter([
       {
         path: '/signUp',
         element: <SignUp />,
-      }
+      },
     ],
   },
 ]);

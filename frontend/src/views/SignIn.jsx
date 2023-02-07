@@ -1,4 +1,6 @@
-import { useState } from 'react';
+/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable react/jsx-props-no-spreading */
+import React, { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -34,15 +36,15 @@ function SignIn() {
     resolver: yupResolver(validationSchema),
   });
 
-  const [alert, setAlert] = useState({ type: 'success', message: null })
+  const [alert, setAlert] = useState({ type: 'success', message: null });
 
   const onSubmit = async (data) => {
     const onSuccess = () => {
       navigate('/');
     };
     const onError = (error) => {
-      setAlert({ type: 'error', message: `An error occurred while signing in: ${error}` })
-    }
+      setAlert({ type: 'error', message: `An error occurred while signing in: ${error}` });
+    };
     dispatch(signInWithEmail(data, onSuccess, onError));
   };
 
@@ -96,7 +98,7 @@ function SignIn() {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
-            onClick={handleSubmit(async (data) => await onSubmit(data))}
+            onClick={handleSubmit(async (data) => onSubmit(data))}
           >
             Sign In
           </Button>
@@ -108,7 +110,7 @@ function SignIn() {
             </Grid>
           </Grid>
           {alert.message
-              && <Alert severity={alert.type}>{alert.message}</Alert>}
+            && <Alert severity={alert.type}>{alert.message}</Alert>}
         </Box>
       </Box>
     </Container>
