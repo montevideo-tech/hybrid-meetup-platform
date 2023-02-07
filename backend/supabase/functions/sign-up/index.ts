@@ -15,9 +15,8 @@ interface User {
 }
 
 async function singUp(supabaseClient: SupabaseClient, user: User) {
-
   const emailExists = await supabaseClient.from('user-data').select('email').eq('email', user.email)
-  //user already exists
+
   if (emailExists.data.length !== 0) {
     return new Response(JSON.stringify({
       error: 'User already exists'
