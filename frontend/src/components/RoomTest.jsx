@@ -47,8 +47,8 @@ function RoomTest() {
         setRemoteStreams([...remoteStreams, stream]);
       });
 
-      newRoom.on('ParticipantJoined', (p) => console.log('joined', p));
-      newRoom.on('ParticipantLeft', (p) => console.log('left', p));
+      newRoom.on('ParticipantJoined', (p) => console.log('someone joined', p));
+      newRoom.on('ParticipantLeft', (p) => console.log('someone left', p));
 
       setRoom(newRoom);
       setParticipant(newParticipant);

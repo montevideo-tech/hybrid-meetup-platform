@@ -1,4 +1,5 @@
 /* eslint-disable max-classes-per-file */
+import EventEmitter from 'events';
 import {
   Space, SubscriptionMode, getUserMedia, SpaceEvent, ParticipantEvent, TrackEvent,
 } from '@mux/spaces-web';
@@ -8,37 +9,44 @@ import {
 
 // TODO properly wrap arguments of event callbacks
 
-export class Track {
+export class Track extends EventEmitter {
   constructor(providerTrack) {
+    super();
     this.provider = providerTrack;
     this.id = this.provider.id;
     this.muted = this.provider.muted;
     this.mediaStreamTrack = this.provider.track;
-  }
 
-  /**
-   * Events
-   */
-  on(event, cb) {
-    switch (event) {
-      case 'Muted':
-        this.provider.on(TrackEvent.Muted, cb);
-        break;
-      case 'Unmuted':
-        this.provider.on(TrackEvent.Unmuted, cb);
-        break;
-      default:
-    }
+    // listen to MUX events and emit owr own, passing our wrapped classes
+    this.provider.on(
+      TrackEvent.Muted,
+      () => this.emit('Muted'),
+    );
+    this.provider.on(
+      TrackEvent.Unmuted,
+      () => this.emit('Unmuted'),
+    );
   }
 }
 
-class Participant {
+class Participant extends EventEmitter {
   constructor(providerParticipant) {
+    super();
     this.provider = providerParticipant;
     this.id = this.provider.connectionId;
     this.displayName = this.provider.id;
     this.role = this.provider.role;
     // this.tracks = []; //provider audioTracks + videoTracks
+
+    // listen to MUX events and emit owr own, passing our wrapped classes
+    this.provider.on(
+      ParticipantEvent.StartedSpeaking,
+      () => this.emit('StartedSpeaking'),
+    );
+    this.provider.on(
+      ParticipantEvent.StoppedSpeaking,
+      () => this.emit('StoppedSpeaking'),
+    );
   }
 
   /**
@@ -47,21 +55,6 @@ class Participant {
   getTracks() {
     const tracks = this.provider.getTracks();
     return tracks.map((t) => new Track(t));
-  }
-
-  /**
-   * Events
-   */
-  on(event, cb) {
-    switch (event) {
-      case 'StartedSpeaking':
-        this.provider.on(ParticipantEvent.StartedSpeaking, cb);
-        break;
-      case 'StoppedSpeaking':
-        this.provider.on(ParticipantEvent.StoppedSpeaking, cb);
-        break;
-      default:
-    }
   }
 }
 
@@ -143,14 +136,32 @@ export class RemoteParticipant extends Participant {
   }
 }
 
-export class Room {
+export class Room extends EventEmitter {
   constructor(jwt) {
+    super();
     this.provider = new Space(jwt, {
       subscriptionMode: SubscriptionMode.Manual,
     });
     this.jwt = jwt;
     this.id = this.provider.spaceId;
     this.remoteParticipants = this.provider.participants;
+
+    // listen to MUX events and emit owr own, passing our wrapped classes
+    this.provider.on(
+      SpaceEvent.ParticipantJoined,
+      (p) => this.emit('ParticipantJoined', new RemoteParticipant(p)),
+    );
+    this.provider.on(
+      SpaceEvent.ParticipantLeft,
+      (p) => this.emit('ParticipantLeft', new RemoteParticipant(p)),
+    );
+    // When you have subscribed to a remote participant's track.
+    // This means that you have begun receiving media from the associated participant track
+    // TODO perhaps we might want to change the name of  ParticipantTrackSubscribed
+    this.provider.on(
+      SpaceEvent.ParticipantTrackSubscribed,
+      (p, t) => this.emit('ParticipantTrackSubscribed', new RemoteParticipant(p), new Track(t)),
+    );
   }
 
   /**
@@ -169,23 +180,5 @@ export class Room {
    */
   leave() {
     return this.provider.leave();
-  }
-
-  /**
-   * Events
-   */
-  on(event, cb) {
-    switch (event) {
-      case 'ParticipantTrackSubscribed': // TODO perhaps we might want to change the name
-        this.provider.on(SpaceEvent.ParticipantTrackSubscribed, cb);
-        break;
-      case 'ParticipantJoined':
-        this.provider.on(SpaceEvent.ParticipantJoined, cb);
-        break;
-      case 'ParticipantLeft':
-        this.provider.on(SpaceEvent.ParticipantLeft, cb);
-        break;
-      default:
-    }
   }
 }
