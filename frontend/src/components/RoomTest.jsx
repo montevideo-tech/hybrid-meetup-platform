@@ -40,9 +40,9 @@ function RoomTest() {
       const newParticipant = await newRoom.join();
 
       newRoom.on('ParticipantTrackSubscribed', (remoteParticipant, track) => {
-        console.log(remoteParticipant, track);
+        // console.log(remoteParticipant, track);
         const stream = new MediaStream();
-        stream.addTrack(track.track); // TODO properly wrap this
+        stream.addTrack(track.mediaStreamTrack);
         console.log(stream);
         setRemoteStreams([...remoteStreams, stream]);
       });

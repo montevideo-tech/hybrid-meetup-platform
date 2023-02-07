@@ -7,8 +7,6 @@ import {
 // TODO we should have a config somewhere which tells us what to use
 // wrap MUX SDK according to table in https://github.com/montevideo-tech/hybrid-meetup-platform/issues/14
 
-// TODO properly wrap arguments of event callbacks
-
 export class Track extends EventEmitter {
   constructor(providerTrack) {
     super();
