@@ -9,6 +9,7 @@ import SignIn from './views/SignIn';
 import SignUp from './views/SignUp';
 import Room, { roomLoader } from './views/Room';
 import ErrorPage from './views/errorPage';
+import RoomTest from './components/RoomTest';
 
 const router = createBrowserRouter([
   {
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
       {
         path: '/signUp',
         element: <SignUp />,
+      },
+      {
+        path: '/room-test',
+        element: <RoomTest />,
       },
     ],
   },
