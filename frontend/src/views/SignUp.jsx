@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -10,8 +11,11 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useDispatch } from 'react-redux';
 import * as Yup from 'yup';
-import authUtils from '../utils/auth';
+import Alert from '@mui/material/Alert';
+import { Link as RouterLink } from 'react-router-dom';
+import { signUp } from '../actions';
 
 function SignUp() {
   const validationSchema = Yup.object().shape({
@@ -26,6 +30,8 @@ function SignUp() {
       .oneOf([Yup.ref('password'), null], 'Confirm Password does not match'),
   });
 
+  const [alert, setAlert] = useState({ type: 'success', message: null })
+
   const {
     register,
     handleSubmit,
@@ -34,9 +40,16 @@ function SignUp() {
     resolver: yupResolver(validationSchema),
   });
 
-  const onSubmit = async (data) => {
-    await authUtils.signUp(data);
-    console.log(JSON.stringify(data, null, 2));
+  const dispatch = useDispatch();
+
+  const onSubmit = (data) => {
+    const onSuccess = () => {
+      setAlert({ type: 'success', message: 'Please verify your email' })
+    }
+    const onError = (error) => {
+      setAlert({ type: 'error', message: `An error occurred: ${error}` })
+    }
+    dispatch(signUp(data, onSuccess, onError));
   };
 
   return (
@@ -123,11 +136,13 @@ function SignUp() {
           </Button>
           <Grid container>
             <Grid item>
-              <Link href="#" variant="body2">
+              <Link component={RouterLink} to="/signIn" variant="body2">
                 Already have an account? Sign In
               </Link>
             </Grid>
           </Grid>
+          {alert.message
+              && <Alert severity={alert.type}>{alert.message}</Alert>}
         </Box>
       </Box>
     </Container>

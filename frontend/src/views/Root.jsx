@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -8,15 +9,23 @@ import LoginIcon from '@mui/icons-material/Login';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
+import { logout } from '../reducers/userSlice';
 
 function Root() {
   const [auth, setAuth] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
+  const currentUser = useSelector((state) => state.loggedUser);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    setAuth(currentUser)
+  }, [currentUser])
+
   const handleSignOut = () => {
-    // TODO: Callback
-    setAuth(true);
+    // TODO: invalidate token
+    dispatch(logout());
+    setAuth(null);
     setAnchorEl(null);
   };
 

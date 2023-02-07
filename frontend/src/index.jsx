@@ -2,8 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import store from './store';
 import Root from './views/Root';
 import SignIn from './views/SignIn';
+import SignUp from './views/SignUp';
 import Room, { roomLoader } from './views/Room';
 import ErrorPage from './views/errorPage';
 
@@ -24,7 +27,11 @@ const router = createBrowserRouter([
     path: '/signIn',
     element: <SignIn />,
   },
+  {
+    path: '/signUp',
+    element: <SignUp />,
+  },
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<RouterProvider router={router} />);
+root.render(<Provider store={store}><RouterProvider router={router} /></Provider>);
