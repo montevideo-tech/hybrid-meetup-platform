@@ -21,15 +21,15 @@ const router = createBrowserRouter([
         element: <Room />,
         loader: roomLoader,
       },
+      {
+        path: '/signIn',
+        element: <SignIn />,
+      },
+      {
+        path: '/signUp',
+        element: <SignUp />,
+      }
     ],
-  },
-  {
-    path: '/signIn',
-    element: <SignIn />,
-  },
-  {
-    path: '/signUp',
-    element: <SignUp />,
   },
 ]);
 

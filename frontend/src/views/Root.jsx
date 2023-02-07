@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import LoginIcon from '@mui/icons-material/Login';
 import AccountCircle from '@mui/icons-material/AccountCircle';
@@ -52,9 +51,9 @@ function Root() {
       <div style={{ height: '8vh' }}>
         <AppBar position="relative" sx={{ height: '100%', justifyContent: 'center' }}>
           <Toolbar>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            <MenuItem variant="h6" sx={{ flexGrow: 1, textDecoration: 'none' }} component={RouterLink} to="/">
               Monte&lt;video&gt; Tech Summer Camp
-            </Typography>
+            </MenuItem>
             {auth && (
               <div>
                 <IconButton
