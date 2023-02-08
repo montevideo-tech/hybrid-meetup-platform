@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
@@ -8,25 +7,31 @@ import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Person from '@mui/icons-material/Person';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import Alert from '@mui/material/Alert';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as Yup from 'yup';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { signInWithEmail } from '../actions';
+import * as Yup from 'yup';
+import Alert from '@mui/material/Alert';
+import { Link as RouterLink } from 'react-router-dom';
+import { signUp } from '../actions';
 
-function SignIn() {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
+function SignUp() {
   const validationSchema = Yup.object().shape({
+    name: Yup.string().required('Name is required'),
     email: Yup.string().required('Email is required').email('Email is invalid'),
-    password: Yup.string().required('Password is required'),
+    password: Yup.string()
+      .required('Password is required')
+      .min(6, 'Password must be at least 6 characters')
+      .max(40, 'Password must not exceed 40 characters'),
+    confirmPassword: Yup.string()
+      .required('Confirm Password is required')
+      .oneOf([Yup.ref('password'), null], 'Confirm Password does not match'),
   });
+
+  const [alert, setAlert] = useState({ type: 'success', message: null });
 
   const {
     register,
@@ -36,20 +41,20 @@ function SignIn() {
     resolver: yupResolver(validationSchema),
   });
 
-  const [alert, setAlert] = useState({ type: 'success', message: null });
+  const dispatch = useDispatch();
 
-  const onSubmit = async (data) => {
+  const onSubmit = (data) => {
     const onSuccess = () => {
-      navigate('/');
+      setAlert({ type: 'success', message: 'Please verify your email' });
     };
     const onError = (error) => {
-      setAlert({ type: 'error', message: `An error occurred while signing in: ${error}` });
+      setAlert({ type: 'error', message: `An error occurred: ${error}` });
     };
-    dispatch(signInWithEmail(data, onSuccess, onError));
+    dispatch(signUp(data, onSuccess, onError));
   };
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Container maxWidth="xs">
       <CssBaseline />
       <Box
         sx={{
@@ -60,12 +65,26 @@ function SignIn() {
         }}
       >
         <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-          <LockOutlinedIcon />
+          <Person />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Sign In
+          Sign Up
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <Box sx={{ mt: 1 }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="Name"
+            label="Name"
+            name="name"
+            autoFocus
+            {...register('name')}
+            error={!!errors.name}
+          />
+          <Typography variant="inherit" color="textSecondary">
+            {errors.name?.message}
+          </Typography>
           <TextField
             margin="normal"
             required
@@ -94,18 +113,32 @@ function SignIn() {
           <Typography variant="inherit" color="textSecondary">
             {errors.password?.message}
           </Typography>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="confirmPassword"
+            label="Confirm password"
+            type="password"
+            id="confirmPassword"
+            {...register('confirmPassword')}
+            error={!!errors.confirmPassword}
+          />
+          <Typography variant="inherit" color="textSecondary">
+            {errors.confirmPassword?.message}
+          </Typography>
           <Button
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
             onClick={handleSubmit(async (data) => onSubmit(data))}
           >
-            Sign In
+            Sign Up
           </Button>
           <Grid container>
             <Grid item>
-              <Link component={RouterLink} to="/signUp" variant="body2">
-                Don't have an account? Sign Up
+              <Link component={RouterLink} to="/signIn" variant="body2">
+                Already have an account? Sign In
               </Link>
             </Grid>
           </Grid>
@@ -117,4 +150,4 @@ function SignIn() {
   );
 }
 
-export default SignIn;
+export default SignUp;
