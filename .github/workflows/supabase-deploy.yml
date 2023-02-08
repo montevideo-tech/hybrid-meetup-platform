@@ -3,7 +3,7 @@ name: Deploy Migrations to Develop
 on:
   push:
     branches:
-      - 41-add-supabase-autodeploy-actions
+      - develop
   workflow_dispatch:
 
 jobs:
