@@ -68,3 +68,16 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+
+## Working with MUX Spaces
+
+Follow the MUX docs [here](https://docs.mux.com/guides/video/build-real-time-video-experiences).
+
+>If you want to quickly generate a one-off JWT for testing, you might want to try the [mux-cli](https://github.com/muxinc/cli), and use the `spaces:sign` [command](https://github.com/muxinc/cli#mux-spacessign-space-id) to quickly get a JWT.
+
+Set the following env variable to the signed JWT:
+
+- `REACT_APP_MUX_SPACE_JWT`
+
+You can find the docs for the MUX Spaces SDK [here](https://devdocs.mux.com/spaces-web/latest/modules.html).
