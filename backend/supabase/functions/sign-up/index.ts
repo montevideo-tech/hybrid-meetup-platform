@@ -14,7 +14,7 @@ interface User {
   // role: number
 }
 
-async function singUp(supabaseClient: SupabaseClient, user: User) {
+async function signUp(supabaseClient: SupabaseClient, user: User) {
 
   const emailExists = await supabaseClient.from('user-data').select('email').eq('email', user.email)
   //user already exists
@@ -72,7 +72,7 @@ serve(async (req) => {
 
     const body = await req.json();
     const user = body.user;
-    return singUp(supabaseClient, user)
+    return signUp(supabaseClient, user)
 
   } catch (error) {
     console.error(error)
