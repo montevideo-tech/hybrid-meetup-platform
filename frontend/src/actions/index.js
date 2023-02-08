@@ -4,9 +4,13 @@ import mvdTech from '../lib/api';
 import { login } from '../reducers/userSlice';
 
 export const signInWithEmail = (data, onSuccess = null, onError = null) => async (dispatch) => {
+  if (!data || !data.email || !data.password) {
+    onError && onError('Internal error: Missing credentials');
+    return;
+  }
   const user = {
-    email: data.email,
-    password: data.password,
+    email: data?.email,
+    password: data?.password,
   };
   try {
     const response = await mvdTech.post(
@@ -27,13 +31,20 @@ export const signInWithEmail = (data, onSuccess = null, onError = null) => async
     );
     onSuccess && onSuccess(response);
   } catch (error) {
-    const signInError = error.response ? error.response?.data?.error?.message : error?.code;
+    const signInError = error.response
+      ? (error.response?.data?.error?.message || error.response?.data)
+      : error?.code;
     onError && onError(signInError);
   }
 };
 
 export const signUp = (data, onSuccess = null, onError = null) => async () => {
+  if (!data || !data.email || !data.password || !data.name) {
+    onError && onError('Internal error: Missing credentials');
+    return;
+  }
   const user = {
+    username: data.name,
     email: data.email,
     password: data.password,
   };

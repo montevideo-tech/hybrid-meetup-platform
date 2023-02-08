@@ -54,7 +54,7 @@ function Root() {
             <MenuItem variant="h6" sx={{ flexGrow: 1, textDecoration: 'none' }} component={RouterLink} to="/">
               Monte&lt;video&gt; Tech Summer Camp
             </MenuItem>
-            {auth && (
+            {auth?.email && auth?.token && (
               <div>
                 <IconButton
                   size="large"
@@ -85,7 +85,7 @@ function Root() {
                 </Menu>
               </div>
             )}
-            {!auth && (
+            {!auth?.email && !auth?.token && (
               <div>
                 <IconButton
                   size="large"
