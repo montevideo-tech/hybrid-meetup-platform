@@ -8,7 +8,7 @@ showing everyone, which is impossible) gets decided outside this component.
 That external function could work something like this:
 A "visibleParticipants" array could be calculated. This array would hold the
 {rowsLimit}*{tilesPerRowLimit} (at most) room participants that are visible at any given moment.
-It's also ordered by visiblity priority. This means that when a currently hidden participants needs
+It's also ordered by visiblity priority. This means that when a currently hidden participant needs
 to be shown, the currently visible participant with the least visibility priority
 (the last in the array) will be hidden to make place for this new one. By default, a participant
 is shown with middle priority (It gets inserted in the middle of the visibleParticipants array).
