@@ -17,10 +17,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
       - uses: supabase/setup-cli@v1
-
+      
+      - name: Link supabase project
       - run: |
           cd ./backend/supabase
           supabase link --project-ref $PROJECT_ID_DEVELOPMENT -p $SUPABASE_DB_PASSWORD
+          
+      - name: Push db migrations
+      - run: |
           supabase db push
