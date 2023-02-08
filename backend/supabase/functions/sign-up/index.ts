@@ -15,9 +15,9 @@ interface User {
 }
 
 async function singUp(supabaseClient: SupabaseClient, user: User) {
-  const emailExists = await supabaseClient.from('user-data').select('email').eq('email', user.email)
+  const emailExists = await supabaseClient.from('users-data').select('email').eq('email', user.email)
 
-  if (emailExists.data.length !== 0) {
+  if (emailExists.data && emailExists.data.length !== 0) {
     return new Response(JSON.stringify({
       error: 'User already exists'
     }), {
@@ -42,7 +42,7 @@ async function singUp(supabaseClient: SupabaseClient, user: User) {
     //   roleId = 2
     // }
 
-    await supabaseClient.from('user-data').insert({
+    await supabaseClient.from('users-data').insert({
       email: user.email,
       username: user.username
       // userId: data.user.id,
