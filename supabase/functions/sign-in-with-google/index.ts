@@ -6,7 +6,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey',
 }
 
-async function singInWithGoogle(supabaseClient: SupabaseClient) {
+async function signInWithGoogle(supabaseClient: SupabaseClient) {
     const { data, error } = await supabaseClient.auth.signInWithOAuth({
       provider: 'google',
     })
