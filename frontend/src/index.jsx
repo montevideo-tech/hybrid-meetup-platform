@@ -23,18 +23,18 @@ const router = createBrowserRouter([
         loader: roomLoader,
       },
       {
+        path: '/signIn',
+        element: <SignIn />,
+      },
+      {
+        path: '/signUp',
+        element: <SignUp />,
+      },
+      {
         path: '/room-test',
         element: <RoomTest />,
       },
     ],
-  },
-  {
-    path: '/signIn',
-    element: <SignIn />,
-  },
-  {
-    path: '/signUp',
-    element: <SignUp />,
   },
 ]);
 

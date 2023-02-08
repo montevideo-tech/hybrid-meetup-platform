@@ -11,23 +11,23 @@ interface User {
   password: String
 }
 
-async function singIn(supabaseClient: SupabaseClient, user: User) {
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-      email: user.email,
-      password: user.password,
-    })
-    
-    if(error){
-      return new Response(JSON.stringify({ error }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
-      })
-    }
+async function signIn(supabaseClient: SupabaseClient, user: User) {
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email: user.email,
+    password: user.password,
+  })
 
-    return new Response(JSON.stringify({ data }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
-      })
+  if (error) {
+    return new Response(JSON.stringify({ error }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 400,
+    })
+  }
+
+  return new Response(JSON.stringify({ data }), {
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    status: 200,
+  })
 }
 
 serve(async (req) => {
@@ -41,10 +41,10 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')
     const supabaseClient = createClient(supabaseUrl, supabaseKey)
-    
+
     const body = await req.json();
     const user = body.user;
-    return singIn(supabaseClient, user)
+    return signIn(supabaseClient, user)
 
   } catch (error) {
     console.error(error)

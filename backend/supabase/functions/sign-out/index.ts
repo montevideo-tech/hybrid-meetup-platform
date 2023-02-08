@@ -6,7 +6,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey',
 }
 
-async function singOut(supabaseClient: SupabaseClient) {
+async function signOut(supabaseClient: SupabaseClient) {
     const { data, error } = await supabaseClient.auth.signOut()
     
     if(error){

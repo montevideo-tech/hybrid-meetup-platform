@@ -1,44 +1,44 @@
 // TODO: DELETE WHEN MIGRATION TO STORE IS COMPLETED
 
-import mvdTech from '../lib/api';
+// import mvdTech from '../lib/api';
 
-async function signUp(data, onSuccess = null, onError = null) {
-  const user = {
-    email: data.email,
-    password: data.password,
-  };
+// async function signUp(data, onSuccess = null, onError = null) {
+//   const user = {
+//     email: data.email,
+//     password: data.password,
+//   };
 
-  try {
-    const response = await mvdTech.post('/sign-up', JSON.stringify({ user }), {
-      headers: {
-        Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
-        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-      },
-    });
-    onSuccess && onSuccess(response);
-  } catch (error) {
-    onError && onError(error);
-  }
-}
+//   try {
+//     const response = await mvdTech.post('/sign-up', JSON.stringify({ user }), {
+//       headers: {
+//         Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+//         'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+//       },
+//     });
+//     onSuccess && onSuccess(response);
+//   } catch (error) {
+//     onError && onError(error);
+//   }
+// }
 
-async function signInWithEmail(data, onSuccess = null, onError = null) {
-  const user = {
-    email: data.email,
-    password: data.password,
-  };
+// async function signInWithEmail(data, onSuccess = null, onError = null) {
+//   const user = {
+//     email: data.email,
+//     password: data.password,
+//   };
 
-  try {
-    const response = await mvdTech.post('/sign-in', JSON.stringify({ user }), {
-      headers: {
-        Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
-        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-      },
-    });
-    onSuccess && onSuccess(response);
-  } catch (error) {
-    onError && onError(error);
-  }
-}
+//   try {
+//     const response = await mvdTech.post('/sign-in', JSON.stringify({ user }), {
+//       headers: {
+//         Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+//         'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+//       },
+//     });
+//     onSuccess && onSuccess(response);
+//   } catch (error) {
+//     onError && onError(error);
+//   }
+// }
 
 // async function signInWithGoogle() {
 //   const { data, error } = await supabase.auth.signInWithOAuth({
@@ -55,4 +55,4 @@ async function signInWithEmail(data, onSuccess = null, onError = null) {
 //   const { error } = await supabase.auth.signOut();
 // }
 
-export default { signUp };
+// export default { signUp };

@@ -6,22 +6,22 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey',
 }
 
-async function singInWithGoogle(supabaseClient: SupabaseClient) {
-    const { data, error } = await supabaseClient.auth.signInWithOAuth({
-      provider: 'google',
-    })
-    
-    if(error){
-      return new Response(JSON.stringify({ error }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
-      })
-    }
+async function signInWithGoogle(supabaseClient: SupabaseClient) {
+  const { data, error } = await supabaseClient.auth.signInWithOAuth({
+    provider: 'google',
+  })
 
-    return new Response(JSON.stringify({ data }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
-      })
+  if (error) {
+    return new Response(JSON.stringify({ error }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 400,
+    })
+  }
+
+  return new Response(JSON.stringify({ data }), {
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    status: 200,
+  })
 }
 
 serve(async (req) => {
@@ -29,8 +29,8 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')
     const supabaseClient = createClient(supabaseUrl, supabaseKey)
-  
-    return singInWithGoogle(supabaseClient)
+
+    return signInWithGoogle(supabaseClient)
 
   } catch (error) {
     console.error(error)

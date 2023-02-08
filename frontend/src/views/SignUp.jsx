@@ -54,8 +54,7 @@ function SignUp() {
   };
 
   return (
-    // eslint-disable-next-line react/react-in-jsx-scope
-    <Container component="main" maxWidth="xs">
+    <Container maxWidth="xs">
       <CssBaseline />
       <Box
         sx={{
