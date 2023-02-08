@@ -36,6 +36,7 @@ export const signUp = (data, onSuccess = null, onError = null) => async () => {
   const user = {
     email: data.email,
     password: data.password,
+    username: data.name,
   };
 
   try {
