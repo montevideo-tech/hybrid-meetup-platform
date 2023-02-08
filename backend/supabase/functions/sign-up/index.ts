@@ -15,6 +15,7 @@ interface User {
 }
 
 async function signUp(supabaseClient: SupabaseClient, user: User) {
+  const emailExists = await supabaseClient.from('users-data').select('email').eq('email', user.email)
 
   if (emailExists.data && emailExists.data.length !== 0) {
     return new Response(JSON.stringify({
