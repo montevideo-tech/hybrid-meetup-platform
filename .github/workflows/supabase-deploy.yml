@@ -22,5 +22,5 @@ jobs:
 
       - run: |
           cd ./backend/supabase
-          supabase link --project-ref $PROJECT_ID_DEVELOPMENT
-          supabase db pus
+          supabase link --project-ref $PROJECT_ID_DEVELOPMENT -p $SUPABASE_DB_PASSWORD
+          supabase db push
