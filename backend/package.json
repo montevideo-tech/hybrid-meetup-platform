@@ -4,9 +4,10 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "test": "run lint && npm run test:run",
     "lint": "eslint . --ext .js,.ts",
-    "lint:fix": "npm run lint -- --fix"
+    "lint:fix": "npm run lint -- --fix",
+    "test": "run lint && npm run test:run",
+    "test:run": "jest"
   },
   "author": "",
   "license": "ISC",
