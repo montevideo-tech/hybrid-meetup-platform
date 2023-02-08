@@ -16,7 +16,8 @@ is shown with middle priority (It gets inserted in the middle of the visiblePart
 import { React, useState } from 'react';
 import { useLoaderData } from 'react-router-dom';
 import Button from '@mui/material/Button';
-import { Box, Grid, Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
+import Video from '../components/Video';
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -69,15 +70,19 @@ function Room() {
       <Grid container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center">
         {visibleParticipants.map((participant) => (
           <Grid item xs={1} sm={1} md={1} key={participant.id}>
-            <Box sx={{ backgroundColor: 'black', color: 'white' }}>
-              participant
-              {' '}
-              {participant.id}
-            </Box>
+            <div style={{ borderStyle: 'solid' }}>
+              <Video
+                stream={null}
+              />
+            </div>
           </Grid>
         ))}
         <Grid item xs={1} sm={1} md={1}>
-          <Box sx={{ backgroundColor: 'black', color: 'white' }}>user slot (you)</Box>
+          <div style={{ borderStyle: 'solid' }}>
+            <Video
+              stream={null}
+            />
+          </div>
         </Grid>
       </Grid>
       <Button variant="outlined" onClick={addParticipant}>Add participant</Button>
