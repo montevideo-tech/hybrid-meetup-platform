@@ -13,7 +13,7 @@ to be shown, the currently visible participant with the least visibility priorit
 (the last in the array) will be hidden to make place for this new one. By default, a participant
 is shown with middle priority (It gets inserted in the middle of the visibleParticipants array).
 */
-import { React, useState } from 'react';
+import { React, useState, useEffect } from 'react';
 import { useLoaderData } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import { Grid, Typography } from '@mui/material';
@@ -60,6 +60,19 @@ function Room() {
     setIdCount(idCount + 1);
     setVisibleParticipants(participantsCopy);
   };
+  // for testing purposes, we use the user camera stream in every video component
+  const [userStream, setUserStream] = useState(null);
+  useEffect(() => {
+    const getUserCameraStream = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: true });
+        setUserStream(stream);
+      } catch (err) {
+        console.log('error trying to get user camera stream');
+      }
+    };
+    getUserCameraStream();
+  }, []);
   return (
     <>
       <Typography variant="h4" component="h1">
@@ -67,12 +80,13 @@ function Room() {
         {' '}
         {roomId}
       </Typography>
+      {userStream && (
       <Grid container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center">
         {visibleParticipants.map((participant) => (
           <Grid item xs={1} sm={1} md={1} key={participant.id}>
             <div style={{ borderStyle: 'solid' }}>
               <Video
-                stream={null}
+                stream={userStream}
               />
             </div>
           </Grid>
@@ -80,11 +94,12 @@ function Room() {
         <Grid item xs={1} sm={1} md={1}>
           <div style={{ borderStyle: 'solid' }}>
             <Video
-              stream={null}
+              stream={userStream}
             />
           </div>
         </Grid>
       </Grid>
+      )}
       <Button variant="outlined" onClick={addParticipant}>Add participant</Button>
     </>
   );
