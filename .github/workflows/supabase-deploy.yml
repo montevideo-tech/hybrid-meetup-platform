@@ -9,15 +9,19 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./backend/supabase
 
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN_DEVELOPMENT }}
       SUPABASE_DB_PASSWORD: ${{ secrets.DB_PASSWORD_DEVELOPMENT }}
       PROJECT_ID_DEVELOPMENT: ${{ secrets.PROJECT_ID_DEVELOPMENT }}
-
+      
     steps:
       - uses: actions/checkout@v3
       - uses: supabase/setup-cli@v1
-      - run: |
-          cd ./backend/supabase && supabase link --project-ref $PROJECT_ID_DEVELOPMENT -p $SUPABASE_DB_PASSWORD |
+      - name: Push supabase db migrations
+        run: |
+          supabase link --project-ref $PROJECT_ID_DEVELOPMENT -p $SUPABASE_DB_PASSWORD
           supabase db push
