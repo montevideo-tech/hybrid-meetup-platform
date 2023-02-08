@@ -1,0 +1,1 @@
+Deno.env.get('REACT_APP_SUPABASE_PROJECT_REF')
