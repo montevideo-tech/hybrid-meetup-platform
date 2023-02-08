@@ -16,7 +16,6 @@ jobs:
       PROJECT_ID_DEVELOPMENT: ${{ secrets.PROJECT_ID_DEVELOPMENT }}
 
     steps:
-      - name: Push db migrations
       - uses: actions/checkout@v3
       - uses: supabase/setup-cli@v1
       - run: |
