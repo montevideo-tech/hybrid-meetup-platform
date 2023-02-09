@@ -8,6 +8,7 @@ import Root from './views/Root';
 import SignIn from './views/SignIn';
 import SignUp from './views/SignUp';
 import Room, { roomLoader } from './views/Room';
+import Rooms from './views/Rooms';
 import ErrorPage from './views/errorPage';
 import RoomTest from './components/RoomTest';
 
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
     element: <Root />,
     errorElement: <ErrorPage />,
     children: [
+      {
+        path: '/rooms',
+        element: <Rooms />,
+      },
       {
         path: '/rooms/:roomId',
         element: <Room />,
