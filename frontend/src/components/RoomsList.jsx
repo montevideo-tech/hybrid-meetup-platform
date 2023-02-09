@@ -11,16 +11,23 @@ function RoomsList(props) {
 
   return (
     <List>
-      {list.map((room) => (
-        <ListItem
-          key={room.id}
-          sx={{ pl: 0 }}
-        >
-          <ListItemButton component={RouterLink} to={`/rooms/${room.id}`}>
-            <ListItemText primary={room.name} />
-          </ListItemButton>
-        </ListItem>
-      ))}
+      {list.map((room) => {
+        const { id, name, providerId } = room;
+        if (!id || !name || !providerId) {
+          return null;
+        }
+
+        return (
+          <ListItem
+            key={room.id}
+            sx={{ pl: 0 }}
+          >
+            <ListItemButton component={RouterLink} to={`/rooms/${room.providerId}`}>
+              <ListItemText primary={room.name} />
+            </ListItemButton>
+          </ListItem>
+        );
+      })}
     </List>
   );
 }

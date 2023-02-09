@@ -1,32 +1,57 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Typography } from '@mui/material';
+import { Paper, Skeleton, Typography } from '@mui/material';
 
+import { supabase } from '../lib/api';
 import RoomsList from '../components/RoomsList';
 
-const dummyRoomsList = [
-  { id: '1', name: 'Room 1' },
-  { id: '2', name: 'Room 2' },
-  { id: '3', name: 'Room 3' },
-  { id: '4', name: 'Room 4' },
-];
-
-// this is just for test. we're going to call our supabase DB
-const fetchRooms = async () => new Promise((resolve) => {
-  resolve(dummyRoomsList);
-});
+// TODO create new room (call cloud function)
 
 function Rooms() {
-  // eslint-disable-next-line no-unused-vars
   const [roomsList, setRoomsList] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const handleTableEvent = (payload) => {
+    const { new: newRoom } = payload;
+    switch (payload.eventType) {
+      case 'INSERT':
+        setRoomsList((list) => [...list, newRoom]); // functional update
+        break;
+      case 'UPDATE':
+        setRoomsList((list) => list.map((room) => {
+          if (room.id === newRoom.id) {
+            return newRoom;
+          }
+          return room;
+        }));
+        break;
+      case 'DELETE':
+        setRoomsList((list) => list.filter((room) => room.id !== payload.old.id));
+        break;
+      default:
+    }
+  };
 
   useEffect(() => {
     const getRoomsList = async () => {
+      setLoading(true);
+
       try {
-        // eslint-disable-next-line no-unused-vars
-        const rooms = await fetchRooms();
-        // setRoomsList(rooms);
+        const { data, error } = await supabase.from('rooms').select();
+        if (error) {
+          console.error(error);
+        }
+
+        setRoomsList(data);
+
+        // Listen to table events
+        supabase
+          .channel('any')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'rooms' }, handleTableEvent)
+          .subscribe();
       } catch (err) {
         console.error(err);
+      } finally {
+        setLoading(false);
       }
     };
     getRoomsList();
@@ -37,7 +62,15 @@ function Rooms() {
       <Typography variant="h4" component="h1">
         Rooms
       </Typography>
-      <RoomsList list={dummyRoomsList} />
+      {loading ? (
+        <>
+          <Skeleton variant="text" animation="wave" width="60%" height={50} />
+          <Skeleton variant="text" animation="wave" width="40%" height={50} />
+          <Skeleton variant="text" animation="wave" width="30%" height={50} />
+        </>
+      ) : (
+        <RoomsList list={roomsList} />
+      )}
     </Paper>
   );
 }
