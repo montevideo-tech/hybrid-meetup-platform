@@ -7,8 +7,8 @@ const corsHeaders = {
 }
 
 interface User {
-  email: String
-  password: String
+  email: string
+  password: string
 }
 
 async function signIn(supabaseClient: SupabaseClient, user: User) {
@@ -38,8 +38,8 @@ serve(async (req) => {
   }
 
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')
-    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
+    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY') ?? ''
     const supabaseClient = createClient(supabaseUrl, supabaseKey)
 
     const body = await req.json();

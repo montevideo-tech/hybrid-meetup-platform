@@ -16,7 +16,7 @@ async function signOut(supabaseClient: SupabaseClient) {
       })
     }
 
-    return new Response(JSON.stringify({ data }), {
+    return new Response(JSON.stringify({}), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
       })
@@ -28,15 +28,15 @@ serve(async (req) => {
   }
 
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')
-    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
+    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY') ?? ''
     const supabaseClient = createClient(
       supabaseUrl, 
       supabaseKey,
       { global: { headers: { Authorization: req.headers.get('User-Authorization')! } } }
     )
 
-    return singOut(supabaseClient)
+    return signOut(supabaseClient)
 
   } catch (error) {
     console.error(error)
