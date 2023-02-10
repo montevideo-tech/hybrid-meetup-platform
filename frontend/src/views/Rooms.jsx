@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Skeleton, Typography } from '@mui/material';
+import {
+  Button, Paper, Skeleton, Typography,
+} from '@mui/material';
+import { useDispatch } from 'react-redux';
 
 import { supabase } from '../lib/api';
+import { createRoom } from '../actions';
+
 import RoomsList from '../components/RoomsList';
 
 // TODO create new room (call cloud function)
@@ -9,6 +14,23 @@ import RoomsList from '../components/RoomsList';
 function Rooms() {
   const [roomsList, setRoomsList] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const dispatch = useDispatch();
+
+  const onSubmit = async () => {
+    console.log('on submit');
+
+    const onSuccess = (res) => {
+      // navigate('/rooms');
+      console.log('Room created', res);
+      // TODO insert DB entry
+    };
+    const onError = (error) => {
+      // setAlert({ type: 'error', message: `An error occurred while creating room: ${error}` });
+      console.error(`An error occurred while creating room: ${error.message}`);
+    };
+    dispatch(createRoom(onSuccess, onError));
+  };
 
   const handleTableEvent = (payload) => {
     const { new: newRoom } = payload;
@@ -77,6 +99,10 @@ function Rooms() {
       <Typography variant="h4" component="h1">
         Rooms
       </Typography>
+      <Button onClick={onSubmit}>
+        Create Room
+      </Button>
+
       {loading ? (
         <>
           <Skeleton variant="text" animation="wave" width="60%" height={50} />
