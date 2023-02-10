@@ -26,8 +26,8 @@ async function signInWithGoogle(supabaseClient: SupabaseClient) {
 
 serve(async (req) => {
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')
-    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
+    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY') ?? ''
     const supabaseClient = createClient(supabaseUrl, supabaseKey)
 
     return signInWithGoogle(supabaseClient)
