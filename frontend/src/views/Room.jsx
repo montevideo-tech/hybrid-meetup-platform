@@ -15,16 +15,23 @@ is shown with middle priority (It gets inserted in the middle of the visiblePart
 */
 import { React, useState, useEffect } from 'react';
 import { useLoaderData } from 'react-router-dom';
-import Button from '@mui/material/Button';
 import { Grid, Typography } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
 import Video from '../components/Video';
+import { Room as WebRoom } from '../lib/webrtc';
+
+// get jwt from env for testing purposes. will get using roomId eventually
+const JWT = process.env.REACT_APP_MUX_SPACE_JWT;
 
 export async function roomLoader({ params }) {
   return params.roomId;
 }
 
 function Room() {
-  const [idCount, setIdCount] = useState(0);
+  const [room, setRoom] = useState();
+  // const [userParticipant, setUserParticipant] = useState();
+  const [localStream, setLocalStream] = useState();
+  const [remoteStreams, setRemoteStreams] = useState([]);
   // const [participants, setParticipants] = useState([]);
   // we eventually need the full list of participants, not only the visible ones
   // this array will hold data such as name foor the purpose of
@@ -33,15 +40,13 @@ function Room() {
   // It's possible that visibleParitcipants will eventually not need to be in the state,
   // if it ends up being a component property passed in by the parent component.
   // for now it needs to be in the state so that the "Add Participant" test button can work
-  const [visibleParticipants, setVisibleParticipants] = useState([]);
-  const rowsLimit = { xs: 2, sm: 2, md: 2 };
+  const rowsLimit = { xs: 2, sm: 4, md: 6 };
   const tilesPerRowLimit = { xs: 2, sm: 6, md: 10 };
   // it's assumed that we'll get a maximum of rowsLimit*tilesPerRowLimit visibleParticipants
   // if this precondition isn't true then the video grid can't be expected to render properly
   const calculateTilesPerRow = (screenSize) => {
     // screenSize should be either 'xs', 'sm' or 'md'
-    const tilesAmount = visibleParticipants.length + 1;
-    // the "+ 1" is because of the user tile
+    const tilesAmount = remoteStreams.length;
     return Math.min(
       tilesPerRowLimit[screenSize],
       Math.ceil(tilesAmount / rowsLimit[screenSize]),
@@ -53,55 +58,57 @@ function Room() {
     md: calculateTilesPerRow('md'),
   };
   const roomId = useLoaderData();
-  const addParticipant = () => {
-    // adds a dummy participant to test the view's adaptiveness
-    // to the amount of participants in the room
-    const participantsCopy = [...visibleParticipants, { id: idCount }];
-    setIdCount(idCount + 1);
-    setVisibleParticipants(participantsCopy);
-  };
-  // for testing purposes, we use the user camera stream in every video component
-  const [userStream, setUserStream] = useState(null);
+  // initialize room
   useEffect(() => {
-    const getUserCameraStream = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: true });
-        setUserStream(stream);
-      } catch (err) {
-        console.log('error trying to get user camera stream');
-      }
+    const joinRoom = async () => {
+      const newRoom = new WebRoom(JWT);
+      const newParticipant = await newRoom.join();
+
+      newRoom.on('ParticipantTrackSubscribed', (remoteParticipant, track) => {
+        const stream = new MediaStream();
+        stream.addTrack(track.mediaStreamTrack);
+        const streamObj = { stream, participantId: remoteParticipant.id };
+        setRemoteStreams([...remoteStreams, streamObj]);
+      });
+
+      newRoom.on('ParticipantJoined', (p) => console.log('someone joined', p));
+      newRoom.on('ParticipantLeft', (p) => console.log('someone left', p));
+
+      setRoom(newRoom);
+      const tracks = await newParticipant.publishTracks(
+        { constraints: { video: true, audio: true } },
+      );
+      const stream = new MediaStream();
+      tracks.forEach((track) => stream.addTrack(track.mediaStreamTrack));
+      setLocalStream(stream);
     };
-    getUserCameraStream();
+    joinRoom();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
-    <>
-      <Typography variant="h4" component="h1">
-        Room
-        {' '}
-        {roomId}
-      </Typography>
-      {userStream && (
-      <Grid container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center">
-        {visibleParticipants.map((participant) => (
-          <Grid item xs={1} sm={1} md={1} key={participant.id}>
-            <div style={{ borderStyle: 'solid' }}>
-              <Video
-                stream={userStream}
-              />
-            </div>
-          </Grid>
-        ))}
-        <Grid item xs={1} sm={1} md={1}>
-          <div style={{ borderStyle: 'solid' }}>
-            <Video
-              stream={userStream}
-            />
-          </div>
+    room ? (
+      <>
+        <Typography variant="h4" component="h1">
+          Room
+          {' '}
+          {roomId}
+        </Typography>
+        <Grid container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center">
+          {remoteStreams.map((stream) => (
+            <Grid item xs={1} sm={1} md={1} key={stream.participantId}>
+              <div style={{ borderStyle: 'solid' }}>
+                <Video
+                  stream={stream.stream}
+                />
+              </div>
+            </Grid>
+          ))}
         </Grid>
-      </Grid>
-      )}
-      <Button variant="outlined" onClick={addParticipant}>Add participant</Button>
-    </>
+        <Video
+          stream={localStream}
+        />
+      </>
+    ) : <CircularProgress />
   );
 }
 
