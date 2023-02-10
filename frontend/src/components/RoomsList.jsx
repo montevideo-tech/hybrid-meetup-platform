@@ -3,32 +3,51 @@ import { Link as RouterLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import {
-  List, ListItem, ListItemButton, ListItemText,
+  List, ListItem, ListItemButton, ListItemText, Typography,
 } from '@mui/material';
 
 function RoomsList(props) {
   const { list } = props; // TODO use store
 
   return (
-    <List>
-      {list.map((room) => {
-        const { id, name, providerId } = room;
-        if (!id || !name || !providerId) {
-          return null;
-        }
+    list.length ? (
+      <List>
+        {list.map((room) => {
+          const {
+            id, name, providerId, createdBy,
+          } = room;
 
-        return (
-          <ListItem
-            key={room.id}
-            sx={{ pl: 0 }}
-          >
-            <ListItemButton component={RouterLink} to={`/rooms/${room.providerId}`}>
-              <ListItemText primary={room.name} />
-            </ListItemButton>
-          </ListItem>
-        );
-      })}
-    </List>
+          if (!id || !name || !providerId) {
+            return null;
+          }
+
+          let createdByStr = 'Created by ';
+          if (createdBy?.username) {
+            createdByStr += createdBy.username;
+            if (createdBy?.email) {
+              createdByStr += ` (${createdBy.email})`;
+            }
+          } else if (createdBy?.email) {
+            createdByStr += createdBy.email;
+          } else {
+            createdByStr += 'event organizer';
+          }
+
+          return (
+            <ListItem
+              key={room.id}
+              sx={{ pl: 0 }}
+            >
+              <ListItemButton component={RouterLink} to={`/rooms/${room.providerId}`}>
+                <ListItemText primary={room.name} secondary={createdByStr} />
+              </ListItemButton>
+            </ListItem>
+          );
+        })}
+      </List>
+    ) : (
+      <Typography variant="body1">There are no rooms yet!</Typography>
+    )
   );
 }
 

@@ -36,12 +36,27 @@ function Rooms() {
       setLoading(true);
 
       try {
-        const { data, error } = await supabase.from('rooms').select();
-        if (error) {
-          console.error(error);
+        const roomsQuery = await supabase.from('rooms').select();
+        if (roomsQuery.error) {
+          throw roomsQuery.error;
         }
 
-        setRoomsList(data);
+        const usersQuery = await supabase.from('users-data').select();
+        if (usersQuery.error) {
+          throw usersQuery.error;
+        }
+
+        setRoomsList(roomsQuery.data.map((room) => {
+          const { id, providerId, name } = room;
+          const createdBy = usersQuery.data.find((u) => u.user_id === room.creatorId);
+
+          return {
+            id,
+            providerId,
+            name,
+            createdBy,
+          };
+        }));
 
         // Listen to table events
         supabase
@@ -49,7 +64,7 @@ function Rooms() {
           .on('postgres_changes', { event: '*', schema: 'public', table: 'rooms' }, handleTableEvent)
           .subscribe();
       } catch (err) {
-        console.error(err);
+        console.error(`Error getting rooms list: ${err.message}`);
       } finally {
         setLoading(false);
       }
