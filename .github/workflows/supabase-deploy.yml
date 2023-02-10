@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-22.04
     defaults:
       run:
-        working-directory: ./backend/supabase
+        working-directory: ./backend/src/supabase
 
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN_DEVELOPMENT }}
