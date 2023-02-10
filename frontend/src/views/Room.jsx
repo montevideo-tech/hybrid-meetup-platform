@@ -29,7 +29,7 @@ export async function roomLoader({ params }) {
 
 function Room() {
   const [room, setRoom] = useState();
-  // const [userParticipant, setUserParticipant] = useState();
+  const [userParticipant, setUserParticipant] = useState();
   const [localStream, setLocalStream] = useState();
   const [remoteStreams, setRemoteStreams] = useState([]);
   // const [participants, setParticipants] = useState([]);
@@ -60,6 +60,12 @@ function Room() {
   const roomId = useLoaderData();
   // initialize room
   useEffect(() => {
+    const leaveRoom = async () => {
+      if (room) {
+        await userParticipant.unpublishAllTracks(); // also stops them
+        await room.leave();
+      }
+    };
     const joinRoom = async () => {
       const newRoom = new WebRoom(JWT);
       const newParticipant = await newRoom.join();
@@ -81,8 +87,10 @@ function Room() {
       const stream = new MediaStream();
       tracks.forEach((track) => stream.addTrack(track.mediaStreamTrack));
       setLocalStream(stream);
+      setUserParticipant(newParticipant);
     };
     joinRoom();
+    return leaveRoom;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
