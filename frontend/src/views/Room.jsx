@@ -66,6 +66,15 @@ function Room() {
         await room.leave();
       }
     };
+    const subscribeToRemoteStreams = async (r) => {
+      // subscribe ta all remote participants for testing purposes
+      const { remoteParticipants } = r;
+      const rps = Array.from(remoteParticipants.values());
+      await Promise.all(rps.map(async (rp) => {
+        await rp.subscribe();
+      }));
+      console.log('subscribed to remote participant(s)');
+    };
     const joinRoom = async () => {
       const newRoom = new WebRoom(JWT);
       const newParticipant = await newRoom.join();
@@ -88,6 +97,7 @@ function Room() {
       tracks.forEach((track) => stream.addTrack(track.mediaStreamTrack));
       setLocalStream(stream);
       setUserParticipant(newParticipant);
+      subscribeToRemoteStreams(newRoom);
     };
     joinRoom();
     return leaveRoom;
