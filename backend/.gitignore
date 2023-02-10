@@ -25,3 +25,5 @@ yarn-error.log*
 # Supabase
 .branches
 .temp
+
+.vscode/*
