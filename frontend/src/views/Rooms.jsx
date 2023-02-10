@@ -9,8 +9,6 @@ import { createRoom } from '../actions';
 
 import RoomsList from '../components/RoomsList';
 
-// TODO create new room (call cloud function)
-
 function Rooms() {
   const [roomsList, setRoomsList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -18,15 +16,11 @@ function Rooms() {
   const dispatch = useDispatch();
 
   const onSubmit = async () => {
-    console.log('on submit');
-
     const onSuccess = (res) => {
-      // navigate('/rooms');
       console.log('Room created', res);
       // TODO insert DB entry
     };
     const onError = (error) => {
-      // setAlert({ type: 'error', message: `An error occurred while creating room: ${error}` });
       console.error(`An error occurred while creating room: ${error.message}`);
     };
     dispatch(createRoom(onSuccess, onError));
