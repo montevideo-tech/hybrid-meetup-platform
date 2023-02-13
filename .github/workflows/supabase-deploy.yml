@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy migrations:
+  deploy-migrations:
     runs-on: ubuntu-22.04
     defaults:
       run:
@@ -17,7 +17,7 @@ jobs:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN_DEVELOPMENT }}
       SUPABASE_DB_PASSWORD: ${{ secrets.DB_PASSWORD_DEVELOPMENT }}
       PROJECT_ID_DEVELOPMENT: ${{ secrets.PROJECT_ID_DEVELOPMENT }}
-      
+
     steps:
       - uses: actions/checkout@v3
       - uses: supabase/setup-cli@v1
@@ -26,19 +26,19 @@ jobs:
           supabase link --project-ref $PROJECT_ID_DEVELOPMENT -p $SUPABASE_DB_PASSWORD
           supabase db push
 
-    deploy edge functions:
-      runs-on: ubuntu-22.04
-      defaults:
-        run:
-          working-directory: ./backend/src/supabase/functions
-      env:
-        SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN_DEVELOPMENT }}
-        SUPABASE_DB_PASSWORD: ${{ secrets.DB_PASSWORD_DEVELOPMENT }}
-        PROJECT_ID_DEVELOPMENT: ${{ secrets.PROJECT_ID_DEVELOPMENT }}
-      
-      steps:
-        - name: Deploy supabase edge functions
-          run: |
-            supabase link --project-ref $PROJECT_ID_DEVELOPMENT -p $SUPABASE_DB_PASSWORD
-            functions_deployer.sh
-          shell: bash
+  deploy-edge-functions:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./backend/src/supabase/functions
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN_DEVELOPMENT }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.DB_PASSWORD_DEVELOPMENT }}
+      PROJECT_ID_DEVELOPMENT: ${{ secrets.PROJECT_ID_DEVELOPMENT }}
+
+    steps:
+      - name: Deploy supabase edge functions
+        run: |
+          supabase link --project-ref $PROJECT_ID_DEVELOPMENT -p $SUPABASE_DB_PASSWORD
+          functions_deployer.sh
+        shell: bash
