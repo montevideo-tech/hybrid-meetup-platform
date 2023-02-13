@@ -70,6 +70,7 @@ export const createRoom = (onSuccess = null, onError = null) => async () => {
   try {
     const response = await mvdTech.post(
       '/create-space',
+      JSON.stringify({}),
       {
         headers: {
           Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
