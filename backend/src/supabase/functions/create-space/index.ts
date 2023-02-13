@@ -1,9 +1,10 @@
 import { serve } from 'https://deno.land/std@0.131.0/http/server.ts';
+import { corsHeaders } from '../_shared/cors.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey',
-}
+// const corsHeaders = {
+//   'Access-Control-Allow-Origin': '*',
+//   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey',
+// }
 
 async function createSpace() {
   const accessTokenID = Deno.env.get('ACCESS_TOKEN_ID');
