@@ -28,9 +28,6 @@ jobs:
 
   deploy-edge-functions:
     runs-on: ubuntu-22.04
-    defaults:
-      run:
-        working-directory: backend/src/supabase/functions
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN_DEVELOPMENT }}
       SUPABASE_DB_PASSWORD: ${{ secrets.DB_PASSWORD_DEVELOPMENT }}
