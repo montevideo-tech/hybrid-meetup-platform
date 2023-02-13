@@ -25,3 +25,5 @@ jobs:
         run: |
           supabase link --project-ref $PROJECT_ID_DEVELOPMENT -p $SUPABASE_DB_PASSWORD
           supabase db push
+      - name: Deploy supabase edge functions
+        uses:  ./backend/src/supabase/functions/functions_deployer.sh
