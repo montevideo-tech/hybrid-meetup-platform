@@ -44,18 +44,13 @@ function Room() {
   const tilesPerRowLimit = { xs: 2, sm: 3, md: 6 };
   // it's assumed that we'll get a maximum of rowsLimit*tilesPerRowLimit visibleParticipants
   // if this precondition isn't true then the video grid can't be expected to render properly
-  const createDummy = (n) => {
-    let result = [];
-    for (let i = 0; i < n; i += 1) {
-      result = [...result, localStream];
-    }
-    return result;
-  };
-  const dummy = createDummy(14);
   const calculateTilesPerRow = (screenSize) => {
     // screenSize should be either 'xs', 'sm' or 'md'
-    // const tilesAmount = remoteStreams.length;
-    const tilesAmount = dummy.length;
+    /* This function attempts to distribute the tiles between
+    rows as evenly as possible. It does so while trying to mantain
+    the amount of tiles per row bigger or equal that the total amount
+    of rows, as this looks better than the opposite relation. */
+    const tilesAmount = remoteStreams.length;
     let rows = 1;
     while (rows <= rowsLimit[screenSize]) {
       const tilesPerRow = Math.ceil(tilesAmount / (rows + 1));
@@ -68,6 +63,7 @@ function Room() {
       }
     }
     /*
+    TODO? fix the "7" case (ask Nico Reyes)
     const finalTilesPerRow = Math.ceil(tilesAmount / (rows));
     const tilesInLastRow = finalTilesPerRow % rows;
     if (finalTilesPerRow - (tilesInLastRow) >= 2) {
@@ -130,17 +126,6 @@ function Room() {
     return leaveRoom;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  function makeid(length) {
-    let result = '';
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const charactersLength = characters.length;
-    let counter = 0;
-    while (counter < length) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-      counter += 1;
-    }
-    return result;
-  }
   const localStreamStyle = {
     width: '25vw',
     position: 'fixed',
@@ -157,12 +142,11 @@ function Room() {
         </Typography>
         <Grid sx={{ width: '65vw', height: '60vh' }} container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center">
           {
-            dummy.map((stream) => (
-            // remoteStreams.map((stream) => (
-              <Grid item xs={1} sm={1} md={1} key={makeid(10)}>
+            remoteStreams.map((stream) => (
+              <Grid item xs={1} sm={1} md={1} key={stream.participantId}>
                 <Box>
                   <Video
-                    stream={stream}
+                    stream={stream.stream}
                   />
                 </Box>
               </Grid>
