@@ -42,4 +42,4 @@ jobs:
       - uses: supabase/setup-cli@v1
       - name: Push supabase edge functions
         run: |
-          bash ./functions/functions_deployer.sh
+          bash functions_deployer.sh
