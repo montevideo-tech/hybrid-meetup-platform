@@ -94,8 +94,6 @@ serve(async (req) => {
     const { table, ...payload } = body;
     return insertEntry(supabaseClient, table, payload);
   } catch (error) {
-    console.error(error);
-
     return new Response(JSON.stringify({ error }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 400,
