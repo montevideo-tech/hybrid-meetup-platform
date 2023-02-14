@@ -15,7 +15,7 @@ is shown with middle priority (It gets inserted in the middle of the visiblePart
 */
 import { React, useState, useEffect } from 'react';
 import { useLoaderData } from 'react-router-dom';
-import { Grid, Typography } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import Video from '../components/Video';
 import { Room as WebRoom } from '../lib/webrtc';
@@ -51,23 +51,29 @@ function Room() {
     }
     return result;
   };
-  const dummy = createDummy(8);
+  const dummy = createDummy(14);
   const calculateTilesPerRow = (screenSize) => {
     // screenSize should be either 'xs', 'sm' or 'md'
     // const tilesAmount = remoteStreams.length;
     const tilesAmount = dummy.length;
-    // a new row only gets rendered when there's enough items
-    // to fill at least tilesPerRowLimit * (3 / 5) tiles on each.
     let rows = 1;
-    const tilesPerRowThreshold = Math.floor(tilesPerRowLimit[screenSize] * (3 / 5));
-    // I add rows until splitting the tiles into row+1 rows wouldn't reach the threshold
     while (rows <= rowsLimit[screenSize]) {
-      if (Math.ceil(tilesAmount / (rows + 1)) >= tilesPerRowThreshold) {
+      const tilesPerRow = Math.ceil(tilesAmount / (rows + 1));
+      if (
+        tilesPerRow >= rows + 1
+      ) {
         rows += 1;
       } else {
         break;
       }
     }
+    /*
+    const finalTilesPerRow = Math.ceil(tilesAmount / (rows));
+    const tilesInLastRow = finalTilesPerRow % rows;
+    if (finalTilesPerRow - (tilesInLastRow) >= 2) {
+      rows -= 1;
+    }
+    */
     return Math.min(
       tilesPerRowLimit[screenSize],
       Math.ceil(tilesAmount / rows),
@@ -137,41 +143,38 @@ function Room() {
   }
   const localStreamStyle = {
     width: '25vw',
-    position: 'absolute',
+    position: 'fixed',
     bottom: 0,
     right: 0,
   };
   return (
     room ? (
-      <div style={{ position: 'relative' }}>
+      <Box style={{ position: 'relative' }}>
         <Typography variant="h4" component="h1">
           Room
           {' '}
           {roomId}
         </Typography>
-        <div style={{ width: '65vw' }}>
-          <Grid container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center">
-            {
-              dummy.map((stream) => (
-              // remoteStreams.map((stream) => (
-                <Grid item xs={1} sm={1} md={1} key={makeid(10)}>
-                  <div style={{ borderStyle: 'solid' }}>
-                    <Video
-                      stream={stream}
-                    />
-                  </div>
-                </Grid>
-              ))
-            }
-          </Grid>
-        </div>
+        <Grid sx={{ width: '65vw', height: '60vh' }} container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center">
+          {
+            dummy.map((stream) => (
+            // remoteStreams.map((stream) => (
+              <Grid item xs={1} sm={1} md={1} key={makeid(10)}>
+                <Box>
+                  <Video
+                    stream={stream}
+                  />
+                </Box>
+              </Grid>
+            ))
+          }
+        </Grid>
         <div style={localStreamStyle}>
           <Video
             stream={localStream}
-            size={25}
           />
         </div>
-      </div>
+      </Box>
     ) : <CircularProgress />
   );
 }
