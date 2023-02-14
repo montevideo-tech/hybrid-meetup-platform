@@ -21,7 +21,8 @@ function Rooms() {
     const onSuccess = (res) => {
       console.log('Room added to DB', res);
     };
-    const onError = (error) => {
+    const onError = (res) => {
+      const { response: { data: { error } } } = res;
       console.error(`An error occurred while adding the room to DB: ${error.message}`);
     };
     dispatch(addRoomToDb(data, onSuccess, onError));
@@ -35,21 +36,23 @@ function Rooms() {
 
     const onSuccess = (res) => {
       console.log('Room created', res);
-      if (!res?.id) {
+      const { data: { data } } = res;
+      if (!data?.id) {
         console.error(new Error('Bad response from provider: no room ID'));
         return;
       }
 
       onRoomCreated(
         {
-          ...res,
+          ...data,
           name: 'testing123',
-          providerId: res.id,
+          providerId: data.id,
           creatorId: user?.id || null,
         },
       );
     };
-    const onError = (error) => {
+    const onError = (res) => {
+      const { response: { data: { error } } } = res;
       console.error(`An error occurred while creating room: ${error.message}`);
     };
     dispatch(createRoom(onSuccess, onError));
