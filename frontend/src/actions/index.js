@@ -65,3 +65,44 @@ export const signUp = (data, onSuccess = null, onError = null) => async () => {
     onError && onError(error);
   }
 };
+
+export const createRoom = (onSuccess = null, onError = null) => async () => {
+  try {
+    const response = await mvdTech.post(
+      '/create-space',
+      JSON.stringify({}),
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
+      },
+    );
+    onSuccess && onSuccess(response);
+  } catch (error) {
+    onError && onError(error);
+  }
+};
+
+export const addRoomToDb = (data, onSuccess = null, onError = null) => async () => {
+  if (!data) {
+    onError && onError('Internal error: Missing data');
+    return;
+  }
+
+  try {
+    const response = await mvdTech.post(
+      '/insert-db-entry',
+      JSON.stringify({ table: 'rooms', ...data }),
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
+      },
+    );
+    onSuccess && onSuccess(response);
+  } catch (error) {
+    onError && onError(error);
+  }
+};
