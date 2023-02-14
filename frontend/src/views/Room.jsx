@@ -40,16 +40,37 @@ function Room() {
   // It's possible that visibleParitcipants will eventually not need to be in the state,
   // if it ends up being a component property passed in by the parent component.
   // for now it needs to be in the state so that the "Add Participant" test button can work
-  const rowsLimit = { xs: 2, sm: 4, md: 6 };
-  const tilesPerRowLimit = { xs: 2, sm: 6, md: 10 };
+  const rowsLimit = { xs: 2, sm: 3, md: 4 };
+  const tilesPerRowLimit = { xs: 2, sm: 3, md: 6 };
   // it's assumed that we'll get a maximum of rowsLimit*tilesPerRowLimit visibleParticipants
   // if this precondition isn't true then the video grid can't be expected to render properly
+  const createDummy = (n) => {
+    let result = [];
+    for (let i = 0; i < n; i += 1) {
+      result = [...result, localStream];
+    }
+    return result;
+  };
+  const dummy = createDummy(8);
   const calculateTilesPerRow = (screenSize) => {
     // screenSize should be either 'xs', 'sm' or 'md'
-    const tilesAmount = remoteStreams.length;
+    // const tilesAmount = remoteStreams.length;
+    const tilesAmount = dummy.length;
+    // a new row only gets rendered when there's enough items
+    // to fill at least tilesPerRowLimit * (3 / 5) tiles on each.
+    let rows = 1;
+    const tilesPerRowThreshold = Math.floor(tilesPerRowLimit[screenSize] * (3 / 5));
+    // I add rows until splitting the tiles into row+1 rows wouldn't reach the threshold
+    while (rows <= rowsLimit[screenSize]) {
+      if (Math.ceil(tilesAmount / (rows + 1)) >= tilesPerRowThreshold) {
+        rows += 1;
+      } else {
+        break;
+      }
+    }
     return Math.min(
       tilesPerRowLimit[screenSize],
-      Math.ceil(tilesAmount / rowsLimit[screenSize]),
+      Math.ceil(tilesAmount / rows),
     );
   };
   const tilesPerRow = {
@@ -103,29 +124,54 @@ function Room() {
     return leaveRoom;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  function makeid(length) {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < length) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      counter += 1;
+    }
+    return result;
+  }
+  const localStreamStyle = {
+    width: '25vw',
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+  };
   return (
     room ? (
-      <>
+      <div style={{ position: 'relative' }}>
         <Typography variant="h4" component="h1">
           Room
           {' '}
           {roomId}
         </Typography>
-        <Grid container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center">
-          {remoteStreams.map((stream) => (
-            <Grid item xs={1} sm={1} md={1} key={stream.participantId}>
-              <div style={{ borderStyle: 'solid' }}>
-                <Video
-                  stream={stream.stream}
-                />
-              </div>
-            </Grid>
-          ))}
-        </Grid>
-        <Video
-          stream={localStream}
-        />
-      </>
+        <div style={{ width: '65vw' }}>
+          <Grid container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center">
+            {
+              dummy.map((stream) => (
+              // remoteStreams.map((stream) => (
+                <Grid item xs={1} sm={1} md={1} key={makeid(10)}>
+                  <div style={{ borderStyle: 'solid' }}>
+                    <Video
+                      stream={stream}
+                    />
+                  </div>
+                </Grid>
+              ))
+            }
+          </Grid>
+        </div>
+        <div style={localStreamStyle}>
+          <Video
+            stream={localStream}
+            size={25}
+          />
+        </div>
+      </div>
     ) : <CircularProgress />
   );
 }
