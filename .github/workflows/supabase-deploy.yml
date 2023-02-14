@@ -34,6 +34,8 @@ jobs:
       PROJECT_ID_DEVELOPMENT: ${{ secrets.PROJECT_ID_DEVELOPMENT }}
 
     steps:
+      - uses: actions/checkout@v3
+      - uses: supabase/setup-cli@v1
       - name: Deploy supabase edge functions
         run: |
           supabase link --project-ref $PROJECT_ID_DEVELOPMENT -p $SUPABASE_DB_PASSWORD
