@@ -1,7 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Button, Paper, Skeleton, Typography,
+  Button,
+  CircularProgress,
+  Grid,
+  IconButton,
+  Paper,
+  Skeleton,
+  TextField,
+  Typography,
 } from '@mui/material';
+import {
+  Check as CheckIcon,
+  Close as CloseIcon,
+} from '@mui/icons-material';
+
 import { useDispatch } from 'react-redux';
 
 import { supabase } from '../lib/api';
@@ -9,19 +21,24 @@ import { createRoom, addRoomToDb } from '../actions';
 
 import RoomsList from '../components/RoomsList';
 
-// TODO make a form to add new room name when creating
-
 function Rooms() {
   const [roomsList, setRoomsList] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loadingRooms, setLoadingRooms] = useState(false);
+  const [creatingRoom, setCreatingRoom] = useState(false);
+  const [showNameInput, setShowNameInput] = useState(false);
+  const [newRoomName, setNewRoomName] = useState('');
+  const [currUserId, setCurrUserId] = useState();
 
   const dispatch = useDispatch();
 
   const onRoomCreated = async (data) => {
-    const onSuccess = (res) => {
-      console.log('Room added to DB', res);
+    const onSuccess = () => {
+      console.log('Room added to DB');
+      setCreatingRoom(false);
+      setNewRoomName('');
     };
     const onError = (res) => {
+      setCreatingRoom(false);
       const { response: { data: { error } } } = res;
       console.error(`An error occurred while adding the room to DB: ${error.message}`);
     };
@@ -29,13 +46,14 @@ function Rooms() {
   };
 
   const onSubmit = async () => {
-    // TODO might want to get signed in user when app loads
-    // and keep it in store
-    const { data: { user } } = await supabase.auth.getUser();
-    console.log('user', user);
+    if (!newRoomName) {
+      return;
+    }
 
+    setShowNameInput(false);
+    setCreatingRoom(true);
     const onSuccess = (res) => {
-      console.log('Room created', res);
+      // console.log('Room created', res);
       const { data: { data } } = res;
       if (!data?.id) {
         console.error(new Error('Bad response from provider: no room ID'));
@@ -45,13 +63,14 @@ function Rooms() {
       onRoomCreated(
         {
           ...data,
-          name: 'testing123',
+          name: newRoomName,
           providerId: data.id,
-          creatorId: user?.id || null,
+          creatorId: currUserId,
         },
       );
     };
     const onError = (res) => {
+      setCreatingRoom(false);
       const { response: { data: { error } } } = res;
       console.error(`An error occurred while creating room: ${error.message}`);
     };
@@ -80,8 +99,23 @@ function Rooms() {
   };
 
   useEffect(() => {
+    // TODO might want to get the signed in user when the app loads
+    // and keep it in store
+    const fetchUser = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        // console.log('user', user);
+        setCurrUserId(user?.id);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchUser();
+  }, []);
+
+  useEffect(() => {
     const getRoomsList = async () => {
-      setLoading(true);
+      setLoadingRooms(true);
 
       try {
         const roomsQuery = await supabase.from('rooms').select();
@@ -114,7 +148,7 @@ function Rooms() {
       } catch (err) {
         console.error(`Error getting rooms list: ${err.message}`);
       } finally {
-        setLoading(false);
+        setLoadingRooms(false);
       }
     };
     getRoomsList();
@@ -125,15 +159,83 @@ function Rooms() {
       <Typography variant="h4" component="h1">
         Rooms
       </Typography>
-      <Button onClick={onSubmit}>
-        Create Room
-      </Button>
 
-      {loading ? (
+      {showNameInput ? (
+        <Grid container spacing={1} sx={{ ml: 1, mt: 1, pr: 1 }}>
+          <Grid item xs={10}>
+            <TextField
+              variant="outlined"
+              label="Insert Room Name"
+              sx={{ width: 1 }}
+              value={newRoomName}
+              onChange={(e) => setNewRoomName(e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={1}>
+            <IconButton
+              color="primary"
+              aria-label="create a room"
+              size="large"
+              onClick={onSubmit}
+              disabled={loadingRooms || creatingRoom || !newRoomName}
+            >
+              <CheckIcon />
+            </IconButton>
+          </Grid>
+          <Grid item xs={1}>
+            <IconButton
+              aria-label="discard room name changes"
+              size="large"
+              onClick={() => {
+                setShowNameInput(false);
+                setNewRoomName('');
+              }}
+              disabled={loadingRooms || creatingRoom}
+            >
+              <CloseIcon />
+            </IconButton>
+          </Grid>
+        </Grid>
+      ) : (
+        <Button
+          variant="contained"
+          onClick={() => setShowNameInput(true)}
+          disabled={loadingRooms || creatingRoom}
+          sx={{
+            my: 2, ml: 1, width: 150, height: 40,
+          }}
+        >
+          {creatingRoom ? (
+            <CircularProgress size={20} />
+          ) : (
+            'Create Room'
+          )}
+        </Button>
+      )}
+
+      {loadingRooms ? (
         <>
-          <Skeleton variant="text" animation="wave" width="60%" height={50} />
-          <Skeleton variant="text" animation="wave" width="40%" height={50} />
-          <Skeleton variant="text" animation="wave" width="30%" height={50} />
+          <Skeleton
+            width="60%"
+            variant="text"
+            animation="wave"
+            height={50}
+            sx={{ ml: 1 }}
+          />
+          <Skeleton
+            width="40%"
+            variant="text"
+            animation="wave"
+            height={50}
+            sx={{ ml: 1 }}
+          />
+          <Skeleton
+            width="30%"
+            variant="text"
+            animation="wave"
+            height={50}
+            sx={{ ml: 1 }}
+          />
         </>
       ) : (
         <RoomsList list={roomsList} />
