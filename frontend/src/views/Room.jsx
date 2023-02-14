@@ -15,13 +15,11 @@ is shown with middle priority (It gets inserted in the middle of the visiblePart
 */
 import { React, useState, useEffect } from 'react';
 import { useLoaderData } from 'react-router-dom';
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import Video from '../components/Video';
 import { Room as WebRoom } from '../lib/webrtc';
-
-// get jwt from env for testing purposes. will get using roomId eventually
-const JWT = process.env.REACT_APP_MUX_SPACE_JWT;
+import { roomJWTprovider } from '../actions';
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -32,6 +30,8 @@ function Room() {
   const [userParticipant, setUserParticipant] = useState();
   const [localStream, setLocalStream] = useState();
   const [remoteStreams, setRemoteStreams] = useState([]);
+  const roomId = useLoaderData();
+  const JWT = roomJWTprovider(roomId);
   // const [participants, setParticipants] = useState([]);
   // we eventually need the full list of participants, not only the visible ones
   // this array will hold data such as name foor the purpose of
@@ -80,7 +80,6 @@ function Room() {
     sm: calculateTilesPerRow('sm'),
     md: calculateTilesPerRow('md'),
   };
-  const roomId = useLoaderData();
   // initialize room
   useEffect(() => {
     const leaveRoom = async () => {
@@ -135,11 +134,6 @@ function Room() {
   return (
     room ? (
       <Box style={{ position: 'relative' }}>
-        <Typography variant="h4" component="h1">
-          Room
-          {' '}
-          {roomId}
-        </Typography>
         <Grid sx={{ width: '65vw', height: '60vh' }} container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center">
           {
             remoteStreams.map((stream) => (
