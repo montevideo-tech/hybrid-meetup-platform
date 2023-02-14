@@ -5,9 +5,11 @@ import {
 import { useDispatch } from 'react-redux';
 
 import { supabase } from '../lib/api';
-import { createRoom } from '../actions';
+import { createRoom, addRoomToDb } from '../actions';
 
 import RoomsList from '../components/RoomsList';
+
+// TODO make a form to add new room name when creating
 
 function Rooms() {
   const [roomsList, setRoomsList] = useState([]);
@@ -15,10 +17,37 @@ function Rooms() {
 
   const dispatch = useDispatch();
 
+  const onRoomCreated = async (data) => {
+    const onSuccess = (res) => {
+      console.log('Room added to DB', res);
+    };
+    const onError = (error) => {
+      console.error(`An error occurred while adding the room to DB: ${error.message}`);
+    };
+    dispatch(addRoomToDb(data, onSuccess, onError));
+  };
+
   const onSubmit = async () => {
+    // TODO might want to get signed in user when app loads
+    // and keep it in store
+    const { data: { user } } = await supabase.auth.getUser();
+    console.log('user', user);
+
     const onSuccess = (res) => {
       console.log('Room created', res);
-      // TODO insert DB entry
+      if (!res?.id) {
+        console.error(new Error('Bad response from provider: no room ID'));
+        return;
+      }
+
+      onRoomCreated(
+        {
+          ...res,
+          name: 'testing123',
+          providerId: res.id,
+          creatorId: user?.id || null,
+        },
+      );
     };
     const onError = (error) => {
       console.error(`An error occurred while creating room: ${error.message}`);
