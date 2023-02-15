@@ -83,6 +83,8 @@ export const roomJWTprovider = async (roomId, onError = null, onSuccess = null) 
       },
     );
     onSuccess && onSuccess(response);
+    /* eslint-disable consistent-return */
+    return response.data.spaceToken;
   } catch (error) {
     onError && onError(error);
   }

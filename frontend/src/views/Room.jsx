@@ -31,7 +31,6 @@ function Room() {
   const [localStream, setLocalStream] = useState();
   const [remoteStreams, setRemoteStreams] = useState([]);
   const roomId = useLoaderData();
-  const JWT = roomJWTprovider(roomId);
   // const [participants, setParticipants] = useState([]);
   // we eventually need the full list of participants, not only the visible ones
   // this array will hold data such as name foor the purpose of
@@ -98,6 +97,7 @@ function Room() {
       console.log('subscribed to remote participant(s)');
     };
     const joinRoom = async () => {
+      const JWT = await roomJWTprovider(roomId);
       const newRoom = new WebRoom(JWT);
       const newParticipant = await newRoom.join();
 
