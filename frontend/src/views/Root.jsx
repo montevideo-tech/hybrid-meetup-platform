@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, Link as RouterLink } from 'react-router-dom';
+import { Outlet, Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -14,6 +14,7 @@ function Root() {
   const [anchorEl, setAnchorEl] = useState(null);
   const currentUser = useSelector((state) => state.loggedUser);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setAuth(currentUser);
@@ -21,9 +22,10 @@ function Root() {
 
   const handleSignOut = () => {
     // TODO: invalidate token
-    dispatch(logout());
     setAuth(null);
     setAnchorEl(null);
+    dispatch(logout());
+    navigate('/signIn');
   };
 
   const handleMenu = (event) => {
