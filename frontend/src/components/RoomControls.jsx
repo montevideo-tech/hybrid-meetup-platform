@@ -31,7 +31,7 @@ function RoomControls(props) {
       size="large"
       disabled={disabled}
       sx={{
-        position: 'absolute', bottom: 0, mx: 'auto',
+        position: 'fixed', bottom: 0, left: 'calc(50% - 103px)',
       }}
     >
       <Button
