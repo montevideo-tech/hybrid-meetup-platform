@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-use-before-define */
 import React, { useState, useEffect } from 'react';
 
@@ -7,6 +8,7 @@ import { Room } from '../lib/webrtc';
 import { REACT_APP_MUX_SPACE_JWT } from '../lib/constants';
 
 import Video from './Video';
+import RoomControls from './RoomControls';
 
 function RoomTest() {
   const [room, setRoom] = useState();
@@ -15,6 +17,7 @@ function RoomTest() {
   const [sharingMedia, setSharingMedia] = useState(false);
   const [remoteStreams, setRemoteStreams] = useState([]);
   const [localStream, setLocalStream] = useState();
+  const [localTracks, setLocalTracks] = useState({ video: null, audio: null });
 
   useEffect(() => {
     if (!room) {
@@ -45,6 +48,9 @@ function RoomTest() {
         stream.addTrack(track.mediaStreamTrack);
         console.log(stream);
         setRemoteStreams([...remoteStreams, stream]);
+
+        track.on('Muted', () => console.log('Track was muted', remoteParticipant));
+        track.on('Unmuted', () => console.log('Track was unmuted', remoteParticipant));
       });
 
       newRoom.on('ParticipantJoined', (p) => console.log('someone joined', p));
@@ -72,6 +78,7 @@ function RoomTest() {
       await room.leave();
       setParticipant(null);
       setLocalStream(null);
+      setLocalTracks({ video: null, audio: null });
       setRemoteStreams([]);
       setRoom(null);
       setSharingMedia(false);
@@ -94,7 +101,15 @@ function RoomTest() {
       // NOTE: this is a workaround the limitations imposed by Mux on creating new Tracks
       const tracks = await participant.publishTracks({ constraints: { video: true, audio: true } });
       const stream = new MediaStream();
-      tracks.forEach((track) => stream.addTrack(track.mediaStreamTrack));
+
+      const newLocalTracks = { ...localTracks };
+
+      tracks.forEach((track) => {
+        newLocalTracks[track.kind] = track;
+        stream.addTrack(track.mediaStreamTrack);
+      });
+
+      setLocalTracks(newLocalTracks);
       setLocalStream(stream);
       setSharingMedia(true);
     } catch (err) {
@@ -102,6 +117,11 @@ function RoomTest() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const updateLocalTracksMuted = (kind, muted) => {
+    localTracks[kind].muted = muted;
+    setLocalTracks({ ...localTracks });
   };
 
   return (
@@ -147,15 +167,13 @@ function RoomTest() {
       >
         JOIN
       </Button>
-      <Button
-        sx={{ fontSize: 30 }}
-        variant="outlined"
-        color="warning"
-        onClick={leaveRoom}
+
+      <RoomControls
+        localTracks={localTracks}
+        updateLocalTracksMuted={updateLocalTracksMuted}
+        leaveRoom={leaveRoom}
         disabled={!room || loading}
-      >
-        LEAVE
-      </Button>
+      />
     </>
   );
 }

@@ -14,6 +14,7 @@ export class Track extends EventEmitter {
     this.id = this.provider.id;
     this.muted = this.provider.muted;
     this.mediaStreamTrack = this.provider.track;
+    this.kind = this.provider.track.kind;
 
     // listen to MUX events and emit owr own, passing our wrapped classes
     this.provider.on(
@@ -24,6 +25,18 @@ export class Track extends EventEmitter {
       TrackEvent.Unmuted,
       () => this.emit('Unmuted'),
     );
+  }
+
+  mute() {
+    this.mediaStreamTrack.enabled = false;
+    this.muted = true;
+    this.provider.emit('Muted', this.provider);
+  }
+
+  unmute() {
+    this.mediaStreamTrack.enabled = true;
+    this.muted = false;
+    this.provider.emit('Unmuted', this.provider);
   }
 }
 
