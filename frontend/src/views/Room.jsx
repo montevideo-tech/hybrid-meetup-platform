@@ -13,7 +13,9 @@ to be shown, the currently visible participant with the least visibility priorit
 (the last in the array) will be hidden to make place for this new one. By default, a participant
 is shown with middle priority (It gets inserted in the middle of the visibleParticipants array).
 */
-import { React, useState, useEffect } from 'react';
+import {
+  React, useState, useEffect, useRef,
+} from 'react';
 import { useLoaderData, Navigate } from 'react-router-dom';
 import { Box, Grid } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -27,11 +29,15 @@ export async function roomLoader({ params }) {
 
 function Room() {
   const [room, setRoom] = useState();
-  const [userParticipant, setUserParticipant] = useState();
+  // const [userParticipant, setUserParticipant] = useState();
   const [localStream, setLocalStream] = useState();
   const [remoteStreams, setRemoteStreams] = useState([]);
   const [roomNotFound, setRoomNotFound] = useState(false);
   const roomId = useLoaderData();
+
+  // create reference to access state var in useEffect cleanup func
+  const roomRef = useRef();
+
   // const [participants, setParticipants] = useState([]);
   // we eventually need the full list of participants, not only the visible ones
   // this array will hold data such as name foor the purpose of
@@ -80,14 +86,16 @@ function Room() {
     sm: calculateTilesPerRow('sm'),
     md: calculateTilesPerRow('md'),
   };
+
+  const leaveRoom = async () => {
+    if (roomRef.current) {
+      // await userParticipant.unpublishAllTracks(); // also stops them
+      await roomRef.current.leave();
+    }
+  };
+
   // initialize room
   useEffect(() => {
-    const leaveRoom = async () => {
-      if (room) {
-        await userParticipant.unpublishAllTracks(); // also stops them
-        await room.leave();
-      }
-    };
     const subscribeToRemoteStreams = async (r) => {
       // subscribe ta all remote participants for testing purposes
       const { remoteParticipants } = r;
@@ -121,13 +129,14 @@ function Room() {
       });
 
       setRoom(newRoom);
+      roomRef.current = newRoom;
       const tracks = await newParticipant.publishTracks(
         { constraints: { video: true, audio: true } },
       );
       const stream = new MediaStream();
       tracks.forEach((track) => stream.addTrack(track.mediaStreamTrack));
       setLocalStream(stream);
-      setUserParticipant(newParticipant);
+      // setUserParticipant(newParticipant);
       subscribeToRemoteStreams(newRoom);
     };
     joinRoom();
