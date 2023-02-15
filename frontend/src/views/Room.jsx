@@ -102,10 +102,22 @@ function Room() {
       const newParticipant = await newRoom.join();
 
       newRoom.on('ParticipantTrackSubscribed', (remoteParticipant, track) => {
+        // console.log('ParticipantTrackSubscribed event');
+
         const stream = new MediaStream();
         stream.addTrack(track.mediaStreamTrack);
         const streamObj = { stream, participantId: remoteParticipant.id };
         setRemoteStreams([...remoteStreams, streamObj]);
+      });
+
+      newRoom.on('ParticipantJoined', (p) => {
+        // console.log('someone joined', p);
+        p.subscribe();
+      });
+      newRoom.on('ParticipantLeft', (p) => {
+        // console.log('someone left', p);
+        const updatedRemoteStreams = remoteStreams.filter((s) => s.participantId !== p.id);
+        setRemoteStreams(updatedRemoteStreams);
       });
 
       setRoom(newRoom);
