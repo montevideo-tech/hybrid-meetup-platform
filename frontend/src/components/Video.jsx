@@ -7,7 +7,7 @@ function Video(props) {
   const videoRef = useRef();
 
   const {
-    stream, isStreamLocal, isAudioMuted, isVideoMuted, isSpeaking, width, height,
+    stream, isStreamLocal, isAudioMuted, isVideoMuted, isSpeaking, size,
   } = props;
 
   useEffect(() => {
@@ -31,7 +31,7 @@ function Video(props) {
       <video
         autoPlay
         ref={videoRef}
-        style={{ width, height }}
+        style={{ width: `${size}%` }}
         muted={isStreamLocal}
       >
         <track kind="captions" />
@@ -47,8 +47,7 @@ Video.propTypes = {
   isAudioMuted: PropTypes.bool,
   isVideoMuted: PropTypes.bool,
   isSpeaking: PropTypes.bool,
-  width: PropTypes.number,
-  height: PropTypes.number,
+  size: PropTypes.number,
 };
 
 Video.defaultProps = {
@@ -57,8 +56,7 @@ Video.defaultProps = {
   isAudioMuted: false,
   isVideoMuted: false,
   isSpeaking: false,
-  width: 300,
-  height: 150,
+  size: 100,
 };
 
 export default Video;
