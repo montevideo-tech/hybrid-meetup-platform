@@ -95,7 +95,6 @@ function Room() {
       await Promise.all(rps.map(async (rp) => {
         await rp.subscribe();
       }));
-      // console.log('subscribed to remote participant(s)');
     };
     const joinRoom = async () => {
       const JWT = await roomJWTprovider(roomId, null, null, () => { setRoomNotFound(true); });
@@ -109,9 +108,6 @@ function Room() {
         setRemoteStreams([...remoteStreams, streamObj]);
       });
 
-      // newRoom.on('ParticipantJoined', (p) => console.log('someone joined', p));
-      // newRoom.on('ParticipantLeft', (p) => console.log('someone left', p));
-
       setRoom(newRoom);
       const tracks = await newParticipant.publishTracks(
         { constraints: { video: true, audio: true } },
@@ -124,7 +120,7 @@ function Room() {
     };
     joinRoom();
     return leaveRoom;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const localStreamStyle = {
     width: '25vw',
@@ -157,6 +153,7 @@ function Room() {
             <div style={localStreamStyle}>
               <Video
                 stream={localStream}
+                muted
               />
             </div>
           </Box>
