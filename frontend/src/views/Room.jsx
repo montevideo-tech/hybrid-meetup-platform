@@ -33,10 +33,12 @@ function Room() {
   const [localStream, setLocalStream] = useState();
   const [remoteStreams, setRemoteStreams] = useState([]);
   const [roomNotFound, setRoomNotFound] = useState(false);
+  const [updateMe, setUpdateMe] = useState(0);
   const roomId = useLoaderData();
 
   // create reference to access state var in useEffect cleanup func
   const roomRef = useRef();
+  const remoteStreamsRef = useRef([]);
 
   // const [participants, setParticipants] = useState([]);
   // we eventually need the full list of participants, not only the visible ones
@@ -94,6 +96,10 @@ function Room() {
     }
   };
 
+  useEffect(() => {
+    setRemoteStreams((prev) => [...prev, ...remoteStreamsRef.current]);
+  }, [updateMe]);
+
   // initialize room
   useEffect(() => {
     const subscribeToRemoteStreams = async (r) => {
@@ -116,21 +122,21 @@ function Room() {
         // this avoid having two different streams for the audio/video tracks of the
         // same participant.
         let foundStream = false;
-        remoteStreams.every((stream) => {
+        remoteStreamsRef.current.forEach((stream) => {
+          // console.log('in loop');
           if (stream.participantId === remoteParticipant.id) {
             stream.stream.addTrack(track.mediaStreamTrack);
             foundStream = true;
-            return false;
           }
-          return true;
         });
         if (!foundStream) {
           // create new stream
           const stream = new MediaStream();
           stream.addTrack(track.mediaStreamTrack);
           const streamObj = { stream, participantId: remoteParticipant.id };
-          setRemoteStreams([...remoteStreams, streamObj]);
+          remoteStreamsRef.current = [...remoteStreamsRef.current, streamObj];
         }
+        setUpdateMe(updateMe + 1);
       });
 
       newRoom.on('ParticipantJoined', (p) => {
