@@ -10,6 +10,7 @@ import SignUp from './views/SignUp';
 import Room, { roomLoader } from './views/Room';
 import ErrorPage from './views/errorPage';
 import RoomTest from './components/RoomTest';
+import RoomNotFound from './views/RoomNotFound';
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
     element: <Root />,
     errorElement: <ErrorPage />,
     children: [
+      {
+        path: '/rooms/404',
+        element: <RoomNotFound />,
+      },
       {
         path: '/rooms/:roomId',
         element: <Room />,

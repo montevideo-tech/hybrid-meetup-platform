@@ -14,7 +14,7 @@ to be shown, the currently visible participant with the least visibility priorit
 is shown with middle priority (It gets inserted in the middle of the visibleParticipants array).
 */
 import { React, useState, useEffect } from 'react';
-import { useLoaderData } from 'react-router-dom';
+import { useLoaderData, Navigate } from 'react-router-dom';
 import { Box, Grid } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import Video from '../components/Video';
@@ -30,6 +30,7 @@ function Room() {
   const [userParticipant, setUserParticipant] = useState();
   const [localStream, setLocalStream] = useState();
   const [remoteStreams, setRemoteStreams] = useState([]);
+  const [roomNotFound, setRoomNotFound] = useState(false);
   const roomId = useLoaderData();
   // const [participants, setParticipants] = useState([]);
   // we eventually need the full list of participants, not only the visible ones
@@ -94,10 +95,10 @@ function Room() {
       await Promise.all(rps.map(async (rp) => {
         await rp.subscribe();
       }));
-      console.log('subscribed to remote participant(s)');
+      // console.log('subscribed to remote participant(s)');
     };
     const joinRoom = async () => {
-      const JWT = await roomJWTprovider(roomId);
+      const JWT = await roomJWTprovider(roomId, null, null, () => { setRoomNotFound(true); });
       const newRoom = new WebRoom(JWT);
       const newParticipant = await newRoom.join();
 
@@ -108,8 +109,8 @@ function Room() {
         setRemoteStreams([...remoteStreams, streamObj]);
       });
 
-      newRoom.on('ParticipantJoined', (p) => console.log('someone joined', p));
-      newRoom.on('ParticipantLeft', (p) => console.log('someone left', p));
+      // newRoom.on('ParticipantJoined', (p) => console.log('someone joined', p));
+      // newRoom.on('ParticipantLeft', (p) => console.log('someone left', p));
 
       setRoom(newRoom);
       const tracks = await newParticipant.publishTracks(
@@ -132,28 +133,36 @@ function Room() {
     right: 0,
   };
   return (
-    room ? (
-      <Box style={{ position: 'relative' }}>
-        <Grid sx={{ width: '65vw', height: '60vh' }} container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center">
-          {
-            remoteStreams.map((stream) => (
-              <Grid item xs={1} sm={1} md={1} key={stream.participantId}>
-                <Box>
-                  <Video
-                    stream={stream.stream}
-                  />
-                </Box>
-              </Grid>
-            ))
-          }
-        </Grid>
-        <div style={localStreamStyle}>
-          <Video
-            stream={localStream}
-          />
-        </div>
-      </Box>
-    ) : <CircularProgress />
+    <>
+      {
+        roomNotFound
+        && <Navigate to="/rooms/404" />
+      }
+      {
+        room ? (
+          <Box style={{ position: 'relative' }}>
+            <Grid sx={{ width: '65vw', height: '60vh' }} container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center">
+              {
+                remoteStreams.map((stream) => (
+                  <Grid item xs={1} sm={1} md={1} key={stream.participantId}>
+                    <Box>
+                      <Video
+                        stream={stream.stream}
+                      />
+                    </Box>
+                  </Grid>
+                ))
+              }
+            </Grid>
+            <div style={localStreamStyle}>
+              <Video
+                stream={localStream}
+              />
+            </div>
+          </Box>
+        ) : <CircularProgress />
+      }
+    </>
   );
 }
 

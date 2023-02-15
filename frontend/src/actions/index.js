@@ -66,7 +66,12 @@ export const signUp = (data, onSuccess = null, onError = null) => async () => {
   }
 };
 
-export const roomJWTprovider = async (roomId, onError = null, onSuccess = null) => {
+export const roomJWTprovider = async (
+  roomId,
+  onError = null,
+  onSuccess = null,
+  onNotFound = null,
+) => {
   if (!roomId) {
     onError && onError('Internal error: missing roomId');
     return;
@@ -86,6 +91,11 @@ export const roomJWTprovider = async (roomId, onError = null, onSuccess = null) 
     /* eslint-disable consistent-return */
     return response.data.spaceToken;
   } catch (error) {
+    if (error.response.status === 404) {
+      onNotFound && onNotFound();
+    } else if (error.response.status !== 200) {
+      throw new Error(`unexpected ${error.response.status} response`);
+    }
     onError && onError(error);
   }
 };
