@@ -112,10 +112,25 @@ function Room() {
       newRoom.on('ParticipantTrackSubscribed', (remoteParticipant, track) => {
         // console.log('ParticipantTrackSubscribed event');
 
-        const stream = new MediaStream();
-        stream.addTrack(track.mediaStreamTrack);
-        const streamObj = { stream, participantId: remoteParticipant.id };
-        setRemoteStreams([...remoteStreams, streamObj]);
+        // if there's already a stream for this participant, add the track to it
+        // this avoid having two different streams for the audio/video tracks of the
+        // same participant.
+        let foundStream = false;
+        remoteStreams.every((stream) => {
+          if (stream.participantId === remoteParticipant.id) {
+            stream.stream.addTrack(track.mediaStreamTrack);
+            foundStream = true;
+            return false;
+          }
+          return true;
+        });
+        if (!foundStream) {
+          // create new stream
+          const stream = new MediaStream();
+          stream.addTrack(track.mediaStreamTrack);
+          const streamObj = { stream, participantId: remoteParticipant.id };
+          setRemoteStreams([...remoteStreams, streamObj]);
+        }
       });
 
       newRoom.on('ParticipantJoined', (p) => {
