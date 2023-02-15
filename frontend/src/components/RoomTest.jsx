@@ -143,6 +143,10 @@ function RoomTest() {
                 <Grid item key={stream.id}>
                   <Video
                     stream={stream}
+                    // eslint-disable-next-line react/jsx-boolean-value
+                    isAudioMuted={false}
+                    isVideoMuted={false}
+                    isSpeaking={false}
                     width={300}
                     height={150}
                   />
@@ -150,12 +154,18 @@ function RoomTest() {
               ))}
             </Grid>
           )}
-          <Video
-            stream={localStream}
-            muted
-            width={300}
-            height={150}
-          />
+          {localStream && (
+            <Video
+              stream={localStream}
+              isStreamLocal
+              // eslint-disable-next-line react/jsx-boolean-value
+              isAudioMuted={localTracks.audio.muted}
+              isVideoMuted={false}
+              isSpeaking={false}
+              width={300}
+              height={150}
+            />
+          )}
         </>
       )}
       <Button

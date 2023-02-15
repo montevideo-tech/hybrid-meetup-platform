@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
@@ -6,7 +7,7 @@ function Video(props) {
   const videoRef = useRef();
 
   const {
-    stream, muted, width, height,
+    stream, isStreamLocal, isAudioMuted, isVideoMuted, isSpeaking, width, height,
   } = props;
 
   useEffect(() => {
@@ -23,28 +24,39 @@ function Video(props) {
   }, [stream]);
 
   return (
-    <video
-      autoPlay
-      ref={videoRef}
-      style={{ width, height }}
-      muted={muted}
-    >
-      <track kind="captions" {...props} />
-    </video>
+    <>
+      {isAudioMuted && (
+        <p>audio muted</p>
+      )}
+      <video
+        autoPlay
+        ref={videoRef}
+        style={{ width, height }}
+        muted={isStreamLocal}
+      >
+        <track kind="captions" />
+      </video>
+    </>
   );
 }
 
 Video.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   stream: PropTypes.object,
-  muted: PropTypes.bool,
+  isStreamLocal: PropTypes.bool,
+  isAudioMuted: PropTypes.bool,
+  isVideoMuted: PropTypes.bool,
+  isSpeaking: PropTypes.bool,
   width: PropTypes.number,
   height: PropTypes.number,
 };
 
 Video.defaultProps = {
   stream: undefined,
-  muted: false,
+  isStreamLocal: false,
+  isAudioMuted: false,
+  isVideoMuted: false,
+  isSpeaking: false,
   width: 300,
   height: 150,
 };
