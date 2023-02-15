@@ -40,7 +40,7 @@ function SignIn() {
 
   const onSubmit = async (data) => {
     const onSuccess = () => {
-      navigate('/');
+      navigate('/rooms');
     };
     const onError = (error) => {
       setAlert({ type: 'error', message: `An error occurred while signing in: ${error}` });
