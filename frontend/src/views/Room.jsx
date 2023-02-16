@@ -127,14 +127,30 @@ function Room() {
         // this avoid having two different streams for the audio/video tracks of the
         // same participant.
         if (remoteStreamsRef.current.has(remoteParticipant.id)) {
-          const stream = remoteStreamsRef.current.get(remoteParticipant.id);
-          stream.addTrack(track.mediaStreamTrack);
+          const streamData = remoteStreamsRef.current.get(remoteParticipant.id);
+          streamData.stream.addTrack(track.mediaStreamTrack);
+          streamData[`${track.kind}Muted`] = track.muted;
         } else {
           const stream = new MediaStream();
           stream.addTrack(track.mediaStreamTrack);
-          remoteStreamsRef.current.set(remoteParticipant.id, stream);
+          remoteStreamsRef.current.set(
+            remoteParticipant.id,
+            { stream, [`${track.kind}Muted`]: track.muted },
+          );
         }
         setRemoteStreamsRef(remoteStreamsRef.current);
+
+        // add event handler for Muted/Unmuted events
+        track.on('Muted', () => {
+          const streamData = remoteStreamsRef.current.get(remoteParticipant.id);
+          streamData[`${track.kind}Muted`] = true;
+          setRemoteStreamsRef(remoteStreamsRef.current);
+        });
+        track.on('Unmuted', () => {
+          const streamData = remoteStreamsRef.current.get(remoteParticipant.id);
+          streamData[`${track.kind}Muted`] = false;
+          setRemoteStreamsRef(remoteStreamsRef.current);
+        });
       });
 
       newRoom.on('ParticipantJoined', (p) => {
@@ -193,11 +209,13 @@ function Room() {
           <Box style={{ position: 'relative' }}>
             <Grid sx={{ width: '65vw', height: '60vh' }} container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center">
               {
-                remoteStreams.map((stream) => (
+                remoteStreams.map(({ stream, audioMuted, videoMuted }) => (
                   <Grid item xs={1} sm={1} md={1} key={stream.id}>
                     <Box>
                       <Video
                         stream={stream}
+                        isAudioMuted={audioMuted || false}
+                        isVideoMuted={videoMuted || false}
                       />
                     </Box>
                   </Grid>
@@ -207,6 +225,7 @@ function Room() {
             <div style={localStreamStyle}>
               <Video
                 stream={localStream}
+                // isAudioMuted={localTracks.audio?.muted || false}
                 muted
               />
             </div>

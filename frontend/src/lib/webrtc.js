@@ -11,7 +11,7 @@ export class Track extends EventEmitter {
   constructor(providerTrack) {
     super();
     this.provider = providerTrack;
-    this.id = this.provider.id;
+    this.id = this.provider.tid;
     this.muted = this.provider.muted;
     this.mediaStreamTrack = this.provider.track;
     this.kind = this.provider.track.kind;

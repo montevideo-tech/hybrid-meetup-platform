@@ -27,6 +27,9 @@ function Video(props) {
       {isAudioMuted && (
         <p>audio muted</p>
       )}
+      {isVideoMuted && (
+        <p>video muted</p>
+      )}
       <video
         autoPlay
         ref={videoRef}
