@@ -11,6 +11,7 @@ import Room, { roomLoader } from './views/Room';
 import Rooms from './views/Rooms';
 import ErrorPage from './views/errorPage';
 import RoomTest from './components/RoomTest';
+import RoomNotFound from './views/RoomNotFound';
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
       {
         path: '/rooms',
         element: <Rooms />,
+      },
+      {
+        path: '/rooms/404',
+        element: <RoomNotFound />,
       },
       {
         path: '/rooms/:roomId',

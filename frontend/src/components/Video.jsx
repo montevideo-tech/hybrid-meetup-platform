@@ -6,10 +6,14 @@ function Video(props) {
   const videoRef = useRef();
 
   const {
-    stream, muted, width, height,
+    stream, muted, size,
   } = props;
 
   useEffect(() => {
+    if (!stream) {
+      return;
+    }
+
     if (
       videoRef.current
       && videoRef.current.srcObject !== stream
@@ -22,7 +26,7 @@ function Video(props) {
     <video
       autoPlay
       ref={videoRef}
-      style={{ width, height }}
+      style={{ width: `${size}%` }}
       muted={muted}
     >
       <track kind="captions" {...props} />
@@ -34,15 +38,13 @@ Video.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   stream: PropTypes.object,
   muted: PropTypes.bool,
-  width: PropTypes.number,
-  height: PropTypes.number,
+  size: PropTypes.number,
 };
 
 Video.defaultProps = {
   stream: undefined,
   muted: false,
-  width: 300,
-  height: 150,
+  size: 100,
 };
 
 export default Video;
