@@ -5,7 +5,7 @@ import store from '../store';
 
 // eslint-disable-next-line react/prop-types
 function RequireAuth({ children }) {
-  const isLoggedIn = store.getState().loggedUser.email;
+  const isLoggedIn = !!store.getState().loggedUser?.email;
 
   return isLoggedIn === true ? children : <Navigate to="/signIn" replace />;
 }

@@ -10,9 +10,10 @@ import SignUp from './views/SignUp';
 import Room, { roomLoader } from './views/Room';
 import Rooms from './views/Rooms';
 import ErrorPage from './views/errorPage';
-import RoomTest from './components/RoomTest';
+// import RoomTest from './components/RoomTest';
 import Home from './views/Home';
 import RoomNotFound from './views/RoomNotFound';
+import RequireAuth from './components/RequireAuth';
 
 const router = createBrowserRouter([
   {
@@ -25,17 +26,8 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: '/rooms',
-        element: <Rooms />,
-      },
-      {
         path: '/rooms/404',
         element: <RoomNotFound />,
-      },
-      {
-        path: '/rooms/:roomId',
-        element: <Room />,
-        loader: roomLoader,
       },
       {
         path: '/signIn',
@@ -46,9 +38,30 @@ const router = createBrowserRouter([
         element: <SignUp />,
       },
       {
-        path: '/room-test',
-        element: <RoomTest />,
+        path: '/rooms',
+        element: (
+          <RequireAuth>
+            <Rooms />
+          </RequireAuth>
+        ),
       },
+      {
+        path: '/rooms/:roomId',
+        element: (
+          <RequireAuth>
+            <Room />
+          </RequireAuth>
+        ),
+        loader: roomLoader,
+      },
+      // {
+      //   path: '/room-test',
+      //   element: (
+      //     <RequireAuth>
+      //       <RoomTest />
+      //     </RequireAuth>
+      //   ),
+      // },
     ],
   },
 ]);
