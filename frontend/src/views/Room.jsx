@@ -225,8 +225,7 @@ function Room() {
             <div style={localStreamStyle}>
               <Video
                 stream={localStream}
-                // isAudioMuted={localTracks.audio?.muted || false}
-                muted
+                isStreamLocal
               />
             </div>
           </Box>
