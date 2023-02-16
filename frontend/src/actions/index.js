@@ -106,3 +106,36 @@ export const addRoomToDb = (data, onSuccess = null, onError = null) => async () 
     onError && onError(error);
   }
 };
+
+export const roomJWTprovider = async (
+  roomId,
+  onError = null,
+  onSuccess = null,
+  onNotFound = null,
+) => {
+  if (!roomId) {
+    onError && onError('Internal error: missing roomId');
+    return;
+  }
+  try {
+    const response = await mvdTech.post(
+      '/room-jwtprovider',
+      JSON.stringify({ spaceId: roomId }),
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
+      },
+    );
+    onSuccess && onSuccess(response);
+    /* eslint-disable consistent-return */
+    return response.data.spaceToken;
+  } catch (error) {
+    if (error.response.status === 404) {
+      onNotFound && onNotFound();
+    } else if (error.response.status !== 200) {
+      throw new Error(`unexpected ${error.response.status} response`);
+    }
+  }
+};
