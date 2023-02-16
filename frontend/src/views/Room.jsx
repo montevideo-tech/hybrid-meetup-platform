@@ -19,7 +19,10 @@ import {
 import { useLoaderData, Navigate } from 'react-router-dom';
 import { Box, Grid } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
+
+import RoomControls from '../components/RoomControls';
 import Video from '../components/Video';
+
 import { Room as WebRoom } from '../lib/webrtc';
 import { roomJWTprovider } from '../actions';
 
@@ -31,6 +34,8 @@ function Room() {
   const [room, setRoom] = useState();
   // const [userParticipant, setUserParticipant] = useState();
   const [localStream, setLocalStream] = useState();
+  // this helps keep track of muting/unmuting with RoomControls
+  const [localTracks, setLocalTracks] = useState({ video: null, audio: null });
   const [remoteStreams, setRemoteStreams] = useState([]);
   const [roomNotFound, setRoomNotFound] = useState(false);
   const [updateMe, setUpdateMe] = useState(0);
@@ -155,8 +160,16 @@ function Room() {
         { constraints: { video: true, audio: true } },
       );
       const stream = new MediaStream();
-      tracks.forEach((track) => stream.addTrack(track.mediaStreamTrack));
+
+      const newLocalTracks = { ...localTracks };
+
+      tracks.forEach((track) => {
+        stream.addTrack(track.mediaStreamTrack);
+        newLocalTracks[track.kind] = track;
+      });
+
       setLocalStream(stream);
+      setLocalTracks(newLocalTracks);
       // setUserParticipant(newParticipant);
       subscribeToRemoteStreams(newRoom);
     };
@@ -164,6 +177,12 @@ function Room() {
     return leaveRoom;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const updateLocalTracksMuted = (kind, muted) => {
+    localTracks[kind].muted = muted;
+    setLocalTracks({ ...localTracks });
+  };
+
   const localStreamStyle = {
     width: '25vw',
     position: 'fixed',
@@ -201,6 +220,13 @@ function Room() {
           </Box>
         ) : <CircularProgress />
       }
+
+      <RoomControls
+        localTracks={localTracks}
+        updateLocalTracksMuted={updateLocalTracksMuted}
+        leaveRoom={leaveRoom}
+        disabled={!room}
+      />
     </>
   );
 }

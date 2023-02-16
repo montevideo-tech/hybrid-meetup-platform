@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/jsx-props-no-spreading */
 import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
@@ -7,6 +5,7 @@ function Video(props) {
   const videoRef = useRef();
 
   const {
+    // eslint-disable-next-line no-unused-vars
     stream, isStreamLocal, isAudioMuted, isVideoMuted, isSpeaking, size,
   } = props;
 

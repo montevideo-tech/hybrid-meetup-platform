@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 
 import { ButtonGroup, Button } from '@mui/material';
 import {
@@ -11,6 +12,8 @@ import {
 } from '@mui/icons-material';
 
 function RoomControls(props) {
+  const navigate = useNavigate();
+
   const {
     localTracks, updateLocalTracksMuted, leaveRoom, disabled,
   } = props;
@@ -23,6 +26,11 @@ function RoomControls(props) {
       t.mute();
       updateLocalTracksMuted(t.kind, true);
     }
+  };
+
+  const endCall = () => {
+    leaveRoom();
+    navigate('/rooms');
   };
 
   return (
@@ -59,7 +67,7 @@ function RoomControls(props) {
       <Button
         size="large"
         color="error"
-        onClick={leaveRoom}
+        onClick={endCall}
       >
         <CancelIcon />
       </Button>
