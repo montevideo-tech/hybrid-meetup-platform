@@ -1,6 +1,11 @@
 import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
+import { Box, IconButton } from '@mui/material';
+import {
+  MicOffOutlined as MicOffOutlinedIcon,
+} from '@mui/icons-material';
+
 function Video(props) {
   const videoRef = useRef();
 
@@ -23,9 +28,21 @@ function Video(props) {
   }, [stream]);
 
   return (
-    <>
+    <Box sx={{ position: 'relative' }}>
       {isAudioMuted && (
-        <p>audio muted</p>
+        <IconButton
+          disableRipple
+          color="primary"
+          sx={{
+            position: 'absolute',
+            top: 10,
+            right: 10,
+            bgcolor: 'rgba(255, 255, 255, 0.4)',
+            border: '2px solid',
+          }}
+        >
+          <MicOffOutlinedIcon sx={{ ml: '2px' }} />
+        </IconButton>
       )}
       {isVideoMuted && (
         <p>video muted</p>
@@ -38,7 +55,7 @@ function Video(props) {
       >
         <track kind="captions" />
       </video>
-    </>
+    </Box>
   );
 }
 
