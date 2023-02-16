@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, useNavigate, Link as RouterLink } from 'react-router-dom';
+import { Outlet, Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
-import LoginIcon from '@mui/icons-material/Login';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
@@ -23,12 +22,9 @@ function Root() {
 
   const handleSignOut = () => {
     // TODO: invalidate token
-    dispatch(logout());
     setAuth(null);
     setAnchorEl(null);
-  };
-
-  const handleSignIn = () => {
+    dispatch(logout());
     navigate('/signIn');
   };
 
@@ -85,20 +81,7 @@ function Root() {
                 </Menu>
               </div>
             )}
-            {!auth?.email && !auth?.token && (
-              <div>
-                <IconButton
-                  size="large"
-                  aria-label="account of current user"
-                  aria-controls="menu-appbar"
-                  aria-haspopup="true"
-                  onClick={handleSignIn}
-                  color="inherit"
-                >
-                  <LoginIcon />
-                </IconButton>
-              </div>
-            )}
+
           </Toolbar>
         </AppBar>
       </div>
