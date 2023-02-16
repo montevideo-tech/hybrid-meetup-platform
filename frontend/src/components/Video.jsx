@@ -1,10 +1,15 @@
 import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-import { Box, IconButton } from '@mui/material';
+import {
+  Box,
+  IconButton,
+} from '@mui/material';
 import {
   MicOffOutlined as MicOffOutlinedIcon,
 } from '@mui/icons-material';
+
+import logo from '../assets/MVDTSC.png';
 
 function Video(props) {
   const videoRef = useRef();
@@ -29,23 +34,17 @@ function Video(props) {
 
   return (
     <Box sx={{ position: 'relative' }}>
-      {isAudioMuted && (
-        <IconButton
-          disableRipple
-          color="primary"
-          sx={{
-            position: 'absolute',
-            top: 10,
-            right: 10,
-            bgcolor: 'rgba(255, 255, 255, 0.4)',
-            border: '2px solid',
-          }}
-        >
-          <MicOffOutlinedIcon sx={{ ml: '2px' }} />
-        </IconButton>
-      )}
       {isVideoMuted && (
-        <p>video muted</p>
+        <img
+          src={logo}
+          alt="Montevideo Tech Summer Camp logo"
+          style={{
+            width: `${size}%`,
+            position: 'absolute',
+            top: 0,
+            left: 0,
+          }}
+        />
       )}
       <video
         autoPlay
@@ -55,6 +54,21 @@ function Video(props) {
       >
         <track kind="captions" />
       </video>
+      {isAudioMuted && (
+        <IconButton
+          disableRipple
+          sx={{
+            position: 'absolute',
+            top: 10,
+            right: 10,
+            color: 'white',
+            bgcolor: 'rgba(0, 0, 0, 0.2)',
+            border: '2px solid',
+          }}
+        >
+          <MicOffOutlinedIcon sx={{ ml: '2px' }} />
+        </IconButton>
+      )}
     </Box>
   );
 }
