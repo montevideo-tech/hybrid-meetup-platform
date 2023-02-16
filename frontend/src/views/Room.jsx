@@ -33,17 +33,21 @@ function Room() {
   const [localStream, setLocalStream] = useState();
   const [remoteStreams, setRemoteStreams] = useState([]);
   const [roomNotFound, setRoomNotFound] = useState(false);
-  const [updateMe, setUpdateMe] = useState(0);
-  const roomId = useLoaderData();
-
-  // create reference to access state var in useEffect cleanup func
-  const roomRef = useRef();
-  const remoteStreamsRef = useRef([]);
-
   // const [participants, setParticipants] = useState([]);
   // we eventually need the full list of participants, not only the visible ones
   // this array will hold data such as name foor the purpose of
   // having a participants name list, etc.
+
+  const roomId = useLoaderData();
+
+  // create reference to access room state var in useEffect cleanup func
+  const roomRef = useRef();
+  const remoteStreamsRef = useRef(new Map());
+
+  const setRemoteStreamsRef = (data) => {
+    remoteStreamsRef.current = data;
+    setRemoteStreams(Array.from(data.values()));
+  };
 
   // It's possible that visibleParitcipants will eventually not need to be in the state,
   // if it ends up being a component property passed in by the parent component.
@@ -96,10 +100,6 @@ function Room() {
     }
   };
 
-  useEffect(() => {
-    setRemoteStreams((prev) => [...prev, ...remoteStreamsRef.current]);
-  }, [updateMe]);
-
   // initialize room
   useEffect(() => {
     const subscribeToRemoteStreams = async (r) => {
@@ -121,22 +121,15 @@ function Room() {
         // if there's already a stream for this participant, add the track to it
         // this avoid having two different streams for the audio/video tracks of the
         // same participant.
-        let foundStream = false;
-        remoteStreamsRef.current.forEach((stream) => {
-          // console.log('in loop');
-          if (stream.participantId === remoteParticipant.id) {
-            stream.stream.addTrack(track.mediaStreamTrack);
-            foundStream = true;
-          }
-        });
-        if (!foundStream) {
-          // create new stream
+        if (remoteStreamsRef.current.has(remoteParticipant.id)) {
+          const stream = remoteStreamsRef.current.get(remoteParticipant.id);
+          stream.addTrack(track.mediaStreamTrack);
+        } else {
           const stream = new MediaStream();
           stream.addTrack(track.mediaStreamTrack);
-          const streamObj = { stream, participantId: remoteParticipant.id };
-          remoteStreamsRef.current = [...remoteStreamsRef.current, streamObj];
+          remoteStreamsRef.current.set(remoteParticipant.id, stream);
         }
-        setUpdateMe(updateMe + 1);
+        setRemoteStreamsRef(remoteStreamsRef.current);
       });
 
       newRoom.on('ParticipantJoined', (p) => {
@@ -145,8 +138,8 @@ function Room() {
       });
       newRoom.on('ParticipantLeft', (p) => {
         // console.log('someone left', p);
-        const updatedRemoteStreams = remoteStreams.filter((s) => s.participantId !== p.id);
-        setRemoteStreams(updatedRemoteStreams);
+        remoteStreamsRef.current.delete(p.id);
+        setRemoteStreamsRef(remoteStreamsRef.current);
       });
 
       setRoom(newRoom);
@@ -164,6 +157,7 @@ function Room() {
     return leaveRoom;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   const localStreamStyle = {
     width: '25vw',
     position: 'fixed',
@@ -182,10 +176,10 @@ function Room() {
             <Grid sx={{ width: '65vw', height: '60vh' }} container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center">
               {
                 remoteStreams.map((stream) => (
-                  <Grid item xs={1} sm={1} md={1} key={stream.participantId}>
+                  <Grid item xs={1} sm={1} md={1} key={stream.id}>
                     <Box>
                       <Video
-                        stream={stream.stream}
+                        stream={stream}
                       />
                     </Box>
                   </Grid>

@@ -10,6 +10,10 @@ function Video(props) {
   } = props;
 
   useEffect(() => {
+    if (!stream) {
+      return;
+    }
+
     if (
       videoRef.current
       && videoRef.current.srcObject !== stream
