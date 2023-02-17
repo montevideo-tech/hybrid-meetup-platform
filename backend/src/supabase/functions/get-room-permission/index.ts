@@ -2,27 +2,42 @@ import { serve } from 'https://deno.land/std@0.131.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { corsHeaders } from '../_shared/cors.ts';
 
+async function returnError(msgError: string){
+  return new Response(JSON.stringify({
+    error: msgError
+  }), {
+    headers: {
+      ...corsHeaders,
+      'Content-Type': 'application/json'
+    },
+    status: 400
+  });
+}
+
 async function getPermission(supabaseClient, body) {
   let { userId, roomId }= body;
   roomId = parseInt(roomId);
-  const roomsData = await supabaseClient.from('rooms-data').select('permissionId').match({ roomId,  userId });
-  if (roomsData.data && roomsData.data.length === 0) {
-    return new Response(JSON.stringify({
-      error: 'No room or user with given data exists'
-    }), {
-      headers: {
-        ...corsHeaders,
-        'Content-Type': 'application/json'
-      },
-      status: 404
-    });
+
+  const roomData = await supabaseClient.from('rooms').select('id').eq('id', roomId);
+  if (!roomData.data || (roomData.data && roomData.data.length === 0))
+    return returnError("No room with given data exists");
+
+  const users = await supabaseClient.from('users-data').select('userId').eq('userId', userId);
+  console.error(users);
+  if (!users.data || (users.data && users.data.length === 0))
+    return returnError("No user with given data exists");
+
+  const roomsData = await supabaseClient.from('rooms-data').select('permissionId').match({ roomId, userId });
+
+  let permission = "GUEST"
+  if (!roomsData.data || (roomsData.data && roomsData.data.length !== 0)){
+    const permissionId = parseInt(roomsData.data[0].permissionId);
+    permission = await supabaseClient.from('rooms-permission').select('name').eq( 'id', permissionId );
+    permission = permission.data[0].name;
   }
 
-  const permissionId = parseInt(roomsData.data[0].permissionId);
-  const permission = await supabaseClient.from('rooms-permission').select('name').match({ id: permissionId });
-
   return new Response(JSON.stringify({
-    permission: permission.data[0].name,
+    permission: permission,
   }), {
     headers: {
       ...corsHeaders,
