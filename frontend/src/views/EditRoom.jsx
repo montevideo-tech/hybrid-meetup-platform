@@ -61,6 +61,7 @@ function EditRoom() {
       padding: '2vh 1vw',
       display: 'flex',
       justifyContent: 'center',
+      alignItems: 'center',
       flexDirection: 'column',
     }}
     >
