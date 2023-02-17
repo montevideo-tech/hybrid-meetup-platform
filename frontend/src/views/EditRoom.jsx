@@ -58,9 +58,8 @@ function EditRoom() {
 
   return (
     <div style={{
-      padding: '2vh 1vw',
+      marginTop: '15px',
       display: 'flex',
-      justifyContent: 'center',
       alignItems: 'center',
       flexDirection: 'column',
     }}
