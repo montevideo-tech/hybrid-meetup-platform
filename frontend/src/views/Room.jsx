@@ -19,7 +19,10 @@ import {
 import { useLoaderData, Navigate } from 'react-router-dom';
 import { Box, Grid } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
+
+import RoomControls from '../components/RoomControls';
 import Video from '../components/Video';
+
 import { Room as WebRoom } from '../lib/webrtc';
 import { roomJWTprovider } from '../actions';
 
@@ -31,6 +34,8 @@ function Room() {
   const [room, setRoom] = useState();
   // const [userParticipant, setUserParticipant] = useState();
   const [localStream, setLocalStream] = useState();
+  // this helps keep track of muting/unmuting with RoomControls
+  const [localTracks, setLocalTracks] = useState({ video: null, audio: null });
   const [remoteStreams, setRemoteStreams] = useState([]);
   const [roomNotFound, setRoomNotFound] = useState(false);
   // const [participants, setParticipants] = useState([]);
@@ -122,14 +127,30 @@ function Room() {
         // this avoid having two different streams for the audio/video tracks of the
         // same participant.
         if (remoteStreamsRef.current.has(remoteParticipant.id)) {
-          const stream = remoteStreamsRef.current.get(remoteParticipant.id);
-          stream.addTrack(track.mediaStreamTrack);
+          const streamData = remoteStreamsRef.current.get(remoteParticipant.id);
+          streamData.stream.addTrack(track.mediaStreamTrack);
+          streamData[`${track.kind}Muted`] = track.muted;
         } else {
           const stream = new MediaStream();
           stream.addTrack(track.mediaStreamTrack);
-          remoteStreamsRef.current.set(remoteParticipant.id, stream);
+          remoteStreamsRef.current.set(
+            remoteParticipant.id,
+            { stream, [`${track.kind}Muted`]: track.muted },
+          );
         }
         setRemoteStreamsRef(remoteStreamsRef.current);
+
+        // add event handler for Muted/Unmuted events
+        track.on('Muted', () => {
+          const streamData = remoteStreamsRef.current.get(remoteParticipant.id);
+          streamData[`${track.kind}Muted`] = true;
+          setRemoteStreamsRef(remoteStreamsRef.current);
+        });
+        track.on('Unmuted', () => {
+          const streamData = remoteStreamsRef.current.get(remoteParticipant.id);
+          streamData[`${track.kind}Muted`] = false;
+          setRemoteStreamsRef(remoteStreamsRef.current);
+        });
       });
 
       newRoom.on('ParticipantJoined', (p) => {
@@ -148,8 +169,16 @@ function Room() {
         { constraints: { video: true, audio: true } },
       );
       const stream = new MediaStream();
-      tracks.forEach((track) => stream.addTrack(track.mediaStreamTrack));
+
+      const newLocalTracks = { ...localTracks };
+
+      tracks.forEach((track) => {
+        stream.addTrack(track.mediaStreamTrack);
+        newLocalTracks[track.kind] = track;
+      });
+
       setLocalStream(stream);
+      setLocalTracks(newLocalTracks);
       // setUserParticipant(newParticipant);
       subscribeToRemoteStreams(newRoom);
     };
@@ -157,6 +186,11 @@ function Room() {
     return leaveRoom;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const updateLocalTracksMuted = (kind, muted) => {
+    localTracks[kind].muted = muted;
+    setLocalTracks({ ...localTracks });
+  };
 
   const localStreamStyle = {
     width: '25vw',
@@ -175,11 +209,13 @@ function Room() {
           <Box style={{ position: 'relative' }}>
             <Grid sx={{ width: '65vw', height: '60vh' }} container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center">
               {
-                remoteStreams.map((stream) => (
+                remoteStreams.map(({ stream, audioMuted, videoMuted }) => (
                   <Grid item xs={1} sm={1} md={1} key={stream.id}>
                     <Box>
                       <Video
                         stream={stream}
+                        isAudioMuted={audioMuted || false}
+                        isVideoMuted={videoMuted || false}
                       />
                     </Box>
                   </Grid>
@@ -189,12 +225,19 @@ function Room() {
             <div style={localStreamStyle}>
               <Video
                 stream={localStream}
-                muted
+                isStreamLocal
               />
             </div>
           </Box>
         ) : <CircularProgress />
       }
+
+      <RoomControls
+        localTracks={localTracks}
+        updateLocalTracksMuted={updateLocalTracksMuted}
+        leaveRoom={leaveRoom}
+        disabled={!room}
+      />
     </>
   );
 }
