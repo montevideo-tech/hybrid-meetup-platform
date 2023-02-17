@@ -15,7 +15,7 @@ async function returnError(msgError: string){
 }
 
 async function getPermission(supabaseClient, body) {
-  let { userId, roomId }= body;
+  let { userId, roomId } = body;
   roomId = parseInt(roomId);
 
   const roomData = await supabaseClient.from('rooms').select('id').eq('id', roomId);
