@@ -19,18 +19,17 @@ async function getPermission(supabaseClient, body) {
   roomId = parseInt(roomId);
 
   const roomData = await supabaseClient.from('rooms').select('id').eq('id', roomId);
-  if (!roomData.data || (roomData.data && roomData.data.length === 0))
+  if (!roomData.data || (roomData.data?.length === 0))
     return returnError("No room with given data exists");
 
   const users = await supabaseClient.from('users-data').select('userId').eq('userId', userId);
-  console.error(users);
-  if (!users.data || (users.data && users.data.length === 0))
+  if (!users.data || (users.data?.length === 0))
     return returnError("No user with given data exists");
 
   const roomsData = await supabaseClient.from('rooms-data').select('permissionId').match({ roomId, userId });
 
   let permission = "GUEST"
-  if (roomsData.data && roomsData.data.length !== 0){
+  if (roomsData.data?.length !== 0){
     const permissionId = parseInt(roomsData.data[0].permissionId);
     permission = await supabaseClient.from('rooms-permission').select('name').eq( 'id', permissionId );
     permission = permission.data[0].name;
