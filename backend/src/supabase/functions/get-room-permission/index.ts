@@ -30,7 +30,7 @@ async function getPermission(supabaseClient, body) {
   const roomsData = await supabaseClient.from('rooms-data').select('permissionId').match({ roomId, userId });
 
   let permission = "GUEST"
-  if (!roomsData.data || (roomsData.data && roomsData.data.length !== 0)){
+  if (roomsData.data && roomsData.data.length !== 0){
     const permissionId = parseInt(roomsData.data[0].permissionId);
     permission = await supabaseClient.from('rooms-permission').select('name').eq( 'id', permissionId );
     permission = permission.data[0].name;
