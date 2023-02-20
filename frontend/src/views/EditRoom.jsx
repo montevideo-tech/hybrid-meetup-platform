@@ -4,6 +4,7 @@ import {
   List, ListItem, IconButton, Typography, TextField, MenuItem, Button, Card,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { giveUserRoleOnRoom } from '../actions';
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -13,11 +14,14 @@ function EditRoom() {
   const roomId = useLoaderData();
   const [email, setEmail] = useState('');
   const [roleToAdd, setRoleToAdd] = useState('host');
+  // TODO:
+  // get actual hosts/presenters from db
   const [roles, setRoles] = useState({ hosts: [], presenters: [] });
-  const handleAddRole = () => {
-    // TODO post role to server
+
+  const handleAddRole = async () => {
     const currentHosts = roles.hosts;
     const currentPresenters = roles.presenters;
+    await giveUserRoleOnRoom(email, roomId, roleToAdd);
     if (roleToAdd === 'host') {
       setRoles({
         hosts: [...currentHosts, email],
@@ -31,6 +35,7 @@ function EditRoom() {
       });
     }
   };
+
   const handleDeleteRole = (e, r) => {
     const currentHosts = roles.hosts;
     const currentPresenters = roles.presenters;
@@ -67,7 +72,7 @@ function EditRoom() {
       <Typography component="h1" variant="h4" sx={{ textAlign: 'center' }}>
         Edit Room
         {' '}
-        { roomId }
+        {roomId}
       </Typography>
       <div style={{ display: 'flex' }}>
         <Card variant="outlined">

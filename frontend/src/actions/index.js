@@ -141,22 +141,21 @@ export const roomJWTprovider = async (
 };
 
 export const giveUserRoleOnRoom = async (
-  userEmail,
+  email,
   roomId,
   roleToAdd,
   onError = null,
   onSuccess = null,
   onNotFound = null,
 ) => {
-  if (!userEmail || !roomId || !roleToAdd) {
+  if (!email || !roomId || !roleToAdd) {
     onError && onError('Internal error: missing data');
     return;
   }
-  console.log(userEmail);
   try {
     const response = await mvdTech.post(
       '/give-rooms-permission',
-      JSON.stringify({ userEmail, providerId: roomId, permission: roleToAdd }),
+      JSON.stringify({ userEmail: email, providerId: roomId, permission: roleToAdd }),
       {
         headers: {
           Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,

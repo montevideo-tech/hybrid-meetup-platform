@@ -2,7 +2,7 @@ import { serve } from 'https://deno.land/std@0.131.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { corsHeaders } from '../_shared/cors.ts';
 
-async function returnError(msgError: string){
+async function returnError(msgError: string) {
   return new Response(JSON.stringify({
     error: msgError
   }), {
@@ -15,15 +15,17 @@ async function returnError(msgError: string){
 }
 
 async function givePermission(supabaseClient, body) {
-  let { userId, providerId, permission } = body;
+  let { userEmail, providerId, permission } = body;
 
   const roomData = await supabaseClient.from('rooms').select('providerId').eq('providerId', providerId);
   if (!roomData.data || (roomData.data?.length === 0))
     return returnError("No room with given data exists");
 
-  const users = await supabaseClient.from('users-data').select('userId').eq('userId', userId);
-  if (!users.data || (users.data?.length === 0))
+  const user = await supabaseClient.from('users-data').select('userId').eq('email', userEmail);
+  if (!user.data || (user.data?.length === 0))
     return returnError("No user with given data exists");
+
+  const userId = user.data[0].userId;
 
   permission = permission?.toUpperCase();
   const permissionData = await supabaseClient.from('rooms-permission').select('id').eq('name', permission);
@@ -50,7 +52,7 @@ async function givePermission(supabaseClient, body) {
   });
 }
 
-serve(async (req)=>{
+serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', {
       headers: corsHeaders,
