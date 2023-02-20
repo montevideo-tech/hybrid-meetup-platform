@@ -14,8 +14,8 @@ async function returnError(msgError: string){
   });
 }
 
-async function getPermission(supabaseClient, body) {
-  let { userId, providerId } = body;
+async function givePermission(supabaseClient, body) {
+  let { userId, providerId, permission } = body;
 
   const roomData = await supabaseClient.from('rooms').select('providerId').eq('providerId', providerId);
   if (!roomData.data || (roomData.data?.length === 0))
@@ -25,14 +25,19 @@ async function getPermission(supabaseClient, body) {
   if (!users.data || (users.data?.length === 0))
     return returnError("No user with given data exists");
 
-  const roomsData = await supabaseClient.from('rooms-data').select('permissionId').match({ providerId, userId });
+  permission = permission?.toUpperCase();
+  const permissionData = await supabaseClient.from('rooms-permission').select('id').eq('name', permission);
+  if (!permissionData.data || (permissionData.data?.length === 0))
+    return returnError("No permission with given data exists");
 
-  let permission = "GUEST"
-  if (roomsData.data?.length !== 0){
-    const permissionId = parseInt(roomsData.data[0].permissionId);
-    permission = await supabaseClient.from('rooms-permission').select('name').eq( 'id', permissionId );
-    permission = permission.data[0].name;
-  }
+  const permissionId = permissionData.data[0].id;
+  await supabaseClient.from('rooms-data').delete().match({ providerId, userId });
+
+  const insert = await supabaseClient.from('rooms-data').insert({
+    providerId,
+    userId,
+    permissionId,
+  });
 
   return new Response(JSON.stringify({
     permission: permission,
@@ -58,7 +63,7 @@ serve(async (req)=>{
     const supabaseClient = createClient(supabaseUrl, supabaseKey);
     const body = await req.json();
 
-    return getPermission(supabaseClient, body);
+    return givePermission(supabaseClient, body);
   } catch (error) {
     return new Response(JSON.stringify({
       error,
