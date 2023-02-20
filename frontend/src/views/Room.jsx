@@ -25,6 +25,7 @@ import Video from '../components/Video';
 
 import { Room as WebRoom } from '../lib/webrtc';
 import { roomJWTprovider } from '../actions';
+import subscribeToRoleChanges from '../utils/roles';
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -162,6 +163,8 @@ function Room() {
         remoteStreamsRef.current.delete(p.id);
         setRemoteStreamsRef(remoteStreamsRef.current);
       });
+
+      subscribeToRoleChanges(roomId);
 
       setRoom(newRoom);
       roomRef.current = newRoom;
