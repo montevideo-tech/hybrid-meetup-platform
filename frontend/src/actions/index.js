@@ -69,7 +69,7 @@ export const signUp = (data, onSuccess = null, onError = null) => async () => {
 export const createRoom = (onSuccess = null, onError = null) => async () => {
   try {
     const response = await mvdTech.post(
-      '/create-space',
+      '/spaces',
       JSON.stringify({}),
       {
         headers: {
