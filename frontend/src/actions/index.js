@@ -109,18 +109,19 @@ export const addRoomToDb = (data, onSuccess = null, onError = null) => async () 
 
 export const roomJWTprovider = async (
   roomId,
+  participantId,
   onError = null,
   onSuccess = null,
   onNotFound = null,
 ) => {
-  if (!roomId) {
-    onError && onError('Internal error: missing roomId');
+  if (!roomId || !participantId) {
+    onError && onError(`Internal error: missing ${!roomId && 'roomId'} ${!participantId && 'participantId'}`);
     return;
   }
   try {
     const response = await mvdTech.post(
       '/room-jwtprovider',
-      JSON.stringify({ spaceId: roomId }),
+      JSON.stringify({ spaceId: roomId, participantId }),
       {
         headers: {
           Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
@@ -130,6 +131,7 @@ export const roomJWTprovider = async (
     );
     onSuccess && onSuccess(response);
     /* eslint-disable consistent-return */
+    console.log(response);
     return response.data.spaceToken;
   } catch (error) {
     if (error.response.status === 404) {

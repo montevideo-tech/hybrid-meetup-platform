@@ -17,6 +17,7 @@ import {
   React, useState, useEffect, useRef,
 } from 'react';
 import { useLoaderData, Navigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { Box, Grid } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -49,6 +50,7 @@ function Room() {
   // create reference to access room state var in useEffect cleanup func
   const roomRef = useRef();
   const remoteStreamsRef = useRef(new Map());
+  const currentUser = useSelector((state) => state.loggedUser);
 
   const setRemoteStreamsRef = (data) => {
     remoteStreamsRef.current = data;
@@ -117,7 +119,13 @@ function Room() {
       }));
     };
     const joinRoom = async () => {
-      const JWT = await roomJWTprovider(roomId, null, null, () => { setRoomNotFound(true); });
+      const JWT = await roomJWTprovider(
+        roomId,
+        currentUser.email,
+        null,
+        null,
+        () => { setRoomNotFound(true); },
+      );
       const newRoom = new WebRoom(JWT);
       const newParticipant = await newRoom.join();
 
