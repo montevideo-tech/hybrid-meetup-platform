@@ -45,7 +45,7 @@ async function createSpace() {
 
 async function deleteSpace(supabaseClient, body) {
   let { providerId } = body;
-  console.error("hola");
+
   const roomData = await supabaseClient.from('rooms').select('providerId').eq('providerId', providerId);
   if (!roomData.data || (roomData.data?.length === 0))
     return returnError("No room with given data exists");
@@ -80,7 +80,6 @@ async function deleteSpace(supabaseClient, body) {
 
 serve(async (req) => {
   const { url, method } = req;
-  console.error("entra");
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
