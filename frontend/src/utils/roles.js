@@ -10,10 +10,20 @@ const subscribeToRoleChanges = (roomId) => {
         event: 'INSERT',
         schema: 'public',
         table: 'rooms-data',
+        filter: `providerId=eq.${roomId}`,
       },
       (payload) => console.log('Change received!', payload),
     )
-    .subscribe();
+    .on(
+      'postgres_changes',
+      {
+        event: 'DELETE',
+        schema: 'public',
+        table: 'rooms-data',
+        filter: `providerId=eq.${roomId}`,
+      },
+      (payload) => console.log('Deletion detected', payload),
+    ).subscribe();
 };
 
 export default subscribeToRoleChanges;

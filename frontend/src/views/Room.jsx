@@ -163,9 +163,6 @@ function Room() {
         remoteStreamsRef.current.delete(p.id);
         setRemoteStreamsRef(remoteStreamsRef.current);
       });
-
-      subscribeToRoleChanges(roomId);
-
       setRoom(newRoom);
       roomRef.current = newRoom;
       const tracks = await newParticipant.publishTracks(
@@ -184,6 +181,7 @@ function Room() {
       setLocalTracks(newLocalTracks);
       // setUserParticipant(newParticipant);
       subscribeToRemoteStreams(newRoom);
+      subscribeToRoleChanges(roomId);
     };
     joinRoom();
     return leaveRoom;

@@ -2,7 +2,7 @@ import { serve } from 'https://deno.land/std@0.131.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { corsHeaders } from '../_shared/cors.ts';
 import Mux from "https://esm.sh/v106/@mux/mux-node@7.0.0/es2022/mux-node.js";
-async function generateToken(supabaseClient, spaceId) {
+async function generateToken(supabaseClient, spaceId, participantId) {
   const spacesId = await supabaseClient.from('rooms').select('providerId').eq('providerId', spaceId);
   if (spacesId.data && spacesId.data.length === 0) {
     return new Response(JSON.stringify({
@@ -18,6 +18,7 @@ async function generateToken(supabaseClient, spaceId) {
   let baseOptions = {
     keyId: Deno.env.get('SPACE_KEY_ID'),
     keySecret: Deno.env.get('SPACE_PRIVATE_KEY'),
+    params: {participantId: }
   };
   const spaceToken = Mux.JWT.signSpaceId(spaceId, {
     ...baseOptions,
@@ -44,8 +45,18 @@ serve(async (req)=>{
     const supabaseClient = createClient(supabaseUrl, supabaseKey);
     const body = await req.json();
     const spaceId = body.spaceId;
+    const participantId = body.participantId;
     if (!spaceId) {
       return new Response(JSON.stringify('The must contain a valid spaceId item'), {
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'application/json'
+        },
+        status: 400,
+      });
+    }
+    if (!participantId) {
+      return new Response(JSON.stringify('The must contain a valid participantId item'), {
         headers: {
           ...corsHeaders,
           'Content-Type': 'application/json'
