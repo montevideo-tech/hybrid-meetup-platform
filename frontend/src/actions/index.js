@@ -84,6 +84,25 @@ export const createRoom = (onSuccess = null, onError = null) => async () => {
   }
 };
 
+export const deleteRoom = (providerId, onSuccess = null, onError = null) => async () => {
+  console.log('holaa');
+  try {
+    const response = await mvdTech.delete(
+      '/spaces',
+      JSON.stringify({ providerId }),
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
+      },
+    );
+    onSuccess && onSuccess(response);
+  } catch (error) {
+    onError && onError(error);
+  }
+};
+
 export const addRoomToDb = (data, onSuccess = null, onError = null) => async () => {
   if (!data) {
     onError && onError('Internal error: Missing data');
