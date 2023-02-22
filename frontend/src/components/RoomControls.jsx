@@ -1,3 +1,4 @@
+/* eslint-disable react/forbid-prop-types */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
@@ -9,13 +10,15 @@ import {
   Mic as MicIcon,
   MicOffOutlined as MicOffOutlinedIcon,
   Cancel as CancelIcon,
+  ScreenShare as ScreenShareIcon,
+  StopScreenShare as StopScreenShareIcon,
 } from '@mui/icons-material';
 
 function RoomControls(props) {
   const navigate = useNavigate();
 
   const {
-    localTracks, updateLocalTracksMuted, leaveRoom, disabled,
+    updateScreen, isSharingScreen, localTracks, updateLocalTracksMuted, leaveRoom, disabled,
   } = props;
 
   const toggleMuteTrack = (t) => {
@@ -31,6 +34,11 @@ function RoomControls(props) {
   const endCall = () => {
     leaveRoom();
     navigate('/rooms');
+  };
+
+  const shareScreen = async () => {
+    console.log('issharing:', isSharingScreen);
+    updateScreen(isSharingScreen);
   };
 
   return (
@@ -64,6 +72,31 @@ function RoomControls(props) {
           <MicIcon />
         )}
       </Button>
+
+      {/* <Button
+        size="large"
+        onClick={startSharingScreen}
+      >
+        <ScreenShareIcon />
+      </Button>
+      <Button
+        size="large"
+        onClick={stopSharingScreen}
+      >
+        <StopScreenShareIcon />
+      </Button> */}
+
+      <Button
+        size="large"
+        onClick={() => shareScreen()}
+      >
+        {!isSharingScreen ? (
+          <ScreenShareIcon />
+        ) : (
+          <StopScreenShareIcon />
+        )}
+      </Button>
+
       <Button
         size="large"
         color="error"
@@ -76,16 +109,19 @@ function RoomControls(props) {
 }
 
 RoomControls.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
   localTracks: PropTypes.object,
+  updateScreen: PropTypes.func.isRequired,
   updateLocalTracksMuted: PropTypes.func.isRequired,
   leaveRoom: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
+  isSharingScreen: PropTypes.bool,
 };
 
 RoomControls.defaultProps = {
   localTracks: { audio: null, video: null },
   disabled: true,
+  isSharingScreen: false,
+
 };
 
 export default RoomControls;

@@ -36,6 +36,8 @@ function Room() {
   const [localStream, setLocalStream] = useState();
   // this helps keep track of muting/unmuting with RoomControls
   const [localTracks, setLocalTracks] = useState({ video: null, audio: null });
+  const [isSharingScreen, setIsSharingScreen] = useState(false);
+
   const [remoteStreams, setRemoteStreams] = useState([]);
   const [roomNotFound, setRoomNotFound] = useState(false);
   // const [participants, setParticipants] = useState([]);
@@ -128,6 +130,7 @@ function Room() {
         // same participant.
         if (remoteStreamsRef.current.has(remoteParticipant.id)) {
           const streamData = remoteStreamsRef.current.get(remoteParticipant.id);
+          // console.log('streamData', streamData);
           streamData.stream.addTrack(track.mediaStreamTrack);
           streamData[`${track.kind}Muted`] = track.muted;
         } else {
@@ -139,7 +142,6 @@ function Room() {
           );
         }
         setRemoteStreamsRef(remoteStreamsRef.current);
-
         // add event handler for Muted/Unmuted events
         track.on('Muted', () => {
           const streamData = remoteStreamsRef.current.get(remoteParticipant.id);
@@ -167,18 +169,26 @@ function Room() {
       roomRef.current = newRoom;
       const tracks = await newParticipant.publishTracks(
         { constraints: { video: true, audio: true } },
+
       );
+
       const stream = new MediaStream();
-
       const newLocalTracks = { ...localTracks };
-
       tracks.forEach((track) => {
         stream.addTrack(track.mediaStreamTrack);
         newLocalTracks[track.kind] = track;
       });
-
+      console.log('182', isSharingScreen);
+      // if (true) {
+      //   const screenTrack = await newParticipant.startScreenShare();
+      //   console.log(screenTrack);
+      //   stream.addTrack(screenTrack.mediaStreamTrack);
+      //   console.log('newLocalTracks', newLocalTracks);
+      //   // newLocalTracks.screen = screenTrack;
+      // }
       setLocalStream(stream);
       setLocalTracks(newLocalTracks);
+      console.log(localTracks);
       // setUserParticipant(newParticipant);
       subscribeToRemoteStreams(newRoom);
     };
@@ -188,8 +198,15 @@ function Room() {
   }, []);
 
   const updateLocalTracksMuted = (kind, muted) => {
+    console.log(kind);
     localTracks[kind].muted = muted;
     setLocalTracks({ ...localTracks });
+  };
+
+  const updateScreen = () => {
+    console.log('update screen');
+    setIsSharingScreen(!isSharingScreen);
+    console.log(isSharingScreen);
   };
 
   const localStreamStyle = {
@@ -198,6 +215,7 @@ function Room() {
     bottom: 0,
     right: 0,
   };
+
   return (
     <>
       {
@@ -233,6 +251,8 @@ function Room() {
       }
 
       <RoomControls
+        updateScreen={updateScreen}
+        isSharingScreen={isSharingScreen}
         localTracks={localTracks}
         updateLocalTracksMuted={updateLocalTracksMuted}
         leaveRoom={leaveRoom}
