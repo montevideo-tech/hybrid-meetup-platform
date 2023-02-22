@@ -1,7 +1,12 @@
 import { supabase } from '../lib/api';
 
-const subscribeToRoleChanges = (roomId) => {
-  console.log(roomId);
+export const ROLES = {
+  HOST: 'HOST',
+  PRESENTER: 'PRESENTER',
+  GUEST: 'GUEST',
+};
+
+const subscribeToRoleChanges = (roomId, handleRoleChange) => {
   supabase
     .channel('any')
     .on(
@@ -12,7 +17,7 @@ const subscribeToRoleChanges = (roomId) => {
         table: 'rooms-data',
         filter: `providerId=eq.${roomId}`,
       },
-      (payload) => console.log('Change received!', payload),
+      (payload) => handleRoleChange(payload),
     )
     .on(
       'postgres_changes',
@@ -22,7 +27,7 @@ const subscribeToRoleChanges = (roomId) => {
         table: 'rooms-data',
         filter: `providerId=eq.${roomId}`,
       },
-      (payload) => console.log('Deletion detected', payload),
+      (payload) => handleRoleChange(payload),
     ).subscribe();
 };
 

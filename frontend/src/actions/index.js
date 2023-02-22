@@ -131,7 +131,6 @@ export const roomJWTprovider = async (
     );
     onSuccess && onSuccess(response);
     /* eslint-disable consistent-return */
-    console.log(response);
     return response.data.spaceToken;
   } catch (error) {
     if (error.response.status === 404) {
@@ -139,5 +138,33 @@ export const roomJWTprovider = async (
     } else if (error.response.status !== 200) {
       throw new Error(`unexpected ${error.response.status} response`);
     }
+  }
+};
+
+export const getRoomPermissions = async (
+  roomId,
+  onError = null,
+  onSuccess = null,
+) => {
+  if (!roomId) {
+    onError && onError('Internal error: missing roomId');
+    return;
+  }
+  try {
+    const response = await mvdTech.post(
+      '/get-room-permission',
+      JSON.stringify({ providerId: roomId }),
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
+      },
+    );
+    onSuccess && onSuccess(response);
+    /* eslint-disable consistent-return */
+    return response.data.spaceToken;
+  } catch (error) {
+    throw new Error(`unexpected ${error.response.status} response`);
   }
 };

@@ -46,8 +46,6 @@ class Participant extends EventEmitter {
     this.provider = providerParticipant;
     this.id = this.provider.connectionId;
     this.displayName = this.provider.id;
-    console.log(this.displayName);
-    console.log(this.provider);
     this.role = this.provider.role;
     // this.tracks = []; //provider audioTracks + videoTracks
 

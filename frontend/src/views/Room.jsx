@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable react/prop-types */
 /*
 This component assumes that it will be given a list of active participants that will
@@ -17,7 +18,7 @@ import {
   React, useState, useEffect, useRef,
 } from 'react';
 import { useLoaderData, Navigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Box, Grid } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -26,7 +27,10 @@ import Video from '../components/Video';
 
 import { Room as WebRoom } from '../lib/webrtc';
 import { roomJWTprovider } from '../actions';
-import subscribeToRoleChanges from '../utils/roles';
+import {
+  initRoom, addUpdateParticipant, removeParticipant, removeRole,
+} from '../reducers/roomSlice';
+import subscribeToRoleChanges, { ROLES } from '../utils/roles';
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -40,17 +44,13 @@ function Room() {
   const [localTracks, setLocalTracks] = useState({ video: null, audio: null });
   const [remoteStreams, setRemoteStreams] = useState([]);
   const [roomNotFound, setRoomNotFound] = useState(false);
-  // const [participants, setParticipants] = useState([]);
-  // we eventually need the full list of participants, not only the visible ones
-  // this array will hold data such as name foor the purpose of
-  // having a participants name list, etc.
-
   const roomId = useLoaderData();
 
   // create reference to access room state var in useEffect cleanup func
   const roomRef = useRef();
   const remoteStreamsRef = useRef(new Map());
   const currentUser = useSelector((state) => state.loggedUser);
+  const dispatch = useDispatch();
 
   const setRemoteStreamsRef = (data) => {
     remoteStreamsRef.current = data;
@@ -108,15 +108,41 @@ function Room() {
     }
   };
 
+  const handleRoleChange = (payload) => {
+    if (payload.eventType === 'INSERT') {
+      const { id, userEmail, permissionId } = payload.new;
+      dispatch(addUpdateParticipant({
+        name: userEmail,
+        role: permissionId === 1 ? ROLES.HOST : ROLES.PRESENTER,
+        id,
+      }));
+    }
+    // Supabase realtime only sends the ID that was deleted from the rooms-data table
+    if (payload.eventType === 'DELETE') {
+      const { id } = payload.old;
+      dispatch(removeRole({ id }));
+    }
+  };
+
   // initialize room
   useEffect(() => {
+    const updateParticipantRoles = () => {
+      // TODO: Function that fetches and updates roles in the store.
+      console.log('updating...');
+    };
     const subscribeToRemoteStreams = async (r) => {
       // subscribe ta all remote participants for testing purposes
       const { remoteParticipants } = r;
       const rps = Array.from(remoteParticipants.values());
       await Promise.all(rps.map(async (rp) => {
         await rp.subscribe();
+        // Add remote participants to participants list.
+        dispatch(addUpdateParticipant({
+          name: rp.id,
+          role: ROLES.GUEST,
+        }));
       }));
+      updateParticipantRoles();
     };
     const joinRoom = async () => {
       const JWT = await roomJWTprovider(
@@ -129,6 +155,9 @@ function Room() {
       const newRoom = new WebRoom(JWT);
       const newParticipant = await newRoom.join();
 
+      // participantsRef.current = [...participantsRef.current,
+      //   { name: currentUser.email, role: ROLES.GUEST }];
+      // setParticipants(participantsRef.current);
       newRoom.on('ParticipantTrackSubscribed', (remoteParticipant, track) => {
         // console.log('ParticipantTrackSubscribed event');
 
@@ -165,11 +194,14 @@ function Room() {
       newRoom.on('ParticipantJoined', (p) => {
         // console.log('someone joined', p);
         p.subscribe();
+        const participantData = { name: p.displayName, role: ROLES.GUEST };
+        dispatch(addUpdateParticipant(participantData));
       });
       newRoom.on('ParticipantLeft', (p) => {
         // console.log('someone left', p);
         remoteStreamsRef.current.delete(p.id);
         setRemoteStreamsRef(remoteStreamsRef.current);
+        dispatch(removeParticipant({ name: p.displayName }));
       });
       setRoom(newRoom);
       roomRef.current = newRoom;
@@ -184,14 +216,18 @@ function Room() {
         stream.addTrack(track.mediaStreamTrack);
         newLocalTracks[track.kind] = track;
       });
-
       setLocalStream(stream);
       setLocalTracks(newLocalTracks);
       // setUserParticipant(newParticipant);
       subscribeToRemoteStreams(newRoom);
-      subscribeToRoleChanges(roomId);
+      subscribeToRoleChanges(roomId, handleRoleChange);
     };
     joinRoom();
+    dispatch(initRoom({
+      id: roomId,
+      participants: [{ name: currentUser.email, role: ROLES.GUEST }],
+      roles: [],
+    }));
     return leaveRoom;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -238,7 +274,14 @@ function Room() {
               />
             </div>
           </Box>
-        ) : <CircularProgress />
+        ) : (
+          <div style={{
+            display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%',
+          }}
+          >
+            <CircularProgress />
+          </div>
+        )
       }
 
       <RoomControls
