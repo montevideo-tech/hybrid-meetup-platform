@@ -37,7 +37,6 @@ function RoomControls(props) {
   };
 
   const shareScreen = async () => {
-    console.log('issharing:', isSharingScreen);
     updateScreen(isSharingScreen);
   };
 
