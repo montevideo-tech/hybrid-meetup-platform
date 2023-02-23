@@ -19,14 +19,14 @@ import {
 } from 'react';
 import { useLoaderData, Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { Box, Grid } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import RoomControls from '../components/RoomControls';
 import Video from '../components/Video';
 
 import { Room as WebRoom } from '../lib/webrtc';
-import { roomJWTprovider } from '../actions';
+import { roomJWTprovider, getRoomPermissions } from '../actions';
 import {
   initRoom, addUpdateParticipant, removeParticipant, removeRole,
 } from '../reducers/roomSlice';
@@ -50,10 +50,13 @@ function Room() {
   const roomRef = useRef();
   const remoteStreamsRef = useRef(new Map());
   const currentUser = useSelector((state) => state.loggedUser);
+  const roomData = useSelector((state) => state.room);
   const dispatch = useDispatch();
 
   const setRemoteStreamsRef = (data) => {
     remoteStreamsRef.current = data;
+    console.log(data);
+    console.log(Array.from(data.values()));
     setRemoteStreams(Array.from(data.values()));
   };
 
@@ -126,9 +129,13 @@ function Room() {
 
   // initialize room
   useEffect(() => {
-    const updateParticipantRoles = () => {
-      // TODO: Function that fetches and updates roles in the store.
-      console.log('updating...');
+    const updateParticipantRoles = async () => {
+      const initialParticipantRoles = await getRoomPermissions(roomId);
+      initialParticipantRoles.map((part) => dispatch(addUpdateParticipant({
+        name: part.userEmail,
+        role: part.permissionId === 1 ? ROLES.HOST : ROLES.PRESENTER,
+        id: part.id,
+      })));
     };
     const subscribeToRemoteStreams = async (r) => {
       // subscribe ta all remote participants for testing purposes
@@ -173,7 +180,7 @@ function Room() {
           stream.addTrack(track.mediaStreamTrack);
           remoteStreamsRef.current.set(
             remoteParticipant.id,
-            { stream, [`${track.kind}Muted`]: track.muted },
+            { stream, [`${track.kind}Muted`]: track.muted, name: remoteParticipant.displayName },
           );
         }
         setRemoteStreamsRef(remoteStreamsRef.current);
@@ -254,14 +261,21 @@ function Room() {
           <Box style={{ position: 'relative' }}>
             <Grid sx={{ width: '65vw', height: '60vh' }} container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center">
               {
-                remoteStreams.map(({ stream, audioMuted, videoMuted }) => (
+                remoteStreams.map(({
+                  stream, audioMuted, videoMuted, name,
+                }) => (
                   <Grid item xs={1} sm={1} md={1} key={stream.id}>
                     <Box>
                       <Video
                         stream={stream}
                         isAudioMuted={audioMuted || false}
                         isVideoMuted={videoMuted || false}
+                        name={name}
                       />
+                      <Typography variant="caption" display="block" gutterBottom>
+                        {roomData.participants
+                          .find((part) => part.name === name)?.role}
+                      </Typography>
                     </Box>
                   </Grid>
                 ))

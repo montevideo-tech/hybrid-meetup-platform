@@ -21,7 +21,7 @@ async function getPermission(supabaseClient, body) {
   if (!roomData.data || (roomData.data?.length === 0))
     return returnError("No room with given data exists");
 
-  const roomsData = await supabaseClient.from('rooms-data').select('permissionId').match({ providerId });
+  const roomsData = await supabaseClient.from('rooms-data').select('id, permissionId, userEmail').eq('providerId', providerId);
 
   return new Response(JSON.stringify({
     roomsData,

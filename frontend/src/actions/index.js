@@ -1,5 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable import/prefer-default-export */
+/* eslint-disable consistent-return */
+
 import mvdTech from '../lib/api';
 import { login } from '../reducers/userSlice';
 
@@ -162,9 +164,9 @@ export const getRoomPermissions = async (
       },
     );
     onSuccess && onSuccess(response);
-    /* eslint-disable consistent-return */
-    return response.data.spaceToken;
+    return response.data.roomsData.data;
   } catch (error) {
+    onError && onError(error);
     throw new Error(`unexpected ${error.response.status} response`);
   }
 };
