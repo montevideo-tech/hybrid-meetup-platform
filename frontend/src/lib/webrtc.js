@@ -94,22 +94,14 @@ export class LocalParticipant extends Participant {
   }
 
   async startScreenShare() {
-    // let tracksToPublish = [];
     const displayMediaOptions = {
       video: {
         cursor: 'always',
-        // height: 1000,
-        // width: 1200,
       },
       audio: false,
     };
     const screenStreams = await getDisplayMedia(displayMediaOptions);
-    const screenStream = screenStreams?.find(
-      (track) => track.source === 'screenshare',
-    );
-    const tracksToPublish = screenStream[0];
-
-    const publishedTracks = await this.provider.publishTracks(tracksToPublish); // returns Mux Track
+    const publishedTracks = await this.provider.publishTracks(screenStreams); // returns Mux Track
     return publishedTracks.map((t) => new Track(t)); // wrap into our Track
   }
 

@@ -18,7 +18,7 @@ function RoomControls(props) {
   const navigate = useNavigate();
 
   const {
-    updateScreen, isSharingScreen, localTracks, updateLocalTracksMuted, leaveRoom, disabled,
+    updateScreenShare, isSharingScreen, localTracks, updateLocalTracksMuted, leaveRoom, disabled,
   } = props;
 
   const toggleMuteTrack = (t) => {
@@ -37,7 +37,7 @@ function RoomControls(props) {
   };
 
   const shareScreen = async () => {
-    updateScreen(isSharingScreen);
+    updateScreenShare();
   };
 
   return (
@@ -72,19 +72,6 @@ function RoomControls(props) {
         )}
       </Button>
 
-      {/* <Button
-        size="large"
-        onClick={startSharingScreen}
-      >
-        <ScreenShareIcon />
-      </Button>
-      <Button
-        size="large"
-        onClick={stopSharingScreen}
-      >
-        <StopScreenShareIcon />
-      </Button> */}
-
       <Button
         size="large"
         onClick={() => shareScreen()}
@@ -109,7 +96,7 @@ function RoomControls(props) {
 
 RoomControls.propTypes = {
   localTracks: PropTypes.object,
-  updateScreen: PropTypes.func.isRequired,
+  updateScreenShare: PropTypes.func.isRequired,
   updateLocalTracksMuted: PropTypes.func.isRequired,
   leaveRoom: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
