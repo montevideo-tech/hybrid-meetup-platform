@@ -28,7 +28,7 @@ import Video from '../components/Video';
 import { Room as WebRoom } from '../lib/webrtc';
 import { roomJWTprovider, getRoomPermissions } from '../actions';
 import {
-  initRoom, addUpdateParticipant, removeParticipant, removeRole,
+  initRoom, addUpdateParticipant, removeParticipant, removeRole, cleanRoom,
 } from '../reducers/roomSlice';
 import subscribeToRoleChanges, { ROLES } from '../utils/roles';
 
@@ -55,8 +55,6 @@ function Room() {
 
   const setRemoteStreamsRef = (data) => {
     remoteStreamsRef.current = data;
-    console.log(data);
-    console.log(Array.from(data.values()));
     setRemoteStreams(Array.from(data.values()));
   };
 
@@ -235,7 +233,10 @@ function Room() {
       participants: [{ name: currentUser.email, role: ROLES.GUEST }],
       roles: [],
     }));
-    return leaveRoom;
+    return () => {
+      dispatch(cleanRoom());
+      leaveRoom();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -249,6 +250,8 @@ function Room() {
     position: 'fixed',
     bottom: 0,
     right: 0,
+    marginLeft: '2vw',
+    marginRight: '2vw',
   };
   return (
     <>
@@ -258,7 +261,10 @@ function Room() {
       }
       {
         room ? (
-          <Box style={{ position: 'relative' }}>
+          <Box style={{
+            position: 'relative', marginLeft: '2vw', marginRight: '2vw',
+          }}
+          >
             <Grid sx={{ width: '65vw', height: '60vh' }} container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center">
               {
                 remoteStreams.map(({

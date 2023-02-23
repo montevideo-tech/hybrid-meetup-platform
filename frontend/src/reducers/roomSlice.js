@@ -50,12 +50,16 @@ export const roomSlice = createSlice({
       state.participants = state.participants
         .filter((pt) => pt.name !== action.payload.name);
     },
+    cleanRoom: (state) => {
+      state.id = null;
+      state.participants = [];
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
 export const {
-  initRoom, updateParticipants, addUpdateParticipant, removeParticipant, removeRole,
+  initRoom, updateParticipants, addUpdateParticipant, removeParticipant, removeRole, cleanRoom,
 } = roomSlice.actions;
 
 export default roomSlice.reducer;
