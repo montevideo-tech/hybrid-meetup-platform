@@ -51,7 +51,7 @@ serve(async (req)=>{
     const spaceId = body.spaceId;
     const participantId = body.participantId;
     if (!spaceId || !participantId) {
-      return new Response(JSON.stringify(`The must contain a valid ${!spaceId && 'spaceId '}${!participantId && 'participantId '} item`), {
+      return new Response(JSON.stringify(`The request must contain a valid ${!spaceId && 'spaceId '}${!participantId && 'participantId '} item`), {
         headers: {
           ...corsHeaders,
           'Content-Type': 'application/json'
