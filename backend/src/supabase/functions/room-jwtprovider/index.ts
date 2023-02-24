@@ -2,8 +2,10 @@ import { serve } from 'https://deno.land/std@0.131.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { corsHeaders } from '../_shared/cors.ts';
 import * as djwt from "https://deno.land/x/djwt@v2.2/mod.ts";
-
-async function generateToken(supabaseClient, spaceId, participantId) {
+/* 
+  Expiration is expressed in minutes 
+*/
+async function generateToken(supabaseClient, spaceId, participantId, expiration = 360) {
   const spacesId = await supabaseClient.from('rooms').select('providerId').eq('providerId', spaceId);
   
   if (spacesId.data && spacesId.data.length === 0) {
@@ -18,12 +20,12 @@ async function generateToken(supabaseClient, spaceId, participantId) {
     });
   }
   
-  const expiration = new Date().valueOf() + 60*60;
+  const exp = new Date().valueOf() + expiration*60;
   const spaceToken = await djwt.create({ alg: "RS256", typ: "JWT" }, {
     kid: Deno.env.get('SPACE_KEY_ID') ?? "",
     aud: "rt",
     sub: spaceId,
-    exp: expiration,
+    exp: exp,
     participant_id: participantId
   }, atob(Deno.env.get('SPACE_PRIVATE_KEY')))
 
@@ -50,6 +52,7 @@ serve(async (req)=>{
     const body = await req.json();
     const spaceId = body.spaceId;
     const participantId = body.participantId;
+    const expiration = body.expiration;
     if (!spaceId || !participantId) {
       return new Response(JSON.stringify(`The request must contain a valid ${!spaceId && 'spaceId '}${!participantId && 'participantId '} item`), {
         headers: {

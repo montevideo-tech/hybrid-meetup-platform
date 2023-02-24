@@ -55,11 +55,11 @@ function Video(props) {
       >
         <track kind="captions" />
       </video>
-      {!!name && (
-        <Typography variant="overline" display="block" gutterBottom>
-          {name}
-        </Typography>
-      })
+      {!name && (
+      <Typography variant="overline" display="block" gutterBottom>
+        {name}
+      </Typography>
+      )}
       {isAudioMuted && (
         <IconButton
           disableRipple

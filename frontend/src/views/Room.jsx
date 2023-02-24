@@ -19,7 +19,9 @@ import {
 } from 'react';
 import { useLoaderData, Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { Box, CircularProgress, Grid, Typography } from '@mui/material';
+import {
+  Box, CircularProgress, Grid, Typography,
+} from '@mui/material';
 
 import RoomControls from '../components/RoomControls';
 import Video from '../components/Video';
