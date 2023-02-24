@@ -49,57 +49,65 @@ function RoomControls(props) {
         position: 'fixed', bottom: 0, left: 'calc(50% - 103px)',
       }}
     >
-      <Tooltip title={!localTracks.video || localTracks.video.muted ? '' : ''}>
-
-        <Button
-          size="large"
-          disabled={!localTracks.video}
-          onClick={() => toggleMuteTrack(localTracks.video)}
-        >
-          {!localTracks.video || localTracks.video.muted ? (
-            <VideocamOffOutlinedIcon />
-          ) : (
-            <VideocamIcon />
-          )}
-        </Button>
+      <Tooltip title={!localTracks.video || localTracks.video.muted ? 'Turn On Camera' : 'Turn Off Camera'}>
+        <div style={{ padding: '2px' }}>
+          <Button
+            size="large"
+            disabled={!localTracks.video}
+            onClick={() => toggleMuteTrack(localTracks.video)}
+          >
+            {!localTracks.video || localTracks.video.muted ? (
+              <VideocamOffOutlinedIcon />
+            ) : (
+              <VideocamIcon />
+            )}
+          </Button>
+        </div>
       </Tooltip>
 
       <Tooltip title={!localTracks.audio || localTracks.audio.muted ? 'Unmute' : 'Mute'}>
-
-        <Button
-          size="large"
-          disabled={!localTracks.audio}
-          onClick={() => toggleMuteTrack(localTracks.audio)}
-        >
-          {!localTracks.audio || localTracks.audio.muted ? (
-            <MicOffOutlinedIcon />
-          ) : (
-            <MicIcon />
-          )}
-        </Button>
+        <div style={{ padding: '2px' }}>
+          <Button
+            size="large"
+            disabled={!localTracks.audio}
+            onClick={() => toggleMuteTrack(localTracks.audio)}
+          >
+            {!localTracks.audio || localTracks.audio.muted ? (
+              <MicOffOutlinedIcon />
+            ) : (
+              <MicIcon />
+            )}
+          </Button>
+        </div>
       </Tooltip>
 
-      <Tooltip title={!isSharingScreen ? '' : ''}>
-        <Button
-          size="large"
-          hover="onHoverTest"
-          onClick={() => shareScreen()}
-        >
-          {!isSharingScreen ? (
-            <ScreenShareIcon />
-          ) : (
-            <StopScreenShareIcon />
-          )}
-        </Button>
+      <Tooltip title={!isSharingScreen ? 'Share screen' : 'Stop sharing screen'}>
+        <div style={{ padding: '2px' }}>
+          <Button
+            size="large"
+            hover="onHoverTest"
+            onClick={() => shareScreen()}
+          >
+            {!isSharingScreen ? (
+              <ScreenShareIcon />
+            ) : (
+              <StopScreenShareIcon />
+            )}
+          </Button>
+        </div>
+      </Tooltip>
+      <Tooltip title="Leave room">
+        <div style={{ padding: '2px' }}>
+          <Button
+            size="large"
+            color="error"
+            onClick={endCall}
+          >
+            <CancelIcon />
+          </Button>
+        </div>
       </Tooltip>
 
-      <Button
-        size="large"
-        color="error"
-        onClick={endCall}
-      >
-        <CancelIcon />
-      </Button>
     </ButtonGroup>
   );
 }
