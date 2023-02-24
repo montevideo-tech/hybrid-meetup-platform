@@ -76,10 +76,8 @@ async function deleteSpace(supabaseClient, providerId) {
   });
 }
 
-async function getUsers(supabaseClient, body) {
-  let { providerId } = body;
-
-  const roomData = await supabaseClient.from('rooms-data').select('permissionId, emailId').eq('providerId', providerId);
+async function getUsers(supabaseClient, providerId) {
+  const roomData = await supabaseClient.from('rooms-data').select('permissionId, userEmail').eq('providerId', providerId);
   if (!roomData.data || (roomData.data?.length === 0))
     return returnError("No room with given data exists");
 
@@ -110,8 +108,11 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY');
     const supabaseClient = createClient(supabaseUrl, supabaseKey);
     if (req.method === 'GET') {
-      const body = await req.json();
-      return getUsers(supabaseClient, body);
+      const taskPattern = new URLPattern({ pathname: '/spaces/:id' })
+      const matchingPath = taskPattern.exec(url);
+      const providerId = matchingPath ? matchingPath.pathname.groups.id : null
+
+      return getUsers(supabaseClient, providerId);
     }
     if (req.method === 'DELETE') {
       const taskPattern = new URLPattern({ pathname: '/spaces/:id' })
