@@ -43,9 +43,7 @@ async function createSpace() {
     });
 }
 
-async function deleteSpace(supabaseClient, body) {
-  let { providerId } = body;
-
+async function deleteSpace(supabaseClient, providerId) {
   const roomData = await supabaseClient.from('rooms').select('providerId').eq('providerId', providerId);
   if (!roomData.data || (roomData.data?.length === 0))
     return returnError("No room with given data exists");
@@ -80,6 +78,7 @@ async function deleteSpace(supabaseClient, body) {
 
 serve(async (req) => {
   const { url, method } = req;
+  console.error(req.headers);
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
@@ -93,8 +92,12 @@ serve(async (req) => {
       const supabaseUrl = Deno.env.get('SUPABASE_URL');
       const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY');
       const supabaseClient = createClient(supabaseUrl, supabaseKey);
-      const body = await req.json();
-      return deleteSpace(supabaseClient, body);
+
+      const taskPattern = new URLPattern({ pathname: '/spaces/:id' })
+      const matchingPath = taskPattern.exec(url);
+
+      const providerId = matchingPath ? matchingPath.pathname.groups.id : null
+      return deleteSpace(supabaseClient, providerId);
     }
   } catch (error) {
     console.error("error");
