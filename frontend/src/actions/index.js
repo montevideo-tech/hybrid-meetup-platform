@@ -121,7 +121,7 @@ export const roomJWTprovider = async (
   try {
     const response = await mvdTech.post(
       '/room-jwtprovider',
-      JSON.stringify({ spaceId: roomId, participantId: `clarar@qualabs.com${Math.random()}` }),
+      JSON.stringify({ spaceId: roomId }),
       {
         headers: {
           Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
