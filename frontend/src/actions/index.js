@@ -27,6 +27,7 @@ export const signInWithEmail = (data, onSuccess = null, onError = null) => async
       login({
         email: response.data.data.user.email,
         token: response.data.data.session.access_token,
+        role: response.data.data.role,
       }),
     );
     onSuccess && onSuccess(response);
@@ -69,8 +70,25 @@ export const signUp = (data, onSuccess = null, onError = null) => async () => {
 export const createRoom = (onSuccess = null, onError = null) => async () => {
   try {
     const response = await mvdTech.post(
-      '/create-space',
+      '/spaces',
       JSON.stringify({}),
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
+      },
+    );
+    onSuccess && onSuccess(response);
+  } catch (error) {
+    onError && onError(error);
+  }
+};
+
+export const deleteRoom = (providerId, onSuccess = null, onError = null) => async () => {
+  try {
+    const response = await mvdTech.delete(
+      `/spaces/${providerId}`,
       {
         headers: {
           Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,

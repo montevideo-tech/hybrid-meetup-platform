@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import store from './store';
+import { store } from './store';
 import Root from './views/Root';
 import SignIn from './views/SignIn';
 import SignUp from './views/SignUp';
@@ -13,6 +13,7 @@ import ErrorPage from './views/errorPage';
 import RoomTest from './components/RoomTest';
 import Home from './views/Home';
 import RoomNotFound from './views/RoomNotFound';
+import EditRoom from './views/EditRoom';
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,11 @@ const router = createBrowserRouter([
       {
         path: '/rooms/:roomId',
         element: <Room />,
+        loader: roomLoader,
+      },
+      {
+        path: '/rooms/:roomId/edit',
+        element: <EditRoom />,
         loader: roomLoader,
       },
       {
