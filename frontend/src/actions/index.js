@@ -127,6 +127,7 @@ export const addRoomToDb = (data, onSuccess = null, onError = null) => async () 
 
 export const roomJWTprovider = async (
   roomId,
+  // isSharingScreen = false,
   onError = null,
   onSuccess = null,
   onNotFound = null,

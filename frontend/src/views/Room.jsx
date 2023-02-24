@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+/* eslint-disable no-undef */
 /* eslint-disable react/prop-types */
 /*
 This component assumes that it will be given a list of active participants that will
@@ -36,6 +38,9 @@ function Room() {
   const [localStream, setLocalStream] = useState();
   // this helps keep track of muting/unmuting with RoomControls
   const [localTracks, setLocalTracks] = useState({ video: null, audio: null });
+  const [isSharingScreen, setIsSharingScreen] = useState(false);
+  const [screenRoom, setScreenRoom] = useState();
+
   const [remoteStreams, setRemoteStreams] = useState([]);
   const [roomNotFound, setRoomNotFound] = useState(false);
   // const [participants, setParticipants] = useState([]);
@@ -169,14 +174,11 @@ function Room() {
         { constraints: { video: true, audio: true } },
       );
       const stream = new MediaStream();
-
       const newLocalTracks = { ...localTracks };
-
       tracks.forEach((track) => {
         stream.addTrack(track.mediaStreamTrack);
         newLocalTracks[track.kind] = track;
       });
-
       setLocalStream(stream);
       setLocalTracks(newLocalTracks);
       // setUserParticipant(newParticipant);
@@ -192,12 +194,41 @@ function Room() {
     setLocalTracks({ ...localTracks });
   };
 
+  const updateScreenShare = async () => {
+    // TODO add flag isSharingScreen
+    const JWT = await roomJWTprovider(roomId, null, null, () => { setRoomNotFound(true); });
+    const newScreenRoom = new WebRoom(JWT);
+    const newParticipant = await newScreenRoom.join();
+    setScreenRoom(newScreenRoom);
+    if (!isSharingScreen) {
+      const tracks = await newParticipant.startScreenShare();
+      const stream = new MediaStream();
+      const newLocalTracks = { ...localTracks };
+
+      tracks.forEach((track) => {
+        stream.addTrack(track.mediaStreamTrack);
+        newLocalTracks[track.kind] = track;
+      });
+      setLocalTracks({ ...localTracks });
+      // add listener on `Stop sharing` browser's button
+      stream.getVideoTracks()[0]
+        .addEventListener('ended', () => {
+          newScreenRoom.leave();
+        });
+    } else {
+      screenRoom.leave();
+    }
+
+    setIsSharingScreen(!isSharingScreen);
+  };
+
   const localStreamStyle = {
     width: '25vw',
     position: 'fixed',
     bottom: 0,
     right: 0,
   };
+
   return (
     <>
       {
@@ -233,6 +264,8 @@ function Room() {
       }
 
       <RoomControls
+        updateScreenShare={updateScreenShare}
+        isSharingScreen={isSharingScreen}
         localTracks={localTracks}
         updateLocalTracksMuted={updateLocalTracksMuted}
         leaveRoom={leaveRoom}

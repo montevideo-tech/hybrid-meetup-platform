@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 import EventEmitter from 'events';
 import {
-  Space, SubscriptionMode, getUserMedia, SpaceEvent, ParticipantEvent, TrackEvent,
+  Space, SubscriptionMode, getUserMedia, getDisplayMedia, SpaceEvent, ParticipantEvent, TrackEvent,
 } from '@mux/spaces-web';
 
 // TODO we should have a config somewhere which tells us what to use
@@ -90,6 +90,18 @@ export class LocalParticipant extends Participant {
     }
 
     const publishedTracks = await this.provider.publishTracks(tracksToPublish); // returns Mux Track
+    return publishedTracks.map((t) => new Track(t)); // wrap into our Track
+  }
+
+  async startScreenShare() {
+    const displayMediaOptions = {
+      video: {
+        cursor: 'always',
+      },
+      audio: false,
+    };
+    const screenStreams = await getDisplayMedia(displayMediaOptions);
+    const publishedTracks = await this.provider.publishTracks(screenStreams); // returns Mux Track
     return publishedTracks.map((t) => new Track(t)); // wrap into our Track
   }
 
