@@ -25,6 +25,7 @@ import Video from '../components/Video';
 
 import { Room as WebRoom } from '../lib/webrtc';
 import { roomJWTprovider, getUserRoleOnRoom } from '../actions';
+import store from '../store';
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -118,11 +119,10 @@ function Room() {
     const joinRoom = async () => {
       const JWT = await roomJWTprovider(roomId, null, null, () => { setRoomNotFound(true); });
       // TODO --------------------------------------------------------------------------------:
-      // get userId from storage
       // save userRole on storage
       // delete console log
-      const userId = '';
-      const userPermission = await getUserRoleOnRoom(userId, roomId);
+      const userEmail = store.getState().loggedUser.email;
+      const userPermission = await getUserRoleOnRoom(userEmail, roomId);
       const userRole = userPermission.permission;
       console.log(userRole);
       // TODO ---------------------------------------------------------------------------------
