@@ -5,14 +5,12 @@ import {
   List, ListItem, ListItemButton, ListItemText, Typography, IconButton,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { deleteRoom } from '../actions';
 
 function RoomsList(props) {
   const dispatch = useDispatch();
-  const currentUser = useSelector((state) => state.loggedUser);
   const { list } = props; // TODO use store
-  console.log(currentUser.email);
   return (
     list.length ? (
       <List>
