@@ -27,9 +27,8 @@ function Rooms() {
   const [showNameInput, setShowNameInput] = useState(false);
   const [newRoomName, setNewRoomName] = useState('');
   const [user, setUser] = useState(null);
-
   const dispatch = useDispatch();
-  const currentUser = useSelector((state) => state.loggedUser);
+  const currentUser = useSelector((state) => state.user);
 
   const onRoomCreated = async (data) => {
     const onSuccess = () => {
@@ -143,92 +142,98 @@ function Rooms() {
     getRoomsList();
   }, []);
 
+  const renderCreateRoomButton = () => (
+    showNameInput ? (
+      <Grid container spacing={1} sx={{ ml: 1, mt: 1, pr: 1 }}>
+        <Grid item xs={10}>
+          <TextField
+            variant="outlined"
+            label="Insert Room Name"
+            sx={{ width: 1 }}
+            value={newRoomName}
+            onChange={(e) => setNewRoomName(e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={1}>
+          <IconButton
+            color="primary"
+            aria-label="create a room"
+            size="large"
+            onClick={onSubmit}
+            disabled={loadingRooms || creatingRoom || !newRoomName}
+          >
+            <CheckIcon />
+          </IconButton>
+        </Grid>
+        <Grid item xs={1}>
+          <IconButton
+            aria-label="discard room name changes"
+            size="large"
+            onClick={() => {
+              setShowNameInput(false);
+              setNewRoomName('');
+            }}
+            disabled={loadingRooms || creatingRoom}
+          >
+            <CloseIcon />
+          </IconButton>
+        </Grid>
+      </Grid>
+    ) : (
+      <Button
+        variant="contained"
+        onClick={() => setShowNameInput(true)}
+        disabled={loadingRooms || creatingRoom}
+        sx={{
+          my: 2, ml: 1, width: 150, height: 40,
+        }}
+      >
+        {creatingRoom ? (
+          <CircularProgress size={20} />
+        ) : (
+          'Create Room'
+        )}
+      </Button>
+    )
+  );
+
   return (
     <Paper sx={{ m: 2, p: 2 }}>
       <Typography variant="h4" component="h1">
         Rooms
       </Typography>
 
-      {showNameInput ? (
-        <Grid container spacing={1} sx={{ ml: 1, mt: 1, pr: 1 }}>
-          <Grid item xs={10}>
-            <TextField
-              variant="outlined"
-              label="Insert Room Name"
-              sx={{ width: 1 }}
-              value={newRoomName}
-              onChange={(e) => setNewRoomName(e.target.value)}
-            />
-          </Grid>
-          <Grid item xs={1}>
-            <IconButton
-              color="primary"
-              aria-label="create a room"
-              size="large"
-              onClick={onSubmit}
-              disabled={loadingRooms || creatingRoom || !newRoomName}
-            >
-              <CheckIcon />
-            </IconButton>
-          </Grid>
-          <Grid item xs={1}>
-            <IconButton
-              aria-label="discard room name changes"
-              size="large"
-              onClick={() => {
-                setShowNameInput(false);
-                setNewRoomName('');
-              }}
-              disabled={loadingRooms || creatingRoom}
-            >
-              <CloseIcon />
-            </IconButton>
-          </Grid>
-        </Grid>
-      ) : (
-        <Button
-          variant="contained"
-          onClick={() => setShowNameInput(true)}
-          disabled={loadingRooms || creatingRoom}
-          sx={{
-            my: 2, ml: 1, width: 150, height: 40,
-          }}
-        >
-          {creatingRoom ? (
-            <CircularProgress size={20} />
-          ) : (
-            'Create Room'
-          )}
-        </Button>
-      )}
+      {user?.role === 'admin' && renderCreateRoomButton()}
 
-      {loadingRooms ? (
-        <>
-          <Skeleton
-            width="60%"
-            variant="text"
-            animation="wave"
-            height={50}
-            sx={{ ml: 1 }}
-          />
-          <Skeleton
-            width="40%"
-            variant="text"
-            animation="wave"
-            height={50}
-            sx={{ ml: 1 }}
-          />
-          <Skeleton
-            width="30%"
-            variant="text"
-            animation="wave"
-            height={50}
-            sx={{ ml: 1 }}
-          />
-        </>
-      ) : (
-        <RoomsList list={roomsList} />
-      )}
+      {
+        loadingRooms ? (
+          <>
+            <Skeleton
+              width="60%"
+              variant="text"
+              animation="wave"
+              height={50}
+              sx={{ ml: 1 }}
+            />
+            <Skeleton
+              width="40%"
+              variant="text"
+              animation="wave"
+              height={50}
+              sx={{ ml: 1 }}
+            />
+            <Skeleton
+              width="30%"
+              variant="text"
+              animation="wave"
+              height={50}
+              sx={{ ml: 1 }}
+            />
+          </>
+        ) : (
+          <RoomsList list={roomsList} />
+        )
+      }
     </Paper>
   );
 }

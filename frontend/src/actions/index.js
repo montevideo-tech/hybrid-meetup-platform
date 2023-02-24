@@ -27,6 +27,7 @@ export const signInWithEmail = (data, onSuccess = null, onError = null) => async
       login({
         email: response.data.data.user.email,
         token: response.data.data.session.access_token,
+        role: response.data.data.role,
       }),
     );
     onSuccess && onSuccess(response);
