@@ -11,7 +11,7 @@ interface RoomsEntry {
   createdAt: string
   providerId: string
   name: string
-  creatorId: number
+  creatorEmail: string
 }
 
 function insertEntry(supabaseClient: SupabaseClient, table: string, payload: any) {
@@ -45,7 +45,7 @@ function insertEntry(supabaseClient: SupabaseClient, table: string, payload: any
 }
 
 async function insertRoomsEntry(supabaseClient: SupabaseClient, entry: RoomsEntry) {
-  const { name, providerId, creatorId } = entry;
+  const { name, providerId, creatorEmail } = entry;
   if (!name || !providerId) {
     return new Response(JSON.stringify(new Error('Missing room name or ID')), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -57,9 +57,9 @@ async function insertRoomsEntry(supabaseClient: SupabaseClient, entry: RoomsEntr
     .from('rooms')
     .insert({
       // createdAt: entry.createdAt, // provided by supabase on creation
-      providerId: providerId,
-      name: name,
-      creatorId: creatorId,
+      providerId,
+      name,
+      creatorEmail
     })
     .select();
 

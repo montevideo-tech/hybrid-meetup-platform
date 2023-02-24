@@ -14,8 +14,7 @@ import {
   Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { useDispatch } from 'react-redux';
-
+import { useDispatch, useSelector } from 'react-redux';
 import { supabase } from '../lib/api';
 import { createRoom, addRoomToDb } from '../actions';
 
@@ -27,9 +26,10 @@ function Rooms() {
   const [creatingRoom, setCreatingRoom] = useState(false);
   const [showNameInput, setShowNameInput] = useState(false);
   const [newRoomName, setNewRoomName] = useState('');
-  const [currUserId, setCurrUserId] = useState();
+  const [user, setUser] = useState(null);
 
   const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.loggedUser);
 
   const onRoomCreated = async (data) => {
     const onSuccess = () => {
@@ -65,7 +65,7 @@ function Rooms() {
           ...data,
           name: newRoomName,
           providerId: data.id,
-          creatorId: currUserId,
+          creatorEmail: user.email,
         },
       );
     };
@@ -99,19 +99,8 @@ function Rooms() {
   };
 
   useEffect(() => {
-    // TODO might want to get the signed in user when the app loads
-    // and keep it in store
-    const fetchUser = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        // console.log('user', user);
-        setCurrUserId(user?.id);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchUser();
-  }, []);
+    setUser(currentUser);
+  }, [currentUser]);
 
   useEffect(() => {
     const getRoomsList = async () => {
