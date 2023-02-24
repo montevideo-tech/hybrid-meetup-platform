@@ -158,3 +158,37 @@ export const roomJWTprovider = async (
     }
   }
 };
+
+export const getUserRoleOnRoom = async (
+  userEmail,
+  providerId,
+  onError = null,
+  onSuccess = null,
+  onNotFound = null,
+) => {
+  if (!userEmail || !providerId) {
+    onError && onError('Internal error: missing roomId or userEmail');
+    return;
+  }
+  try {
+    const response = await mvdTech.post(
+      '/get-room-permission',
+      JSON.stringify({ userEmail, providerId }),
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
+      },
+    );
+    onSuccess && onSuccess(response);
+    /* eslint-disable consistent-return */
+    return response.data;
+  } catch (error) {
+    if (error.response.status === 404) {
+      onNotFound && onNotFound();
+    } else if (error.response.status !== 200) {
+      onError && onError(error);
+    }
+  }
+};
