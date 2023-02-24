@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 
-import { ButtonGroup, Button } from '@mui/material';
+import { ButtonGroup, Button, Tooltip } from '@mui/material';
 import {
   Videocam as VideocamIcon,
   VideocamOffOutlined as VideocamOffOutlinedIcon,
@@ -49,39 +49,49 @@ function RoomControls(props) {
         position: 'fixed', bottom: 0, left: 'calc(50% - 103px)',
       }}
     >
-      <Button
-        size="large"
-        disabled={!localTracks.video}
-        onClick={() => toggleMuteTrack(localTracks.video)}
-      >
-        {!localTracks.video || localTracks.video.muted ? (
-          <VideocamOffOutlinedIcon />
-        ) : (
-          <VideocamIcon />
-        )}
-      </Button>
-      <Button
-        size="large"
-        disabled={!localTracks.audio}
-        onClick={() => toggleMuteTrack(localTracks.audio)}
-      >
-        {!localTracks.audio || localTracks.audio.muted ? (
-          <MicOffOutlinedIcon />
-        ) : (
-          <MicIcon />
-        )}
-      </Button>
+      <Tooltip title={!localTracks.video || localTracks.video.muted ? '' : ''}>
 
-      <Button
-        size="large"
-        onClick={() => shareScreen()}
-      >
-        {!isSharingScreen ? (
-          <ScreenShareIcon />
-        ) : (
-          <StopScreenShareIcon />
-        )}
-      </Button>
+        <Button
+          size="large"
+          disabled={!localTracks.video}
+          onClick={() => toggleMuteTrack(localTracks.video)}
+        >
+          {!localTracks.video || localTracks.video.muted ? (
+            <VideocamOffOutlinedIcon />
+          ) : (
+            <VideocamIcon />
+          )}
+        </Button>
+      </Tooltip>
+
+      <Tooltip title={!localTracks.audio || localTracks.audio.muted ? 'Unmute' : 'Mute'}>
+
+        <Button
+          size="large"
+          disabled={!localTracks.audio}
+          onClick={() => toggleMuteTrack(localTracks.audio)}
+        >
+          {!localTracks.audio || localTracks.audio.muted ? (
+            <MicOffOutlinedIcon />
+          ) : (
+            <MicIcon />
+          )}
+        </Button>
+      </Tooltip>
+
+      <Tooltip title={!isSharingScreen ? '' : ''}>
+        <Button
+          size="large"
+          hover="onHoverTest"
+          onClick={() => shareScreen()}
+        >
+          {!isSharingScreen ? (
+            <ScreenShareIcon />
+          ) : (
+            <StopScreenShareIcon />
+          )}
+        </Button>
+      </Tooltip>
 
       <Button
         size="large"
