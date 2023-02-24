@@ -14,25 +14,6 @@ async function returnError(msgError: string) {
   });
 }
 
-async function getUsers(supabaseClient, body) {
-  let { providerId } = body;
-
-  const roomData = await supabaseClient.from('rooms-data').select('permissionId, userId').eq('providerId', providerId);
-  if (!roomData.data || (roomData.data?.length === 0))
-    return returnError("No room with given data exists");
-
-  return new Response(JSON.stringify({
-    roomData: roomData.data,
-  }), {
-    headers: {
-      ...corsHeaders,
-      'Content-Type': 'application/json'
-    },
-    status: 200
-  });
-
-}
-
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', {
@@ -44,9 +25,7 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY');
     const supabaseClient = createClient(supabaseUrl, supabaseKey);
-    const body = await req.json();
 
-    return getUsers(supabaseClient, body);
   } catch (error) {
     return new Response(JSON.stringify({
       error,

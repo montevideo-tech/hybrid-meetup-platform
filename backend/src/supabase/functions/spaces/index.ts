@@ -2,7 +2,7 @@ import { serve } from 'https://deno.land/std@0.131.0/http/server.ts';
 import { corsHeaders } from '../_shared/cors.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-async function returnError(msgError: string){
+async function returnError(msgError: string) {
   return new Response(JSON.stringify({
     error: msgError
   }), {
@@ -21,26 +21,26 @@ async function createSpace() {
   const key = `Basic ${muxCredentials}`;
 
   const response = await fetch('https://api.mux.com/video/v1/spaces', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: key
-      },
-      body: JSON.stringify({})
-    });
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: key
+    },
+    body: JSON.stringify({})
+  });
 
-    const {data, errors} = await response.json();
+  const { data, errors } = await response.json();
 
-    if(data)
-      return new Response(JSON.stringify({ data }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
-      });
-
-    return new Response(JSON.stringify({ errors }), {
+  if (data)
+    return new Response(JSON.stringify({ data }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 400,
+      status: 200,
     });
+
+  return new Response(JSON.stringify({ errors }), {
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    status: 400,
+  });
 }
 
 async function deleteSpace(supabaseClient, providerId) {
@@ -54,14 +54,14 @@ async function deleteSpace(supabaseClient, providerId) {
   const key = `Basic ${muxCredentials}`;
 
   const response = await fetch(`https://api.mux.com/video/v1/spaces/${providerId}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: key
-      },
-    });
-  
-  if(response.status < 300 && response.status > 199){
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: key
+    },
+  });
+
+  if (response.status < 300 && response.status > 199) {
     await supabaseClient.from('rooms-data').delete().match({ providerId });
     await supabaseClient.from('rooms').delete().match({ providerId });
     return new Response(JSON.stringify({ status: "OK" }), {
@@ -76,6 +76,25 @@ async function deleteSpace(supabaseClient, providerId) {
   });
 }
 
+async function getUsers(supabaseClient, body) {
+  let { providerId } = body;
+
+  const roomData = await supabaseClient.from('rooms-data').select('permissionId, emailId').eq('providerId', providerId);
+  if (!roomData.data || (roomData.data?.length === 0))
+    return returnError("No room with given data exists");
+
+  return new Response(JSON.stringify({
+    roomData: roomData.data,
+  }), {
+    headers: {
+      ...corsHeaders,
+      'Content-Type': 'application/json'
+    },
+    status: 200
+  });
+
+}
+
 serve(async (req) => {
   const { url, method } = req;
   console.error(req.headers);
@@ -87,12 +106,14 @@ serve(async (req) => {
     if (req.method === 'POST') {
       return createSpace();
     }
-
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY');
+    const supabaseClient = createClient(supabaseUrl, supabaseKey);
+    if (req.method === 'GET') {
+      const body = await req.json();
+      return getUsers(supabaseClient, body);
+    }
     if (req.method === 'DELETE') {
-      const supabaseUrl = Deno.env.get('SUPABASE_URL');
-      const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY');
-      const supabaseClient = createClient(supabaseUrl, supabaseKey);
-
       const taskPattern = new URLPattern({ pathname: '/spaces/:id' })
       const matchingPath = taskPattern.exec(url);
 
