@@ -87,8 +87,7 @@ export const createRoom = (onSuccess = null, onError = null) => async () => {
 export const deleteRoom = (providerId, onSuccess = null, onError = null) => async () => {
   try {
     const response = await mvdTech.delete(
-      '/spaces',
-      JSON.stringify({ providerId }),
+      `/spaces/${providerId}`,
       {
         headers: {
           Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
