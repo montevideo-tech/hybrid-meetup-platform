@@ -9,7 +9,6 @@ import {
   MicOffOutlined as MicOffOutlinedIcon,
 } from '@mui/icons-material';
 
-// import { red, green } from '@mui/material/colors';
 import logo from '../assets/MVDTSC.png';
 
 function Video(props) {
