@@ -145,6 +145,7 @@ export const roomJWTprovider = async (
 
 export const getRoomPermissions = async (
   roomId,
+  userEmail = null,
   onError = null,
   onSuccess = null,
 ) => {
@@ -155,7 +156,7 @@ export const getRoomPermissions = async (
   try {
     const response = await mvdTech.post(
       '/get-room-permission',
-      JSON.stringify({ providerId: roomId }),
+      JSON.stringify({ providerId: roomId, userEmail }),
       {
         headers: {
           Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,

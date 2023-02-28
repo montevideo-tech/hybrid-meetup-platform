@@ -112,10 +112,11 @@ function Room() {
 
   const handleRoleChange = (payload) => {
     if (payload.eventType === 'INSERT') {
-      const { id, userEmail, permissionId } = payload.new;
+      const { id, userEmail } = payload;
+      const permission = payload['rooms-permission'].name;
       dispatch(addUpdateParticipant({
         name: userEmail,
-        role: permissionId === 1 ? ROLES.HOST : ROLES.PRESENTER,
+        role: permission,
         id,
       }));
     }
@@ -132,7 +133,7 @@ function Room() {
       const initialParticipantRoles = await getRoomPermissions(roomId);
       initialParticipantRoles.map((part) => dispatch(addUpdateParticipant({
         name: part.userEmail,
-        role: part.permissionId === 1 ? ROLES.HOST : ROLES.PRESENTER,
+        role: part['rooms-permission'].name,
         id: part.id,
       })));
     };
@@ -145,10 +146,10 @@ function Room() {
         // Add remote participants to participants list.
         dispatch(addUpdateParticipant({
           name: rp.id,
-          role: ROLES.GUEST,
         }));
-      }));
-      updateParticipantRoles();
+      })).then(() => {
+        updateParticipantRoles();
+      });
     };
     const joinRoom = async () => {
       const JWT = await roomJWTprovider(
@@ -197,12 +198,19 @@ function Room() {
         });
       });
 
-      newRoom.on('ParticipantJoined', (p) => {
+      newRoom.on('ParticipantJoined', async (p) => {
         // console.log('someone joined', p);
         p.subscribe();
-        const participantData = { name: p.displayName, role: ROLES.GUEST };
-        dispatch(addUpdateParticipant(participantData));
+        const participantData = await getRoomPermissions(roomId, p.displayName);
+        if (participantData.length > 0) {
+          dispatch(addUpdateParticipant({
+            name: participantData[0].userEmail,
+            role: participantData[0]['rooms-permission'].name,
+            id: participantData[0].id,
+          }));
+        } else { dispatch(addUpdateParticipant({ name: p.displayName, role: ROLES.GUEST })); }
       });
+
       newRoom.on('ParticipantLeft', (p) => {
         // console.log('someone left', p);
         remoteStreamsRef.current.delete(p.id);
@@ -232,7 +240,6 @@ function Room() {
     dispatch(initRoom({
       id: roomId,
       participants: [{ name: currentUser.email, role: ROLES.GUEST }],
-      roles: [],
     }));
     return () => {
       dispatch(cleanRoom());

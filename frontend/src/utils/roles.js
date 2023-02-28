@@ -17,7 +17,20 @@ const subscribeToRoleChanges = (roomId, handleRoleChange) => {
         table: 'rooms-data',
         filter: `providerId=eq.${roomId}`,
       },
-      (payload) => handleRoleChange(payload),
+      async (payload) => {
+        const data = await supabase
+          .from('rooms-data')
+          .select(`
+            id,
+            providerId,
+            rooms-permission(name),
+            userEmail)
+          `)
+          .eq('id', payload.new.id);
+        const newPermission = data.data[0];
+        newPermission.eventType = 'INSERT';
+        handleRoleChange(newPermission);
+      },
     )
     .on(
       'postgres_changes',

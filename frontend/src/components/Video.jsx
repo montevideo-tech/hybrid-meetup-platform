@@ -55,7 +55,7 @@ function Video(props) {
       >
         <track kind="captions" />
       </video>
-      {!name && (
+      {name && (
       <Typography variant="overline" display="block" gutterBottom>
         {name}
       </Typography>

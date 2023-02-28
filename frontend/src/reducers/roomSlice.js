@@ -12,7 +12,6 @@ export const roomSlice = createSlice({
     initRoom: (state, action) => {
       state.id = action.payload.id;
       state.participants = action.payload.participants;
-      state.roles = action.payload.roles;
     },
     updateParticipants: (state, action) => {
       state.participants = action.payload.participants;
