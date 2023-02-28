@@ -9,6 +9,7 @@ import {
   MicOffOutlined as MicOffOutlinedIcon,
 } from '@mui/icons-material';
 
+// import { red, green } from '@mui/material/colors';
 import logo from '../assets/MVDTSC.png';
 
 function Video(props) {
@@ -33,7 +34,14 @@ function Video(props) {
   }, [stream]);
 
   return (
-    <Box sx={{ position: 'relative' }}>
+    <Box
+      sx={{
+        position: 'relative',
+        border: `${isSpeaking ? '5px solid red' : '2px solid black'}`,
+        borderRadius: '10px',
+        overflow: 'hidden',
+      }}
+    >
       {isVideoMuted && (
         <img
           src={logo}

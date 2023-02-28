@@ -135,7 +135,7 @@ function Room() {
           stream.addTrack(track.mediaStreamTrack);
           remoteStreamsRef.current.set(
             remoteParticipant.id,
-            { stream, [`${track.kind}Muted`]: track.muted },
+            { stream, [`${track.kind}Muted`]: track.muted, speaking: false },
           );
         }
         setRemoteStreamsRef(remoteStreamsRef.current);
@@ -156,6 +156,16 @@ function Room() {
       newRoom.on('ParticipantJoined', (p) => {
         // console.log('someone joined', p);
         p.subscribe();
+        p.on('StartedSpeaking', () => {
+          const streamData = remoteStreamsRef.current.get(p.id);
+          streamData.speaking = true;
+          setRemoteStreamsRef(remoteStreamsRef.current);
+        });
+        p.on('StoppedSpeaking', () => {
+          const streamData = remoteStreamsRef.current.get(p.id);
+          streamData.speaking = false;
+          setRemoteStreamsRef(remoteStreamsRef.current);
+        });
       });
       newRoom.on('ParticipantLeft', (p) => {
         // console.log('someone left', p);
@@ -209,13 +219,19 @@ function Room() {
           <Box style={{ position: 'relative' }}>
             <Grid sx={{ width: '65vw', height: '60vh' }} container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center">
               {
-                remoteStreams.map(({ stream, audioMuted, videoMuted }) => (
+                remoteStreams.map(({
+                  stream,
+                  audioMuted,
+                  videoMuted,
+                  speaking,
+                }) => (
                   <Grid item xs={1} sm={1} md={1} key={stream.id}>
                     <Box>
                       <Video
                         stream={stream}
                         isAudioMuted={audioMuted || false}
                         isVideoMuted={videoMuted || false}
+                        isSpeaking={speaking || false}
                       />
                     </Box>
                   </Grid>

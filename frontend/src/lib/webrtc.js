@@ -173,6 +173,11 @@ export class Room extends EventEmitter {
       SpaceEvent.ParticipantTrackSubscribed,
       (p, t) => this.emit('ParticipantTrackSubscribed', new RemoteParticipant(p), new Track(t)),
     );
+    // GQ
+    // this.provider.on(
+    //   SpaceEvent.ActiveSpeakersChanged,
+    //   (p) => console.log('ActiveSpeakersChanged', p),
+    // );
   }
 
   /**
