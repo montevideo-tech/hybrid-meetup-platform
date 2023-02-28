@@ -14,8 +14,7 @@ import {
   Close as CloseIcon,
 } from '@mui/icons-material';
 
-import { useDispatch } from 'react-redux';
-
+import { useDispatch, useSelector } from 'react-redux';
 import { supabase } from '../lib/api';
 import { createRoom, addRoomToDb } from '../actions';
 
@@ -27,9 +26,9 @@ function Rooms() {
   const [creatingRoom, setCreatingRoom] = useState(false);
   const [showNameInput, setShowNameInput] = useState(false);
   const [newRoomName, setNewRoomName] = useState('');
-  const [currUserId, setCurrUserId] = useState();
-
+  const [user, setUser] = useState(null);
   const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.user);
 
   const onRoomCreated = async (data) => {
     const onSuccess = () => {
@@ -65,7 +64,7 @@ function Rooms() {
           ...data,
           name: newRoomName,
           providerId: data.id,
-          creatorId: currUserId,
+          creatorEmail: user.email,
         },
       );
     };
@@ -99,19 +98,8 @@ function Rooms() {
   };
 
   useEffect(() => {
-    // TODO might want to get the signed in user when the app loads
-    // and keep it in store
-    const fetchUser = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        // console.log('user', user);
-        setCurrUserId(user?.id);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchUser();
-  }, []);
+    setUser(currentUser);
+  }, [currentUser]);
 
   useEffect(() => {
     const getRoomsList = async () => {
@@ -154,92 +142,98 @@ function Rooms() {
     getRoomsList();
   }, []);
 
+  const renderCreateRoomButton = () => (
+    showNameInput ? (
+      <Grid container spacing={1} sx={{ ml: 1, mt: 1, pr: 1 }}>
+        <Grid item xs={10}>
+          <TextField
+            variant="outlined"
+            label="Insert Room Name"
+            sx={{ width: 1 }}
+            value={newRoomName}
+            onChange={(e) => setNewRoomName(e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={1}>
+          <IconButton
+            color="primary"
+            aria-label="create a room"
+            size="large"
+            onClick={onSubmit}
+            disabled={loadingRooms || creatingRoom || !newRoomName}
+          >
+            <CheckIcon />
+          </IconButton>
+        </Grid>
+        <Grid item xs={1}>
+          <IconButton
+            aria-label="discard room name changes"
+            size="large"
+            onClick={() => {
+              setShowNameInput(false);
+              setNewRoomName('');
+            }}
+            disabled={loadingRooms || creatingRoom}
+          >
+            <CloseIcon />
+          </IconButton>
+        </Grid>
+      </Grid>
+    ) : (
+      <Button
+        variant="contained"
+        onClick={() => setShowNameInput(true)}
+        disabled={loadingRooms || creatingRoom}
+        sx={{
+          my: 2, ml: 1, width: 150, height: 40,
+        }}
+      >
+        {creatingRoom ? (
+          <CircularProgress size={20} />
+        ) : (
+          'Create Room'
+        )}
+      </Button>
+    )
+  );
+
   return (
     <Paper sx={{ m: 2, p: 2 }}>
       <Typography variant="h4" component="h1">
         Rooms
       </Typography>
 
-      {showNameInput ? (
-        <Grid container spacing={1} sx={{ ml: 1, mt: 1, pr: 1 }}>
-          <Grid item xs={10}>
-            <TextField
-              variant="outlined"
-              label="Insert Room Name"
-              sx={{ width: 1 }}
-              value={newRoomName}
-              onChange={(e) => setNewRoomName(e.target.value)}
-            />
-          </Grid>
-          <Grid item xs={1}>
-            <IconButton
-              color="primary"
-              aria-label="create a room"
-              size="large"
-              onClick={onSubmit}
-              disabled={loadingRooms || creatingRoom || !newRoomName}
-            >
-              <CheckIcon />
-            </IconButton>
-          </Grid>
-          <Grid item xs={1}>
-            <IconButton
-              aria-label="discard room name changes"
-              size="large"
-              onClick={() => {
-                setShowNameInput(false);
-                setNewRoomName('');
-              }}
-              disabled={loadingRooms || creatingRoom}
-            >
-              <CloseIcon />
-            </IconButton>
-          </Grid>
-        </Grid>
-      ) : (
-        <Button
-          variant="contained"
-          onClick={() => setShowNameInput(true)}
-          disabled={loadingRooms || creatingRoom}
-          sx={{
-            my: 2, ml: 1, width: 150, height: 40,
-          }}
-        >
-          {creatingRoom ? (
-            <CircularProgress size={20} />
-          ) : (
-            'Create Room'
-          )}
-        </Button>
-      )}
+      {user?.role === 'admin' && renderCreateRoomButton()}
 
-      {loadingRooms ? (
-        <>
-          <Skeleton
-            width="60%"
-            variant="text"
-            animation="wave"
-            height={50}
-            sx={{ ml: 1 }}
-          />
-          <Skeleton
-            width="40%"
-            variant="text"
-            animation="wave"
-            height={50}
-            sx={{ ml: 1 }}
-          />
-          <Skeleton
-            width="30%"
-            variant="text"
-            animation="wave"
-            height={50}
-            sx={{ ml: 1 }}
-          />
-        </>
-      ) : (
-        <RoomsList list={roomsList} />
-      )}
+      {
+        loadingRooms ? (
+          <>
+            <Skeleton
+              width="60%"
+              variant="text"
+              animation="wave"
+              height={50}
+              sx={{ ml: 1 }}
+            />
+            <Skeleton
+              width="40%"
+              variant="text"
+              animation="wave"
+              height={50}
+              sx={{ ml: 1 }}
+            />
+            <Skeleton
+              width="30%"
+              variant="text"
+              animation="wave"
+              height={50}
+              sx={{ ml: 1 }}
+            />
+          </>
+        ) : (
+          <RoomsList list={roomsList} />
+        )
+      }
     </Paper>
   );
 }

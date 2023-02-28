@@ -1,14 +1,16 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
-
 import {
-  List, ListItem, ListItemButton, ListItemText, Typography,
+  List, ListItem, ListItemButton, ListItemText, Typography, IconButton,
 } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { useDispatch } from 'react-redux';
+import { deleteRoom } from '../actions';
 
 function RoomsList(props) {
+  const dispatch = useDispatch();
   const { list } = props; // TODO use store
-
   return (
     list.length ? (
       <List>
@@ -41,6 +43,9 @@ function RoomsList(props) {
               <ListItemButton component={RouterLink} to={`/rooms/${room.providerId}`}>
                 <ListItemText primary={room.name} secondary={createdByStr} />
               </ListItemButton>
+              <IconButton aria-label="delete" size="large" onClick={() => dispatch(deleteRoom(room.providerId))}>
+                <DeleteIcon fontSize="inherit" />
+              </IconButton>
             </ListItem>
           );
         })}

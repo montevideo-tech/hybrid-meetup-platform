@@ -1,4 +1,6 @@
 /* eslint-disable no-param-reassign */
+/* eslint-disable max-len */
+/* eslint-disable no-undef */
 /* eslint-disable react/prop-types */
 /*
 This component assumes that it will be given a list of active participants that will
@@ -43,6 +45,9 @@ function Room() {
   const [localStream, setLocalStream] = useState();
   // this helps keep track of muting/unmuting with RoomControls
   const [localTracks, setLocalTracks] = useState({ video: null, audio: null });
+  const [isSharingScreen, setIsSharingScreen] = useState(false);
+  const [screenRoom, setScreenRoom] = useState();
+
   const [remoteStreams, setRemoteStreams] = useState([]);
   const [roomNotFound, setRoomNotFound] = useState(false);
   const roomId = useLoaderData();
@@ -50,7 +55,7 @@ function Room() {
   // create reference to access room state var in useEffect cleanup func
   const roomRef = useRef();
   const remoteStreamsRef = useRef(new Map());
-  const currentUser = useSelector((state) => state.loggedUser);
+  const currentUser = useSelector((state) => state.user);
   const roomData = useSelector((state) => state.room);
   const dispatch = useDispatch();
 
@@ -142,11 +147,12 @@ function Room() {
       const { remoteParticipants } = r;
       const rps = Array.from(remoteParticipants.values());
       await Promise.all(rps.map(async (rp) => {
-        await rp.subscribe();
-        // Add remote participants to participants list.
         dispatch(addUpdateParticipant({
           name: rp.id,
+          role: ROLES.GUEST,
         }));
+        rp.subscribe();
+        // Add remote participants to participants list.
       })).then(() => {
         updateParticipantRoles();
       });
@@ -161,6 +167,11 @@ function Room() {
       );
       const newRoom = new WebRoom(JWT);
       const newParticipant = await newRoom.join();
+
+      dispatch(initRoom({
+        id: roomId,
+        participants: [{ name: currentUser.email, role: ROLES.GUEST }],
+      }));
 
       // participantsRef.current = [...participantsRef.current,
       //   { name: currentUser.email, role: ROLES.GUEST }];
@@ -223,9 +234,7 @@ function Room() {
         { constraints: { video: true, audio: true } },
       );
       const stream = new MediaStream();
-
       const newLocalTracks = { ...localTracks };
-
       tracks.forEach((track) => {
         stream.addTrack(track.mediaStreamTrack);
         newLocalTracks[track.kind] = track;
@@ -237,10 +246,6 @@ function Room() {
       subscribeToRoleChanges(roomId, handleRoleChange);
     };
     joinRoom();
-    dispatch(initRoom({
-      id: roomId,
-      participants: [{ name: currentUser.email, role: ROLES.GUEST }],
-    }));
     return () => {
       dispatch(cleanRoom());
       leaveRoom();
@@ -253,6 +258,34 @@ function Room() {
     setLocalTracks({ ...localTracks });
   };
 
+  const updateScreenShare = async () => {
+    // TODO add flag isSharingScreen
+    const JWT = await roomJWTprovider(roomId, null, null, () => { setRoomNotFound(true); });
+    const newScreenRoom = new WebRoom(JWT);
+    const newParticipant = await newScreenRoom.join();
+    setScreenRoom(newScreenRoom);
+    if (!isSharingScreen) {
+      const tracks = await newParticipant.startScreenShare();
+      const stream = new MediaStream();
+      const newLocalTracks = { ...localTracks };
+
+      tracks.forEach((track) => {
+        stream.addTrack(track.mediaStreamTrack);
+        newLocalTracks[track.kind] = track;
+      });
+      setLocalTracks({ ...localTracks });
+      // add listener on `Stop sharing` browser's button
+      stream.getVideoTracks()[0]
+        .addEventListener('ended', () => {
+          newScreenRoom.leave();
+        });
+    } else {
+      screenRoom.leave();
+    }
+
+    setIsSharingScreen(!isSharingScreen);
+  };
+
   const localStreamStyle = {
     width: '25vw',
     position: 'fixed',
@@ -261,6 +294,7 @@ function Room() {
     marginLeft: '2vw',
     marginRight: '2vw',
   };
+
   return (
     <>
       {
@@ -313,6 +347,8 @@ function Room() {
       }
 
       <RoomControls
+        updateScreenShare={updateScreenShare}
+        isSharingScreen={isSharingScreen}
         localTracks={localTracks}
         updateLocalTracksMuted={updateLocalTracksMuted}
         leaveRoom={leaveRoom}
