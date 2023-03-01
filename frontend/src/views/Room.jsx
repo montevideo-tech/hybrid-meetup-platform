@@ -260,11 +260,11 @@ function Room() {
 
   const updateScreenShare = async () => {
     // TODO add flag isSharingScreen
-    const JWT = await roomJWTprovider(roomId, null, null, () => { setRoomNotFound(true); });
-    const newScreenRoom = new WebRoom(JWT);
-    const newParticipant = await newScreenRoom.join();
-    setScreenRoom(newScreenRoom);
     if (!isSharingScreen) {
+      const JWT = await roomJWTprovider(roomId, `${currentUser.email}-screen-share`, null, null, () => { setRoomNotFound(true); });
+      const newScreenRoom = new WebRoom(JWT);
+      const newParticipant = await newScreenRoom.join();
+      setScreenRoom(newScreenRoom);
       const tracks = await newParticipant.startScreenShare();
       const stream = new MediaStream();
       const newLocalTracks = { ...localTracks };
