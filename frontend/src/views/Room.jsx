@@ -153,9 +153,9 @@ function Room() {
         }));
         rp.subscribe();
         // Add remote participants to participants list.
-      })).then(() => {
-        updateParticipantRoles();
-      });
+      }));
+
+      updateParticipantRoles();
     };
     const joinRoom = async () => {
       const JWT = await roomJWTprovider(
