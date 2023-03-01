@@ -156,7 +156,42 @@ export const roomJWTprovider = async (
     if (error.response.status === 404) {
       onNotFound && onNotFound();
     } else if (error.response.status !== 200) {
-      throw new Error(`unexpected ${error.response.status} response`);
+      onError && onError(error);
+    }
+  }
+};
+
+export const giveUserRoleOnRoom = async (
+  email,
+  roomId,
+  roleToAdd,
+  onError = null,
+  onSuccess = null,
+  onNotFound = null,
+) => {
+  if (!email || !roomId || !roleToAdd) {
+    onError && onError('Internal error: missing data');
+    return;
+  }
+  try {
+    const response = await mvdTech.post(
+      '/give-rooms-permission',
+      JSON.stringify({ userEmail: email, providerId: roomId, permission: roleToAdd }),
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
+      },
+    );
+    onSuccess && onSuccess(response);
+    /* eslint-disable consistent-return */
+    return response.data;
+  } catch (error) {
+    if (error.response.status === 404) {
+      onNotFound && onNotFound();
+    } else if (error.response.status !== 200) {
+      onError && onError(error);
     }
   }
 };
