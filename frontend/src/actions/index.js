@@ -1,5 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable import/prefer-default-export */
+/* eslint-disable consistent-return */
+
 import mvdTech from '../lib/api';
 import { login } from '../reducers/userSlice';
 
@@ -127,19 +129,19 @@ export const addRoomToDb = (data, onSuccess = null, onError = null) => async () 
 
 export const roomJWTprovider = async (
   roomId,
-  // isSharingScreen = false,
+  participantId,
   onError = null,
   onSuccess = null,
   onNotFound = null,
 ) => {
-  if (!roomId) {
-    onError && onError('Internal error: missing roomId');
+  if (!roomId || !participantId) {
+    onError && onError(`Internal error: missing ${!roomId && 'roomId'} ${!participantId && 'participantId'}`);
     return;
   }
   try {
     const response = await mvdTech.post(
       '/room-jwtprovider',
-      JSON.stringify({ spaceId: roomId }),
+      JSON.stringify({ spaceId: roomId, participantId }),
       {
         headers: {
           Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
@@ -191,5 +193,34 @@ export const giveUserRoleOnRoom = async (
     } else if (error.response.status !== 200) {
       onError && onError(error);
     }
+  }
+};
+
+export const getRoomPermissions = async (
+  roomId,
+  userEmail = null,
+  onError = null,
+  onSuccess = null,
+) => {
+  if (!roomId) {
+    onError && onError('Internal error: missing roomId');
+    return;
+  }
+  try {
+    const response = await mvdTech.post(
+      '/get-room-permission',
+      JSON.stringify({ providerId: roomId, userEmail }),
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
+      },
+    );
+    onSuccess && onSuccess(response);
+    return response.data.roomsData.data;
+  } catch (error) {
+    onError && onError(error);
+    throw new Error(`unexpected ${error.response.status} response`);
   }
 };

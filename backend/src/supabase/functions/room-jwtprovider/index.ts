@@ -1,9 +1,13 @@
 import { serve } from 'https://deno.land/std@0.131.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { corsHeaders } from '../_shared/cors.ts';
-import Mux from "https://esm.sh/v106/@mux/mux-node@7.0.0/es2022/mux-node.js";
-async function generateToken(supabaseClient, spaceId) {
+import * as djwt from "https://deno.land/x/djwt@v2.2/mod.ts";
+/* 
+  Expiration is expressed in minutes 
+*/
+async function generateToken(supabaseClient, spaceId, participantId, expiration = 360) {
   const spacesId = await supabaseClient.from('rooms').select('providerId').eq('providerId', spaceId);
+  
   if (spacesId.data && spacesId.data.length === 0) {
     return new Response(JSON.stringify({
       error: 'No room with given providerId exists'
@@ -15,13 +19,16 @@ async function generateToken(supabaseClient, spaceId) {
       status: 404
     });
   }
-  let baseOptions = {
-    keyId: Deno.env.get('SPACE_KEY_ID'),
-    keySecret: Deno.env.get('SPACE_PRIVATE_KEY'),
-  };
-  const spaceToken = Mux.JWT.signSpaceId(spaceId, {
-    ...baseOptions,
-  });
+  
+  const exp = new Date().valueOf() + expiration*60;
+  const spaceToken = await djwt.create({ alg: "RS256", typ: "JWT" }, {
+    kid: Deno.env.get('SPACE_KEY_ID') ?? "",
+    aud: "rt",
+    sub: spaceId,
+    exp: exp,
+    participant_id: participantId
+  }, atob(Deno.env.get('SPACE_PRIVATE_KEY')))
+
   return new Response(JSON.stringify({
     spaceToken,
   }), {
@@ -44,8 +51,10 @@ serve(async (req)=>{
     const supabaseClient = createClient(supabaseUrl, supabaseKey);
     const body = await req.json();
     const spaceId = body.spaceId;
-    if (!spaceId) {
-      return new Response(JSON.stringify('The must contain a valid spaceId item'), {
+    const participantId = body.participantId;
+    const expiration = body.expiration;
+    if (!spaceId || !participantId) {
+      return new Response(JSON.stringify(`The request must contain a valid ${!spaceId && 'spaceId '}${!participantId && 'participantId '} item`), {
         headers: {
           ...corsHeaders,
           'Content-Type': 'application/json'
@@ -53,7 +62,7 @@ serve(async (req)=>{
         status: 400,
       });
     }
-    return generateToken(supabaseClient, spaceId);
+    return generateToken(supabaseClient, spaceId, participantId);
   } catch (error) {
     return new Response(JSON.stringify({
       error,
