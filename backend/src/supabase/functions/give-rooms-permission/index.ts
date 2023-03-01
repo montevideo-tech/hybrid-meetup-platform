@@ -25,19 +25,17 @@ async function givePermission(supabaseClient, body) {
   if (!user.data || (user.data?.length === 0))
     return returnError("No user with given data exists");
 
-  const userId = user.data[0].userId;
-
   permission = permission?.toUpperCase();
   const permissionData = await supabaseClient.from('rooms-permission').select('id').eq('name', permission);
   if (!permissionData.data || (permissionData.data?.length === 0))
     return returnError("No permission with given data exists");
 
   const permissionId = permissionData.data[0].id;
-  await supabaseClient.from('rooms-data').delete().match({ providerId, userId });
+  await supabaseClient.from('rooms-data').delete().match({ providerId, userEmail });
 
   const insert = await supabaseClient.from('rooms-data').insert({
     providerId,
-    userId,
+    userEmail,
     permissionId,
   });
 
