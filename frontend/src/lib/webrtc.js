@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 import EventEmitter from 'events';
 import {
-  Space, SubscriptionMode, getUserMedia, SpaceEvent, ParticipantEvent, TrackEvent,
+  Space, SubscriptionMode, getUserMedia, getDisplayMedia, SpaceEvent, ParticipantEvent, TrackEvent,
 } from '@mux/spaces-web';
 
 // TODO we should have a config somewhere which tells us what to use
@@ -11,9 +11,10 @@ export class Track extends EventEmitter {
   constructor(providerTrack) {
     super();
     this.provider = providerTrack;
-    this.id = this.provider.id;
+    this.id = this.provider.tid;
     this.muted = this.provider.muted;
     this.mediaStreamTrack = this.provider.track;
+    this.kind = this.provider.track.kind;
 
     // listen to MUX events and emit owr own, passing our wrapped classes
     this.provider.on(
@@ -24,6 +25,18 @@ export class Track extends EventEmitter {
       TrackEvent.Unmuted,
       () => this.emit('Unmuted'),
     );
+  }
+
+  mute() {
+    this.mediaStreamTrack.enabled = false;
+    this.muted = true;
+    this.provider.emit('Muted', this.provider);
+  }
+
+  unmute() {
+    this.mediaStreamTrack.enabled = true;
+    this.muted = false;
+    this.provider.emit('Unmuted', this.provider);
   }
 }
 
@@ -77,6 +90,18 @@ export class LocalParticipant extends Participant {
     }
 
     const publishedTracks = await this.provider.publishTracks(tracksToPublish); // returns Mux Track
+    return publishedTracks.map((t) => new Track(t)); // wrap into our Track
+  }
+
+  async startScreenShare() {
+    const displayMediaOptions = {
+      video: {
+        cursor: 'always',
+      },
+      audio: false,
+    };
+    const screenStreams = await getDisplayMedia(displayMediaOptions);
+    const publishedTracks = await this.provider.publishTracks(screenStreams); // returns Mux Track
     return publishedTracks.map((t) => new Track(t)); // wrap into our Track
   }
 
