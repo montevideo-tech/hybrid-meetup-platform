@@ -18,6 +18,7 @@ import EditRoom from './views/EditRoom';
 
 // import RoomTest from './components/RoomTest';
 import RequireAuth from './components/RequireAuth';
+import RedirectLoggedInUser from './components/RedirectLoggedInUser';
 
 const router = createBrowserRouter([
   {
@@ -53,11 +54,19 @@ const router = createBrowserRouter([
       },
       {
         path: '/signIn',
-        element: <SignIn />,
+        element: (
+          <RedirectLoggedInUser>
+            <SignIn />
+          </RedirectLoggedInUser>
+        ),
       },
       {
         path: '/signUp',
-        element: <SignUp />,
+        element: (
+          <RedirectLoggedInUser>
+            <SignUp />
+          </RedirectLoggedInUser>
+        ),
       },
       {
         path: '/rooms',
