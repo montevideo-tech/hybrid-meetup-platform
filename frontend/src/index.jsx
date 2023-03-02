@@ -1,19 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Provider } from 'react-redux';
+
+import './index.css';
 import { store } from './store';
+
 import Root from './views/Root';
 import SignIn from './views/SignIn';
 import SignUp from './views/SignUp';
 import Room, { roomLoader } from './views/Room';
 import Rooms from './views/Rooms';
 import ErrorPage from './views/errorPage';
-import RoomTest from './components/RoomTest';
 import Home from './views/Home';
 import RoomNotFound from './views/RoomNotFound';
 import EditRoom from './views/EditRoom';
+
+// import RoomTest from './components/RoomTest';
+import RequireAuth from './components/RequireAuth';
+import RedirectLoggedInUser from './components/RedirectLoggedInUser';
 
 const router = createBrowserRouter([
   {
@@ -26,35 +31,59 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: '/rooms',
-        element: <Rooms />,
-      },
-      {
         path: '/rooms/404',
         element: <RoomNotFound />,
       },
       {
         path: '/rooms/:roomId',
-        element: <Room />,
+        element: (
+          <RequireAuth>
+            <Room />
+          </RequireAuth>
+        ),
         loader: roomLoader,
       },
       {
         path: '/rooms/:roomId/edit',
-        element: <EditRoom />,
+        element: (
+          <RequireAuth>
+            <EditRoom />
+          </RequireAuth>
+        ),
         loader: roomLoader,
       },
       {
         path: '/signIn',
-        element: <SignIn />,
+        element: (
+          <RedirectLoggedInUser>
+            <SignIn />
+          </RedirectLoggedInUser>
+        ),
       },
       {
         path: '/signUp',
-        element: <SignUp />,
+        element: (
+          <RedirectLoggedInUser>
+            <SignUp />
+          </RedirectLoggedInUser>
+        ),
       },
       {
-        path: '/room-test',
-        element: <RoomTest />,
+        path: '/rooms',
+        element: (
+          <RequireAuth>
+            <Rooms />
+          </RequireAuth>
+        ),
       },
+      // {
+      //   path: '/room-test',
+      //   element: (
+      //     <RequireAuth>
+      //       <RoomTest />
+      //     </RequireAuth>
+      //   ),
+      // },
     ],
   },
 ]);
