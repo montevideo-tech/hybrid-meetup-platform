@@ -22,7 +22,7 @@ import {
 import { useLoaderData, Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Box, CircularProgress, Grid, Typography,
+  Box, CircularProgress, Grid, Typography, useMediaQuery, useTheme
 } from '@mui/material';
 
 import RoomControls from '../components/RoomControls';
@@ -58,6 +58,12 @@ function Room() {
   const currentUser = useSelector((state) => state.user);
   const roomData = useSelector((state) => state.room);
   const dispatch = useDispatch();
+
+  const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.only('xs'));
+  const isSm = useMediaQuery(theme.breakpoints.between('sm', 'md'));
+  const isMd = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
+  const isLg = useMediaQuery(theme.breakpoints.up('lg'))
 
   const setRemoteStreamsRef = (data) => {
     remoteStreamsRef.current = data;
@@ -295,6 +301,72 @@ function Room() {
     marginRight: '2vw',
   };
 
+  const participants = [{
+    audioMuted: false, name: 'yulianag@qualabs.com', stream: false, videoMuted: false,
+  },
+  {
+    audioMuted: false, name: 'yulianag1@qualabs.com', stream: false, videoMuted: false,
+  },
+  {
+    audioMuted: false, name: 'yulianag2@qualabs.com', stream: false, videoMuted: false,
+  },
+  {
+    audioMuted: false, name: 'yulianag3@qualabs.com', stream: false, videoMuted: false,
+  },
+  {
+    audioMuted: false, name: 'yulianag4@qualabs.com', stream: false, videoMuted: false,
+  },
+  {
+    audioMuted: false, name: 'yulianag5@qualabs.com', stream: false, videoMuted: false,
+  },
+  {
+    audioMuted: false, name: 'yulianag6@qualabs.com', stream: false, videoMuted: false,
+  },
+  {
+    audioMuted: false, name: 'yulianag7@qualabs.com', stream: false, videoMuted: false,
+  },
+  {
+    audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
+  },
+  {
+    audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
+  },
+  {
+    audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
+  },
+  {
+    audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
+  },
+  {
+    audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
+  },
+  {
+    audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
+  },
+  ];
+
+
+
+  const getScreenSizeBreakpoint = () => {
+    if (isXs) {
+      return 'xs';
+    } else if (isSm) {
+      return 'sm';
+    } else if (isMd) {
+      return 'md';
+    } else if (isLg) {
+      return 'lg';
+    }
+  };
+
+  const getLimitOfCameras = {
+    'xs': 1,
+    'sm': 2,
+    'md': 3,
+    'lg': 4
+  }
+
+
   return (
     <>
       {
@@ -307,13 +379,13 @@ function Room() {
             position: 'relative', marginLeft: '2vw', marginRight: '2vw',
           }}
           >
-            <Grid sx={{ width: '65vw', height: '60vh' }} container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center">
+            <Grid sx={{ width: '65vw', height: '60vh' }} container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center" >
               {
-                remoteStreams.map(({
+                participants.slice(0, getLimitOfCameras[getScreenSizeBreakpoint()]).map(({
                   stream, audioMuted, videoMuted, name,
                 }) => (
-                  <Grid item xs={1} sm={1} md={1} key={stream.id}>
-                    <Box>
+                  <Grid item xs={1} sm={1} md={1} key={stream.id} >
+                    <Box style={{ background: 'red' }}>
                       <Video
                         stream={stream}
                         isAudioMuted={audioMuted || false}
