@@ -27,6 +27,7 @@ import {
 
 import RoomControls from '../components/RoomControls';
 import Video from '../components/Video';
+import Audio from '../components/Audio'
 
 import { Room as WebRoom } from '../lib/webrtc';
 import { roomJWTprovider, getRoomPermissions } from '../actions';
@@ -188,20 +189,38 @@ function Room() {
         // if there's already a stream for this participant, add the track to it
         // this avoid having two different streams for the audio/video tracks of the
         // same participant.
+
         if (remoteStreamsRef.current.has(remoteParticipant.id)) {
           const streamData = remoteStreamsRef.current.get(remoteParticipant.id);
-          streamData.stream.addTrack(track.mediaStreamTrack);
           streamData[`${track.kind}Muted`] = track.muted;
-        } else {
           const stream = new MediaStream();
           stream.addTrack(track.mediaStreamTrack);
+          if (track.kind === 'audio'){
+            streamData.audioStream = stream;
+          }
+          else {
+            streamData.videoStream = stream;
+          }
+          remoteStreamsRef.current.set(remoteParticipant.id, streamData)
+        }
+        else {
+          const audioStream = new MediaStream();
+          const videoStream = new MediaStream();
+          if (track.kind === 'audio'){
+            audioStream.addTrack(track.mediaStreamTrack);
+          }
+          else {
+            audioStream.addTrack(track.mediaStreamTrack);
+          }
+            
           remoteStreamsRef.current.set(
             remoteParticipant.id,
-            { stream, [`${track.kind}Muted`]: track.muted, name: remoteParticipant.displayName },
+            { audioStream, videoStream, [`${track.kind}Muted`]: track.muted, name: remoteParticipant.displayName },
           );
         }
         setRemoteStreamsRef(remoteStreamsRef.current);
-
+        console.log('remoteStreamsRef--->',remoteStreamsRef.current)
+        
         // add event handler for Muted/Unmuted events
         track.on('Muted', () => {
           const streamData = remoteStreamsRef.current.get(remoteParticipant.id);
@@ -301,49 +320,49 @@ function Room() {
     marginRight: '2vw',
   };
 
-  const participants = [{
-    audioMuted: false, name: 'yulianag@qualabs.com', stream: false, videoMuted: false,
-  },
-  {
-    audioMuted: false, name: 'yulianag1@qualabs.com', stream: false, videoMuted: false,
-  },
-  {
-    audioMuted: false, name: 'yulianag2@qualabs.com', stream: false, videoMuted: false,
-  },
-  {
-    audioMuted: false, name: 'yulianag3@qualabs.com', stream: false, videoMuted: false,
-  },
-  {
-    audioMuted: false, name: 'yulianag4@qualabs.com', stream: false, videoMuted: false,
-  },
-  {
-    audioMuted: false, name: 'yulianag5@qualabs.com', stream: false, videoMuted: false,
-  },
-  {
-    audioMuted: false, name: 'yulianag6@qualabs.com', stream: false, videoMuted: false,
-  },
-  {
-    audioMuted: false, name: 'yulianag7@qualabs.com', stream: false, videoMuted: false,
-  },
-  {
-    audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
-  },
-  {
-    audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
-  },
-  {
-    audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
-  },
-  {
-    audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
-  },
-  {
-    audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
-  },
-  {
-    audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
-  },
-  ];
+  // const participants = [{
+  //   audioMuted: false, name: 'yulianag', stream: false, videoMuted: false,
+  // },
+  // {
+  //   audioMuted: false, name: 'yulianag1', stream: false, videoMuted: false,
+  // },
+  // {
+  //   audioMuted: false, name: 'yulianag2', stream: false, videoMuted: false,
+  // },
+  // {
+  //   audioMuted: false, name: 'yulianag3', stream: false, videoMuted: false,
+  // },
+  // {
+  //   audioMuted: false, name: 'yulianag4', stream: false, videoMuted: false,
+  // },
+  // {
+  //   audioMuted: false, name: 'yulianag5', stream: false, videoMuted: false,
+  // },
+  // {
+  //   audioMuted: false, name: 'yulianag6', stream: false, videoMuted: false,
+  // },
+  // {
+  //   audioMuted: false, name: 'yulianag7', stream: false, videoMuted: false,
+  // },
+  // {
+  //   audioMuted: false, name: 'yulianag8', stream: false, videoMuted: false,
+  // },
+  // {
+  //   audioMuted: false, name: 'yulianag8', stream: false, videoMuted: false,
+  // },
+  // {
+  //   audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
+  // },
+  // {
+  //   audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
+  // },
+  // {
+  //   audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
+  // },
+  // {
+  //   audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
+  // },
+  // ];
 
 
 
@@ -363,9 +382,8 @@ function Room() {
     'xs': 1,
     'sm': 2,
     'md': 3,
-    'lg': 4
-  }
-
+    'lg': 4,
+  };
 
   return (
     <>
@@ -379,15 +397,15 @@ function Room() {
             position: 'relative', marginLeft: '2vw', marginRight: '2vw',
           }}
           >
-            <Grid sx={{ width: '65vw', height: '60vh' }} container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center" >
+            {/* <Grid sx={{ width: '65vw', height: '60vh' }} container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center">
               {
-                participants.slice(0, getLimitOfCameras[getScreenSizeBreakpoint()]).map(({
-                  stream, audioMuted, videoMuted, name,
+                remoteStreams.slice(0, getLimitOfCameras[getScreenSizeBreakpoint()]).map(({
+                  audioStream, videoStream, audioMuted, videoMuted, name,
                 }) => (
-                  <Grid item xs={1} sm={1} md={1} key={stream.id} >
+                  <Grid item xs={1} sm={1} md={1} key={stream.id}>
                     <Box style={{ background: 'red' }}>
                       <Video
-                        stream={stream}
+                        stream={videoStream}
                         isAudioMuted={audioMuted || false}
                         isVideoMuted={videoMuted || false}
                         name={name}
@@ -400,7 +418,7 @@ function Room() {
                   </Grid>
                 ))
               }
-            </Grid>
+            </Grid> */}
             <div style={localStreamStyle}>
               <Video
                 stream={localStream}
@@ -417,6 +435,15 @@ function Room() {
           </div>
         )
       }
+      <div>
+        {remoteStreams.map(({
+          audioStream,
+        }) => (
+          <Audio
+            stream={audioStream}
+          />
+        ))}
+      </div>
 
       <RoomControls
         updateScreenShare={updateScreenShare}
