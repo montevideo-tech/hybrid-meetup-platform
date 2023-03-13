@@ -63,8 +63,9 @@ function Room() {
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.only('xs'));
   const isSm = useMediaQuery(theme.breakpoints.between('sm', 'md'));
-  const isMd = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
-  const isLg = useMediaQuery(theme.breakpoints.up('lg'))
+  const isMd = useMediaQuery(theme.breakpoints.between('md', 'lg'));
+  const isLg = useMediaQuery(theme.breakpoints.between('lg', 'xl'));
+  const isXl = useMediaQuery(theme.breakpoints.up('xl'));
 
   const setRemoteStreamsRef = (data) => {
     remoteStreamsRef.current = data;
@@ -113,6 +114,8 @@ function Room() {
     xs: calculateTilesPerRow('xs'),
     sm: calculateTilesPerRow('sm'),
     md: calculateTilesPerRow('md'),
+    lg: calculateTilesPerRow('lg'),
+    xl: calculateTilesPerRow('xl'),
   };
 
   const leaveRoom = async () => {
@@ -184,7 +187,6 @@ function Room() {
       //   { name: currentUser.email, role: ROLES.GUEST }];
       // setParticipants(participantsRef.current);
       newRoom.on('ParticipantTrackSubscribed', (remoteParticipant, track) => {
-        // console.log('ParticipantTrackSubscribed event');
 
         // if there's already a stream for this participant, add the track to it
         // this avoid having two different streams for the audio/video tracks of the
@@ -219,7 +221,6 @@ function Room() {
           );
         }
         setRemoteStreamsRef(remoteStreamsRef.current);
-        console.log('remoteStreamsRef--->',remoteStreamsRef.current)
         
         // add event handler for Muted/Unmuted events
         track.on('Muted', () => {
@@ -235,7 +236,6 @@ function Room() {
       });
 
       newRoom.on('ParticipantJoined', async (p) => {
-        // console.log('someone joined', p);
         p.subscribe();
         const participantData = await getRoomPermissions(roomId, p.displayName);
         if (participantData.length > 0) {
@@ -248,7 +248,6 @@ function Room() {
       });
 
       newRoom.on('ParticipantLeft', (p) => {
-        // console.log('someone left', p);
         remoteStreamsRef.current.delete(p.id);
         setRemoteStreamsRef(remoteStreamsRef.current);
         dispatch(removeParticipant({ name: p.displayName }));
@@ -320,51 +319,6 @@ function Room() {
     marginRight: '2vw',
   };
 
-  const participants = [{
-    audioMuted: false, name: 'yulianag', stream: false, videoMuted: false,
-  },
-  {
-    audioMuted: false, name: 'yulianag1', stream: false, videoMuted: false,
-  },
-  {
-    audioMuted: false, name: 'yulianag2', stream: false, videoMuted: false,
-  },
-  {
-    audioMuted: false, name: 'yulianag3', stream: false, videoMuted: false,
-  },
-  {
-    audioMuted: false, name: 'yulianag4', stream: false, videoMuted: false,
-  },
-  {
-    audioMuted: false, name: 'yulianag5', stream: false, videoMuted: false,
-  },
-  {
-    audioMuted: false, name: 'yulianag6', stream: false, videoMuted: false,
-  },
-  {
-    audioMuted: false, name: 'yulianag7', stream: false, videoMuted: false,
-  },
-  {
-    audioMuted: false, name: 'yulianag8', stream: false, videoMuted: false,
-  },
-  {
-    audioMuted: false, name: 'yulianag8', stream: false, videoMuted: false,
-  },
-  {
-    audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
-  },
-  {
-    audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
-  },
-  {
-    audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
-  },
-  {
-    audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
-  },
-  ];
-
-
   const getScreenSizeBreakpoint = () => {
     if (isXs) {
       return 'xs';
@@ -374,16 +328,18 @@ function Room() {
       return 'md';
     } else if (isLg) {
       return 'lg';
+    } else if (isXl) {
+      return 'xl';
     }
   };
 
   const getLimitOfCameras = {
-    'xs': 0,
-    'sm': 0,
-    'md': 1,
+    'xs': 1,
+    'sm': 2,
+    'md': 3,
     'lg': 4,
+    'xl': 6,
   };
-  console.log('screen size::::', getScreenSizeBreakpoint());
   return (
     <>
       {
@@ -401,7 +357,7 @@ function Room() {
                 remoteStreams.slice(0, getLimitOfCameras[getScreenSizeBreakpoint()]).map(({
                   videoStream, name, audioMuted, videoMuted
                 }) => (
-                  <Grid item xs={1} sm={1} md={1} key={videoStream.id}>
+                  <Grid item xs={1} sm={1} md={1}>
                     <Box style={{ background: 'red' }}>
                       <Video
                         stream={videoStream}
