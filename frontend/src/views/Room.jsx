@@ -357,7 +357,7 @@ function Room() {
                 remoteStreams.slice(0, getLimitOfCameras[getScreenSizeBreakpoint()]).map(({
                   videoStream, name, audioMuted, videoMuted
                 }) => (
-                  <Grid item xs={1} sm={1} md={1}>
+                  <Grid item xs={1} sm={1} md={1}  key={videoStream.id}>
                     <Box style={{ background: 'red' }}>
                       <Video
                         stream={videoStream}
