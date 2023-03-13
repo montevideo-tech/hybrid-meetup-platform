@@ -14,7 +14,6 @@ import logo from '../assets/MVDTSC.png';
 
 function Video(props) {
   const videoRef = useRef();
-
   const {
     // eslint-disable-next-line no-unused-vars
     stream, isStreamLocal, isAudioMuted, isVideoMuted, isSpeaking, size, name,
