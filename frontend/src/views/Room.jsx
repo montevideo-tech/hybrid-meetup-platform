@@ -210,7 +210,7 @@ function Room() {
             audioStream.addTrack(track.mediaStreamTrack);
           }
           else {
-            audioStream.addTrack(track.mediaStreamTrack);
+            videoStream.addTrack(track.mediaStreamTrack);
           }
             
           remoteStreamsRef.current.set(
@@ -320,50 +320,49 @@ function Room() {
     marginRight: '2vw',
   };
 
-  // const participants = [{
-  //   audioMuted: false, name: 'yulianag', stream: false, videoMuted: false,
-  // },
-  // {
-  //   audioMuted: false, name: 'yulianag1', stream: false, videoMuted: false,
-  // },
-  // {
-  //   audioMuted: false, name: 'yulianag2', stream: false, videoMuted: false,
-  // },
-  // {
-  //   audioMuted: false, name: 'yulianag3', stream: false, videoMuted: false,
-  // },
-  // {
-  //   audioMuted: false, name: 'yulianag4', stream: false, videoMuted: false,
-  // },
-  // {
-  //   audioMuted: false, name: 'yulianag5', stream: false, videoMuted: false,
-  // },
-  // {
-  //   audioMuted: false, name: 'yulianag6', stream: false, videoMuted: false,
-  // },
-  // {
-  //   audioMuted: false, name: 'yulianag7', stream: false, videoMuted: false,
-  // },
-  // {
-  //   audioMuted: false, name: 'yulianag8', stream: false, videoMuted: false,
-  // },
-  // {
-  //   audioMuted: false, name: 'yulianag8', stream: false, videoMuted: false,
-  // },
-  // {
-  //   audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
-  // },
-  // {
-  //   audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
-  // },
-  // {
-  //   audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
-  // },
-  // {
-  //   audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
-  // },
-  // ];
-
+  const participants = [{
+    audioMuted: false, name: 'yulianag', stream: false, videoMuted: false,
+  },
+  {
+    audioMuted: false, name: 'yulianag1', stream: false, videoMuted: false,
+  },
+  {
+    audioMuted: false, name: 'yulianag2', stream: false, videoMuted: false,
+  },
+  {
+    audioMuted: false, name: 'yulianag3', stream: false, videoMuted: false,
+  },
+  {
+    audioMuted: false, name: 'yulianag4', stream: false, videoMuted: false,
+  },
+  {
+    audioMuted: false, name: 'yulianag5', stream: false, videoMuted: false,
+  },
+  {
+    audioMuted: false, name: 'yulianag6', stream: false, videoMuted: false,
+  },
+  {
+    audioMuted: false, name: 'yulianag7', stream: false, videoMuted: false,
+  },
+  {
+    audioMuted: false, name: 'yulianag8', stream: false, videoMuted: false,
+  },
+  {
+    audioMuted: false, name: 'yulianag8', stream: false, videoMuted: false,
+  },
+  {
+    audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
+  },
+  {
+    audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
+  },
+  {
+    audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
+  },
+  {
+    audioMuted: false, name: 'yulianag8@qualabs.com', stream: false, videoMuted: false,
+  },
+  ];
 
 
   const getScreenSizeBreakpoint = () => {
@@ -379,12 +378,12 @@ function Room() {
   };
 
   const getLimitOfCameras = {
-    'xs': 1,
-    'sm': 2,
-    'md': 3,
+    'xs': 0,
+    'sm': 0,
+    'md': 1,
     'lg': 4,
   };
-
+  console.log('screen size::::', getScreenSizeBreakpoint());
   return (
     <>
       {
@@ -397,12 +396,12 @@ function Room() {
             position: 'relative', marginLeft: '2vw', marginRight: '2vw',
           }}
           >
-            {/* <Grid sx={{ width: '65vw', height: '60vh' }} container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center">
+            <Grid sx={{ width: '65vw', height: '60vh' }} container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center">
               {
                 remoteStreams.slice(0, getLimitOfCameras[getScreenSizeBreakpoint()]).map(({
-                  audioStream, videoStream, audioMuted, videoMuted, name,
+                  videoStream, name, audioMuted, videoMuted
                 }) => (
-                  <Grid item xs={1} sm={1} md={1} key={stream.id}>
+                  <Grid item xs={1} sm={1} md={1} key={videoStream.id}>
                     <Box style={{ background: 'red' }}>
                       <Video
                         stream={videoStream}
@@ -418,7 +417,7 @@ function Room() {
                   </Grid>
                 ))
               }
-            </Grid> */}
+            </Grid>
             <div style={localStreamStyle}>
               <Video
                 stream={localStream}

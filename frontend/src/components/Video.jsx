@@ -14,11 +14,17 @@ import logo from '../assets/MVDTSC.png';
 
 function Video(props) {
   const videoRef = useRef();
-
+  console.log('-----props en componente VIDEO', props)
   const {
     // eslint-disable-next-line no-unused-vars
     stream, isStreamLocal, isAudioMuted, isVideoMuted, isSpeaking, size, name,
   } = props;
+  console.log('----entra componente VIDEO---')
+  console.log('-----stream', stream)
+  console.log('-----isStreamLocal', isStreamLocal)
+  console.log('-----isAudioMuted', isAudioMuted)
+  console.log('-----isVideoMuted', isVideoMuted)
+  console.log('-----name', name)
 
   useEffect(() => {
     if (!stream) {
@@ -33,6 +39,7 @@ function Video(props) {
     }
   }, [stream]);
 
+  console.log('--- en componente VIDEO videoRef', videoRef)
   return (
     <Box sx={{ position: 'relative' }}>
       {isVideoMuted && (
