@@ -22,12 +22,12 @@ import {
 import { useLoaderData, Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Box, CircularProgress, Grid, Typography, useMediaQuery, useTheme
+  Box, CircularProgress, Grid, Typography, useMediaQuery, useTheme,
 } from '@mui/material';
 
 import RoomControls from '../components/RoomControls';
 import Video from '../components/Video';
-import Audio from '../components/Audio'
+import Audio from '../components/Audio';
 
 import { Room as WebRoom } from '../lib/webrtc';
 import { roomJWTprovider, getRoomPermissions } from '../actions';
@@ -65,7 +65,27 @@ function Room() {
   const isSm = useMediaQuery(theme.breakpoints.between('sm', 'md'));
   const isMd = useMediaQuery(theme.breakpoints.between('md', 'lg'));
   const isLg = useMediaQuery(theme.breakpoints.between('lg', 'xl'));
-  const isXl = useMediaQuery(theme.breakpoints.up('xl'));
+
+  const getScreenSizeBreakpoint = () => {
+    if (isXs) {
+      return 'xs';
+    } if (isSm) {
+      return 'sm';
+    } if (isMd) {
+      return 'md';
+    } if (isLg) {
+      return 'lg';
+    }
+    return 'xl';
+  };
+
+  const getLimitOfCameras = {
+    xs: 1,
+    sm: 2,
+    md: 3,
+    lg: 4,
+    xl: 6,
+  };
 
   const setRemoteStreamsRef = (data) => {
     remoteStreamsRef.current = data;
@@ -187,7 +207,6 @@ function Room() {
       //   { name: currentUser.email, role: ROLES.GUEST }];
       // setParticipants(participantsRef.current);
       newRoom.on('ParticipantTrackSubscribed', (remoteParticipant, track) => {
-
         // if there's already a stream for this participant, add the track to it
         // this avoid having two different streams for the audio/video tracks of the
         // same participant.
@@ -197,31 +216,30 @@ function Room() {
           streamData[`${track.kind}Muted`] = track.muted;
           const stream = new MediaStream();
           stream.addTrack(track.mediaStreamTrack);
-          if (track.kind === 'audio'){
+          if (track.kind === 'audio') {
             streamData.audioStream = stream;
-          }
-          else {
+          } else {
             streamData.videoStream = stream;
           }
-          remoteStreamsRef.current.set(remoteParticipant.id, streamData)
-        }
-        else {
+          remoteStreamsRef.current.set(remoteParticipant.id, streamData);
+        } else {
           const audioStream = new MediaStream();
           const videoStream = new MediaStream();
-          if (track.kind === 'audio'){
+          if (track.kind === 'audio') {
             audioStream.addTrack(track.mediaStreamTrack);
-          }
-          else {
+          } else {
             videoStream.addTrack(track.mediaStreamTrack);
           }
-            
+
           remoteStreamsRef.current.set(
             remoteParticipant.id,
-            { audioStream, videoStream, [`${track.kind}Muted`]: track.muted, name: remoteParticipant.displayName },
+            {
+              audioStream, videoStream, [`${track.kind}Muted`]: track.muted, name: remoteParticipant.displayName,
+            },
           );
         }
         setRemoteStreamsRef(remoteStreamsRef.current);
-        
+
         // add event handler for Muted/Unmuted events
         track.on('Muted', () => {
           const streamData = remoteStreamsRef.current.get(remoteParticipant.id);
@@ -319,27 +337,6 @@ function Room() {
     marginRight: '2vw',
   };
 
-  const getScreenSizeBreakpoint = () => {
-    if (isXs) {
-      return 'xs';
-    } else if (isSm) {
-      return 'sm';
-    } else if (isMd) {
-      return 'md';
-    } else if (isLg) {
-      return 'lg';
-    } else if (isXl) {
-      return 'xl';
-    }
-  };
-
-  const getLimitOfCameras = {
-    'xs': 1,
-    'sm': 2,
-    'md': 3,
-    'lg': 4,
-    'xl': 6,
-  };
   return (
     <>
       {
@@ -355,10 +352,10 @@ function Room() {
             <Grid sx={{ width: '65vw', height: '60vh' }} container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center">
               {
                 remoteStreams.slice(0, getLimitOfCameras[getScreenSizeBreakpoint()]).map(({
-                  videoStream, name, audioMuted, videoMuted
+                  videoStream, name, audioMuted, videoMuted,
                 }) => (
-                  <Grid item xs={1} sm={1} md={1}  key={videoStream.id}>
-                    <Box style={{ background: 'red' }}>
+                  <Grid item xs={1} sm={1} md={1} key={videoStream.id}>
+                    <Box>
                       <Video
                         stream={videoStream}
                         isAudioMuted={audioMuted || false}
