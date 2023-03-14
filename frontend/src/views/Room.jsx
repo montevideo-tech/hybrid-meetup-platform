@@ -79,6 +79,7 @@ function Room() {
     return 'xl';
   };
 
+  // this are arbitrary values, we'll revisit this
   const getLimitOfCameras = {
     xs: 1,
     sm: 2,
