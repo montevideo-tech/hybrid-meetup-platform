@@ -250,7 +250,6 @@ function Room() {
       dispatch(cleanRoom());
       leaveRoom();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updateLocalTracksMuted = (kind, muted) => {
