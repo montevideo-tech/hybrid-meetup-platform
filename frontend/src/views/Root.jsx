@@ -12,7 +12,7 @@ import { logout } from '../reducers/userSlice';
 function Root() {
   const [auth, setAuth] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
-  const currentUser = useSelector((state) => state.loggedUser);
+  const currentUser = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 

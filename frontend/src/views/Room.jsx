@@ -1,3 +1,6 @@
+/* eslint-disable no-param-reassign */
+/* eslint-disable max-len */
+/* eslint-disable no-undef */
 /* eslint-disable react/prop-types */
 /*
 This component assumes that it will be given a list of active participants that will
@@ -17,14 +20,20 @@ import {
   React, useState, useEffect, useRef,
 } from 'react';
 import { useLoaderData, Navigate } from 'react-router-dom';
-import { Box, Grid } from '@mui/material';
-import CircularProgress from '@mui/material/CircularProgress';
+import { useSelector, useDispatch } from 'react-redux';
+import {
+  Box, CircularProgress, Grid, Typography,
+} from '@mui/material';
 
 import RoomControls from '../components/RoomControls';
 import Video from '../components/Video';
 
 import { Room as WebRoom } from '../lib/webrtc';
-import { roomJWTprovider } from '../actions';
+import { roomJWTprovider, getRoomPermissions } from '../actions';
+import {
+  initRoom, addUpdateParticipant, removeParticipant, removeRole, cleanRoom,
+} from '../reducers/roomSlice';
+import subscribeToRoleChanges, { ROLES } from '../utils/roles';
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -36,18 +45,19 @@ function Room() {
   const [localStream, setLocalStream] = useState();
   // this helps keep track of muting/unmuting with RoomControls
   const [localTracks, setLocalTracks] = useState({ video: null, audio: null });
+  const [isSharingScreen, setIsSharingScreen] = useState(false);
+  const [screenRoom, setScreenRoom] = useState();
+
   const [remoteStreams, setRemoteStreams] = useState([]);
   const [roomNotFound, setRoomNotFound] = useState(false);
-  // const [participants, setParticipants] = useState([]);
-  // we eventually need the full list of participants, not only the visible ones
-  // this array will hold data such as name foor the purpose of
-  // having a participants name list, etc.
-
   const roomId = useLoaderData();
 
   // create reference to access room state var in useEffect cleanup func
   const roomRef = useRef();
   const remoteStreamsRef = useRef(new Map());
+  const currentUser = useSelector((state) => state.user);
+  const roomData = useSelector((state) => state.room);
+  const dispatch = useDispatch();
 
   const setRemoteStreamsRef = (data) => {
     remoteStreamsRef.current = data;
@@ -105,21 +115,67 @@ function Room() {
     }
   };
 
+  const handleRoleChange = (payload) => {
+    if (payload.eventType === 'INSERT') {
+      const { id, userEmail } = payload;
+      const permission = payload['rooms-permission'].name;
+      dispatch(addUpdateParticipant({
+        name: userEmail,
+        role: permission,
+        id,
+      }));
+    }
+    // Supabase realtime only sends the ID that was deleted from the rooms-data table
+    if (payload.eventType === 'DELETE') {
+      const { id } = payload.old;
+      dispatch(removeRole({ id }));
+    }
+  };
+
   // initialize room
   useEffect(() => {
+    const updateParticipantRoles = async () => {
+      const initialParticipantRoles = await getRoomPermissions(roomId);
+      initialParticipantRoles.map((part) => dispatch(addUpdateParticipant({
+        name: part.userEmail,
+        role: part['rooms-permission'].name,
+        id: part.id,
+      })));
+    };
     const subscribeToRemoteStreams = async (r) => {
       // subscribe ta all remote participants for testing purposes
       const { remoteParticipants } = r;
       const rps = Array.from(remoteParticipants.values());
       await Promise.all(rps.map(async (rp) => {
-        await rp.subscribe();
+        dispatch(addUpdateParticipant({
+          name: rp.id,
+          role: ROLES.GUEST,
+        }));
+        rp.subscribe();
+        // Add remote participants to participants list.
       }));
+
+      updateParticipantRoles();
     };
     const joinRoom = async () => {
-      const JWT = await roomJWTprovider(roomId, null, null, () => { setRoomNotFound(true); });
+      const JWT = await roomJWTprovider(
+        roomId,
+        currentUser.email,
+        null,
+        null,
+        () => { setRoomNotFound(true); },
+      );
       const newRoom = new WebRoom(JWT);
       const newParticipant = await newRoom.join();
 
+      dispatch(initRoom({
+        id: roomId,
+        participants: [{ name: currentUser.email, role: ROLES.GUEST }],
+      }));
+
+      // participantsRef.current = [...participantsRef.current,
+      //   { name: currentUser.email, role: ROLES.GUEST }];
+      // setParticipants(participantsRef.current);
       newRoom.on('ParticipantTrackSubscribed', (remoteParticipant, track) => {
         // console.log('ParticipantTrackSubscribed event');
 
@@ -135,7 +191,9 @@ function Room() {
           stream.addTrack(track.mediaStreamTrack);
           remoteStreamsRef.current.set(
             remoteParticipant.id,
-            { stream, [`${track.kind}Muted`]: track.muted, speaking: false },
+            {
+              stream, [`${track.kind}Muted`]: track.muted, speaking: false, name: remoteParticipant.displayName
+            },
           );
         }
         setRemoteStreamsRef(remoteStreamsRef.current);
@@ -153,7 +211,7 @@ function Room() {
         });
       });
 
-      newRoom.on('ParticipantJoined', (p) => {
+      newRoom.on('ParticipantJoined', async (p) => {
         // console.log('someone joined', p);
         p.subscribe();
         p.on('StartedSpeaking', () => {
@@ -166,35 +224,44 @@ function Room() {
           streamData.speaking = false;
           setRemoteStreamsRef(remoteStreamsRef.current);
         });
+        const participantData = await getRoomPermissions(roomId, p.displayName);
+        if (participantData.length > 0) {
+          dispatch(addUpdateParticipant({
+            name: participantData[0].userEmail,
+            role: participantData[0]['rooms-permission'].name,
+            id: participantData[0].id,
+          }));
+        } else { dispatch(addUpdateParticipant({ name: p.displayName, role: ROLES.GUEST })); }
       });
+
       newRoom.on('ParticipantLeft', (p) => {
         // console.log('someone left', p);
         remoteStreamsRef.current.delete(p.id);
         setRemoteStreamsRef(remoteStreamsRef.current);
+        dispatch(removeParticipant({ name: p.displayName }));
       });
-
       setRoom(newRoom);
       roomRef.current = newRoom;
       const tracks = await newParticipant.publishTracks(
         { constraints: { video: true, audio: true } },
       );
       const stream = new MediaStream();
-
       const newLocalTracks = { ...localTracks };
-
       tracks.forEach((track) => {
         stream.addTrack(track.mediaStreamTrack);
         newLocalTracks[track.kind] = track;
       });
-
       setLocalStream(stream);
       setLocalTracks(newLocalTracks);
       // setUserParticipant(newParticipant);
       subscribeToRemoteStreams(newRoom);
+      subscribeToRoleChanges(roomId, handleRoleChange);
     };
     joinRoom();
-    return leaveRoom;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      dispatch(cleanRoom());
+      leaveRoom();
+    };
   }, []);
 
   const updateLocalTracksMuted = (kind, muted) => {
@@ -202,12 +269,43 @@ function Room() {
     setLocalTracks({ ...localTracks });
   };
 
+  const updateScreenShare = async () => {
+    // TODO add flag isSharingScreen
+    if (!isSharingScreen) {
+      const JWT = await roomJWTprovider(roomId, `${currentUser.email}-screen-share`, null, null, () => { setRoomNotFound(true); });
+      const newScreenRoom = new WebRoom(JWT);
+      const newParticipant = await newScreenRoom.join();
+      setScreenRoom(newScreenRoom);
+      const tracks = await newParticipant.startScreenShare();
+      const stream = new MediaStream();
+      const newLocalTracks = { ...localTracks };
+
+      tracks.forEach((track) => {
+        stream.addTrack(track.mediaStreamTrack);
+        newLocalTracks[track.kind] = track;
+      });
+      setLocalTracks({ ...localTracks });
+      // add listener on `Stop sharing` browser's button
+      stream.getVideoTracks()[0]
+        .addEventListener('ended', () => {
+          newScreenRoom.leave();
+        });
+    } else {
+      screenRoom.leave();
+    }
+
+    setIsSharingScreen(!isSharingScreen);
+  };
+
   const localStreamStyle = {
     width: '25vw',
     position: 'fixed',
     bottom: 0,
     right: 0,
+    marginLeft: '2vw',
+    marginRight: '2vw',
   };
+
   return (
     <>
       {
@@ -216,7 +314,10 @@ function Room() {
       }
       {
         room ? (
-          <Box style={{ position: 'relative' }}>
+          <Box style={{
+            position: 'relative', marginLeft: '2vw', marginRight: '2vw',
+          }}
+          >
             <Grid sx={{ width: '65vw', height: '60vh' }} container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center">
               {
                 remoteStreams.map(({
@@ -224,6 +325,7 @@ function Room() {
                   audioMuted,
                   videoMuted,
                   speaking,
+                  name
                 }) => (
                   <Grid item xs={1} sm={1} md={1} key={stream.id}>
                     <Box>
@@ -232,7 +334,12 @@ function Room() {
                         isAudioMuted={audioMuted || false}
                         isVideoMuted={videoMuted || false}
                         isSpeaking={speaking || false}
+                        name={name}
                       />
+                      <Typography variant="caption" display="block" gutterBottom>
+                        {roomData.participants
+                          .find((part) => part.name === name)?.role}
+                      </Typography>
                     </Box>
                   </Grid>
                 ))
@@ -245,10 +352,19 @@ function Room() {
               />
             </div>
           </Box>
-        ) : <CircularProgress />
+        ) : (
+          <div style={{
+            display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%',
+          }}
+          >
+            <CircularProgress />
+          </div>
+        )
       }
 
       <RoomControls
+        updateScreenShare={updateScreenShare}
+        isSharingScreen={isSharingScreen}
         localTracks={localTracks}
         updateLocalTracksMuted={updateLocalTracksMuted}
         leaveRoom={leaveRoom}

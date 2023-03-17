@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import {
   Box,
   IconButton,
+  Typography,
 } from '@mui/material';
 import {
   MicOffOutlined as MicOffOutlinedIcon,
@@ -16,7 +17,7 @@ function Video(props) {
 
   const {
     // eslint-disable-next-line no-unused-vars
-    stream, isStreamLocal, isAudioMuted, isVideoMuted, isSpeaking, size,
+    stream, isStreamLocal, isAudioMuted, isVideoMuted, isSpeaking, size, name,
   } = props;
 
   useEffect(() => {
@@ -61,6 +62,11 @@ function Video(props) {
       >
         <track kind="captions" />
       </video>
+      {name && (
+      <Typography variant="overline" display="block" gutterBottom>
+        {name}
+      </Typography>
+      )}
       {isAudioMuted && (
         <IconButton
           disableRipple
@@ -88,6 +94,7 @@ Video.propTypes = {
   isVideoMuted: PropTypes.bool,
   isSpeaking: PropTypes.bool,
   size: PropTypes.number,
+  name: PropTypes.string,
 };
 
 Video.defaultProps = {
@@ -97,6 +104,7 @@ Video.defaultProps = {
   isVideoMuted: false,
   isSpeaking: false,
   size: 100,
+  name: '',
 };
 
 export default Video;

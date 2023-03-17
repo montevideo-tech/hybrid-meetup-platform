@@ -15,27 +15,23 @@ async function returnError(msgError: string){
 }
 
 async function getPermission(supabaseClient, body) {
-  let { userId, providerId } = body;
+  let { providerId, userEmail } = body;
 
   const roomData = await supabaseClient.from('rooms').select('providerId').eq('providerId', providerId);
   if (!roomData.data || (roomData.data?.length === 0))
     return returnError("No room with given data exists");
 
-  const users = await supabaseClient.from('users-data').select('userId').eq('userId', userId);
-  if (!users.data || (users.data?.length === 0))
-    return returnError("No user with given data exists");
-
-  const roomsData = await supabaseClient.from('rooms-data').select('permissionId').match({ providerId, userId });
-
-  let permission = "GUEST"
-  if (roomsData.data?.length !== 0){
-    const permissionId = parseInt(roomsData.data[0].permissionId);
-    permission = await supabaseClient.from('rooms-permission').select('name').eq( 'id', permissionId );
-    permission = permission.data[0].name;
+  if (userEmail){
+    const users = await supabaseClient.from('users-data').select('email').eq('email', userEmail);
+    if (!users.data || (users.data?.length === 0))
+      return returnError("No user with given data exists");
   }
 
+  const filter = userEmail ? {providerId, userEmail} : {providerId}
+  const roomsData = await supabaseClient.from('rooms-data').select(`id, permissionId, rooms-permission(name), userEmail`).match(filter);
+
   return new Response(JSON.stringify({
-    permission: permission,
+    roomsData,
   }), {
     headers: {
       ...corsHeaders,
