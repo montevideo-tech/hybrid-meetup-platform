@@ -142,21 +142,27 @@ function Room() {
         id: part.id,
       })));
     };
+
     const subscribeToRemoteStreams = async (r) => {
-      // subscribe ta all remote participants for testing purposes
       const { remoteParticipants } = r;
       const rps = Array.from(remoteParticipants.values());
-      await Promise.all(rps.map(async (rp) => {
-        dispatch(addUpdateParticipant({
-          name: rp.id,
-          role: ROLES.GUEST,
-        }));
-        rp.subscribe();
-        // Add remote participants to participants list.
-      }));
-
+      // Listen to all the participants that are already on the call
+      rps.map(async (rp) => {
+        rp.on('StartedSpeaking', () => {
+          const streamData = remoteStreamsRef.current.get(rp.connectionId);
+          streamData.speaking = true;
+          setRemoteStreamsRef(remoteStreamsRef.current);
+        });
+        rp.on('StoppedSpeaking', () => {
+          const streamData = remoteStreamsRef.current.get(rp.connectionId);
+          streamData.speaking = false;
+          setRemoteStreamsRef(remoteStreamsRef.current);
+        });
+        await rp.subscribe();
+      });
       updateParticipantRoles();
     };
+
     const joinRoom = async () => {
       const JWT = await roomJWTprovider(
         roomId,
@@ -212,7 +218,6 @@ function Room() {
       });
 
       newRoom.on('ParticipantJoined', async (p) => {
-        // console.log('someone joined', p);
         p.subscribe();
         p.on('StartedSpeaking', () => {
           const streamData = remoteStreamsRef.current.get(p.id);
