@@ -167,6 +167,17 @@ function Room() {
     const streamData = remoteStreamsRef.current.get(id);
     streamData.speaking = newStatus;
     setRemoteStreamsRef(remoteStreamsRef.current);
+
+    if (bool) { // if the person is talking
+      const idx = remoteStreams.findIndex((stream) => stream.id === id); // find index of person in array
+      console.log(idx);
+      if (idx !== 0) { // if you are not the first person on the list
+        const newRemoteStreams = [...remoteStreams];
+        newRemoteStreams.splice(idx, 1); // remove person from array
+        newRemoteStreams.unshift(streamData); // add it to the beginning of the array
+        setRemoteStreams(newRemoteStreams);
+      }
+    }
   };
 
   // initialize room
