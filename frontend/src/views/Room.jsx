@@ -163,6 +163,12 @@ function Room() {
     }
   };
 
+  const updateIsSpeakingStatus = (id, newStatus) => {
+    const streamData = remoteStreamsRef.current.get(id);
+    streamData.speaking = newStatus;
+    setRemoteStreamsRef(remoteStreamsRef.current);
+  };
+
   // initialize room
   useEffect(() => {
     const updateParticipantRoles = async () => {
@@ -180,14 +186,10 @@ function Room() {
       // Listen to all the participants that are already on the call
       rps.map(async (rp) => {
         rp.on('StartedSpeaking', () => {
-          const streamData = remoteStreamsRef.current.get(rp.connectionId);
-          streamData.speaking = true;
-          setRemoteStreamsRef(remoteStreamsRef.current);
+          updateIsSpeakingStatus(rp.connectionId, true);
         });
         rp.on('StoppedSpeaking', () => {
-          const streamData = remoteStreamsRef.current.get(rp.connectionId);
-          streamData.speaking = false;
-          setRemoteStreamsRef(remoteStreamsRef.current);
+          updateIsSpeakingStatus(rp.connectionId, false);
         });
         await rp.subscribe();
       });
@@ -263,14 +265,10 @@ function Room() {
       newRoom.on('ParticipantJoined', async (p) => {
         p.subscribe();
         p.on('StartedSpeaking', () => {
-          const streamData = remoteStreamsRef.current.get(p.id);
-          streamData.speaking = true;
-          setRemoteStreamsRef(remoteStreamsRef.current);
+          updateIsSpeakingStatus(p.id, true);
         });
         p.on('StoppedSpeaking', () => {
-          const streamData = remoteStreamsRef.current.get(p.id);
-          streamData.speaking = false;
-          setRemoteStreamsRef(remoteStreamsRef.current);
+          updateIsSpeakingStatus(p.id, false);
         });
         const participantData = await getRoomPermissions(roomId, p.displayName);
         if (participantData.length > 0) {
