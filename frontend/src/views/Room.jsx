@@ -163,6 +163,12 @@ function Room() {
     }
   };
 
+  const updateIsSpeakingStatus = (id, newStatus) => {
+    const streamData = remoteStreamsRef.current.get(id);
+    streamData.speaking = newStatus;
+    setRemoteStreamsRef(remoteStreamsRef.current);
+  };
+
   // initialize room
   useEffect(() => {
     const updateParticipantRoles = async () => {
@@ -173,21 +179,23 @@ function Room() {
         id: part.id,
       })));
     };
+
     const subscribeToRemoteStreams = async (r) => {
-      // subscribe ta all remote participants for testing purposes
       const { remoteParticipants } = r;
       const rps = Array.from(remoteParticipants.values());
-      await Promise.all(rps.map(async (rp) => {
-        dispatch(addUpdateParticipant({
-          name: rp.id,
-          role: ROLES.GUEST,
-        }));
-        rp.subscribe();
-        // Add remote participants to participants list.
-      }));
-
+      // Listen to all the participants that are already on the call
+      rps.map(async (rp) => {
+        rp.on('StartedSpeaking', () => {
+          updateIsSpeakingStatus(rp.connectionId, true);
+        });
+        rp.on('StoppedSpeaking', () => {
+          updateIsSpeakingStatus(rp.connectionId, false);
+        });
+        await rp.subscribe();
+      });
       updateParticipantRoles();
     };
+
     const joinRoom = async () => {
       const JWT = await roomJWTprovider(
         roomId,
@@ -235,7 +243,7 @@ function Room() {
           remoteStreamsRef.current.set(
             remoteParticipant.id,
             {
-              audioStream, videoStream, [`${track.kind}Muted`]: track.muted, name: remoteParticipant.displayName,
+              audioStream, videoStream, [`${track.kind}Muted`]: track.muted, speaking: false, name: remoteParticipant.displayName,
             },
           );
         }
@@ -256,6 +264,12 @@ function Room() {
 
       newRoom.on('ParticipantJoined', async (p) => {
         p.subscribe();
+        p.on('StartedSpeaking', () => {
+          updateIsSpeakingStatus(p.id, true);
+        });
+        p.on('StoppedSpeaking', () => {
+          updateIsSpeakingStatus(p.id, false);
+        });
         const participantData = await getRoomPermissions(roomId, p.displayName);
         if (participantData.length > 0) {
           dispatch(addUpdateParticipant({
@@ -352,7 +366,7 @@ function Room() {
             <Grid sx={{ width: '65vw', height: '60vh' }} container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center">
               {
                 remoteStreams.slice(0, getLimitOfCameras[getScreenSizeBreakpoint()]).map(({
-                  videoStream, name, audioMuted, videoMuted,
+                  videoStream, name, audioMuted, videoMuted, speaking
                 }) => (
                   <Grid item xs={1} sm={1} md={1} key={videoStream.id}>
                     <Box>
@@ -360,6 +374,7 @@ function Room() {
                         stream={videoStream}
                         isAudioMuted={audioMuted || false}
                         isVideoMuted={videoMuted || false}
+                        isSpeaking={speaking || false}
                         name={name}
                       />
                       <Typography variant="caption" display="block" gutterBottom>
