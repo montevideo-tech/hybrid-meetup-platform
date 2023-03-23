@@ -4,19 +4,18 @@ import PropTypes from 'prop-types';
 import {
   Box,
   IconButton,
-  Typography,
 } from '@mui/material';
 import {
   MicOffOutlined as MicOffOutlinedIcon,
 } from '@mui/icons-material';
-
+import ParticipantInfo from './ParticipantInfo';
 import logo from '../assets/MVDTSC.png';
 
 function Video(props) {
   const videoRef = useRef();
   const {
     // eslint-disable-next-line no-unused-vars
-    stream, isStreamLocal, isAudioMuted, isVideoMuted, isSpeaking, size, name,
+    stream, isStreamLocal, isAudioMuted, isVideoMuted, isSpeaking, size, name, width, height,
   } = props;
 
   useEffect(() => {
@@ -32,8 +31,20 @@ function Video(props) {
     }
   }, [stream]);
 
+  const outlineWidth = 3;
+
   return (
-    <Box sx={{ position: 'relative' }}>
+    <Box sx={{
+      position: 'relative',
+      width: `${width - outlineWidth * 2}px`,
+      height: `${height - outlineWidth * 2}px`,
+      minWidth: '160px',
+      minHeight: '90px',
+      background: 'rgb(60,64,67)',
+      borderRadius: '5px',
+      overflow: 'hidden',
+    }}
+    >
       {isVideoMuted && (
         <img
           src={logo}
@@ -55,9 +66,7 @@ function Video(props) {
         <track kind="captions" />
       </video>
       {name && (
-      <Typography variant="overline" display="block" gutterBottom>
-        {name}
-      </Typography>
+      <ParticipantInfo name={name} parentHeight={height} />
       )}
       {isAudioMuted && (
         <IconButton
@@ -86,6 +95,8 @@ Video.propTypes = {
   isVideoMuted: PropTypes.bool,
   isSpeaking: PropTypes.bool,
   size: PropTypes.number,
+  width: PropTypes.number,
+  height: PropTypes.number,
   name: PropTypes.string,
 };
 
@@ -97,6 +108,8 @@ Video.defaultProps = {
   isSpeaking: false,
   size: 100,
   name: '',
+  width: 160,
+  height: 90,
 };
 
 export default Video;
