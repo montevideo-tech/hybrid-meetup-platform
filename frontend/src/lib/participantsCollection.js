@@ -1,10 +1,6 @@
 /**
  * Calculate optimal layout (most area used) of a number of boxes within a larger frame.
  * Given number of boxes, aspectRatio of those boxes, and spacing between them.
- *
- * Thanks to Anton Dosov for algorithm shown in this article:
- * https://dev.to/antondosov/building-a-video-gallery-just-like-in-zoom-4mam
- *
  * @param frameWidth width of the space holding the boxes
  * @param frameHeight height of the space holding the boxes
  * @param boxCount number of boxes to place (all same aspect ratio)
