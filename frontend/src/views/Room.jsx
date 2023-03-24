@@ -1,21 +1,3 @@
-/* eslint-disable no-param-reassign */
-/* eslint-disable max-len */
-/* eslint-disable no-undef */
-/* eslint-disable react/prop-types */
-/*
-This component assumes that it will be given a list of active participants that will
-be constantly recalcultated by the parent component or an external function so that
-the subgroup of people that are actually being shown in the room (as opposed to always
-showing everyone, which is impossible) gets decided outside this component.
-
-That external function could work something like this:
-A "visibleParticipants" array could be calculated. This array would hold the
-{rowsLimit}*{tilesPerRowLimit} (at most) room participants that are visible at any given moment.
-It's also ordered by visiblity priority. This means that when a currently hidden participant needs
-to be shown, the currently visible participant with the least visibility priority
-(the last in the array) will be hidden to make place for this new one. By default, a participant
-is shown with middle priority (It gets inserted in the middle of the visibleParticipants array).
-*/
 import {
   React, useState, useEffect, useRef,
 } from 'react';
@@ -66,6 +48,11 @@ function Room() {
   const paddingY = height < 600 ? 10 : 40;
   const paddingX = width < 800 ? 40 : 60;
 
+  const setRemoteStreamsRef = (data) => {
+    remoteStreamsRef.current = data;
+    setRemoteStreams(Array.from(data.values()));
+  };
+
   const participantsCount = remoteStreams.length;
 
   let collectionWidth = width - paddingX * 2;
@@ -79,14 +66,14 @@ function Room() {
     collectionWidth = Math.max(collectionWidth, 160);
   }
   let collectionHeight = height - headerHeight - paddingY * 2;
-  let screenShareWidth = isSharingScreen ? width - collectionWidth : 0;
+  // let screenShareWidth = isSharingScreen ? width - collectionWidth : 0;
   let direction = 'row';
   if (width < height) {
     gap = 8;
     collectionWidth = width - paddingX * 2;
     if (isSharingScreen) {
       direction = 'column';
-      screenShareWidth = width;
+      // screenShareWidth = width;
       collectionHeight = height - headerHeight - (width / 4) * 3;
     }
   }
@@ -94,11 +81,6 @@ function Room() {
   const rows = Math.max(Math.ceil(collectionHeight / (90 * scaleFactor)), 1);
   const columns = Math.max(Math.ceil(collectionWidth / (160 * scaleFactor)), 1);
   const participantsPerPage = Math.round(rows * columns);
-
-  const setRemoteStreamsRef = (data) => {
-    remoteStreamsRef.current = data;
-    setRemoteStreams(Array.from(data.values()));
-  };
 
   const leaveRoom = async () => {
     if (roomRef.current) {
@@ -124,6 +106,12 @@ function Room() {
     }
   };
 
+  const updateIsSpeakingStatus = (id, newStatus) => {
+    const streamData = remoteStreamsRef.current.get(id);
+    streamData.speaking = newStatus;
+    setRemoteStreamsRef(remoteStreamsRef.current);
+  };
+
   // initialize room
   useEffect(() => {
     const updateParticipantRoles = async () => {
@@ -134,21 +122,23 @@ function Room() {
         id: part.id,
       })));
     };
+
     const subscribeToRemoteStreams = async (r) => {
-      // subscribe ta all remote participants for testing purposes
       const { remoteParticipants } = r;
       const rps = Array.from(remoteParticipants.values());
-      await Promise.all(rps.map(async (rp) => {
-        dispatch(addUpdateParticipant({
-          name: rp.id,
-          role: ROLES.GUEST,
-        }));
-        rp.subscribe();
-        // Add remote participants to participants list.
-      }));
-
+      // Listen to all the participants that are already on the call
+      rps.map(async (rp) => {
+        rp.on('StartedSpeaking', () => {
+          updateIsSpeakingStatus(rp.connectionId, true);
+        });
+        rp.on('StoppedSpeaking', () => {
+          updateIsSpeakingStatus(rp.connectionId, false);
+        });
+        await rp.subscribe();
+      });
       updateParticipantRoles();
     };
+
     const joinRoom = async () => {
       const JWT = await roomJWTprovider(
         roomId,
@@ -196,7 +186,7 @@ function Room() {
           remoteStreamsRef.current.set(
             remoteParticipant.id,
             {
-              audioStream, videoStream, [`${track.kind}Muted`]: track.muted, name: remoteParticipant.displayName,
+              audioStream, videoStream, [`${track.kind}Muted`]: track.muted, speaking: false, name: remoteParticipant.displayName,
             },
           );
         }
@@ -217,6 +207,12 @@ function Room() {
 
       newRoom.on('ParticipantJoined', async (p) => {
         p.subscribe();
+        p.on('StartedSpeaking', () => {
+          updateIsSpeakingStatus(p.id, true);
+        });
+        p.on('StoppedSpeaking', () => {
+          updateIsSpeakingStatus(p.id, false);
+        });
         const participantData = await getRoomPermissions(roomId, p.displayName);
         if (participantData.length > 0) {
           dispatch(addUpdateParticipant({
@@ -254,7 +250,6 @@ function Room() {
       dispatch(cleanRoom());
       leaveRoom();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updateLocalTracksMuted = (kind, muted) => {

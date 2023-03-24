@@ -102,13 +102,14 @@ function ParticipantsCollection(props) {
           gap={gap - 6}
         >
           {currentParticipants.map(({
-            videoStream, name, isVideoMuted, isAudioMuted,
+            videoStream, name, audioMuted, videoMuted, speaking
           }) => (
             <Video
               key={name}
               stream={videoStream}
-              isAudioMuted={isAudioMuted || false}
-              isVideoMuted={isVideoMuted || false}
+              isAudioMuted={audioMuted || false}
+              isVideoMuted={videoMuted || false}
+              isSpeaking={speaking || false}
               name={name}
             />
           ))}
@@ -146,7 +147,6 @@ function ParticipantsCollection(props) {
 
 ParticipantsCollection.propTypes = {
   children: ReactNode,
-  roomData: PropTypes.arrayOf,
   width: PropTypes.number,
   height: PropTypes.number,
   gap: PropTypes.number,
@@ -162,8 +162,6 @@ ParticipantsCollection.defaultProps = {
   gap: 10,
   participantsPerPage: MAX_PARTICIPANTS_PER_PAGE,
   participantsCount: 1,
-  roomData: undefined,
-
 };
 
 export default ParticipantsCollection;

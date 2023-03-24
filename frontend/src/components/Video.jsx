@@ -43,6 +43,7 @@ function Video(props) {
       background: 'rgb(60,64,67)',
       borderRadius: '5px',
       overflow: 'hidden',
+      border: `${isSpeaking ? '5px solid red' : {}}`,
     }}
     >
       {isVideoMuted && (
