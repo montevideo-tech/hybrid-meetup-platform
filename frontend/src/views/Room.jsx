@@ -58,7 +58,7 @@ function Room() {
   const roomRef = useRef();
   const remoteStreamsRef = useRef(new Map());
   const currentUser = useSelector((state) => state.user);
-  const roomData = useSelector((state) => state.room);
+  // const roomData = useSelector((state) => state.room);
   const dispatch = useDispatch();
   const { width = 0, height = 0 } = useWindowDimensions();
   const headerHeight = 153.6; // 8vh
