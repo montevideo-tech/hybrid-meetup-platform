@@ -1,33 +1,15 @@
-/* eslint-disable no-param-reassign */
-/* eslint-disable max-len */
-/* eslint-disable no-undef */
-/* eslint-disable react/prop-types */
-/*
-This component assumes that it will be given a list of active participants that will
-be constantly recalcultated by the parent component or an external function so that
-the subgroup of people that are actually being shown in the room (as opposed to always
-showing everyone, which is impossible) gets decided outside this component.
-
-That external function could work something like this:
-A "visibleParticipants" array could be calculated. This array would hold the
-{rowsLimit}*{tilesPerRowLimit} (at most) room participants that are visible at any given moment.
-It's also ordered by visiblity priority. This means that when a currently hidden participant needs
-to be shown, the currently visible participant with the least visibility priority
-(the last in the array) will be hidden to make place for this new one. By default, a participant
-is shown with middle priority (It gets inserted in the middle of the visibleParticipants array).
-*/
 import {
   React, useState, useEffect, useRef,
 } from 'react';
 import { useLoaderData, Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Box, CircularProgress, Grid, Typography, useMediaQuery, useTheme,
+  Box, CircularProgress,
 } from '@mui/material';
 
+import useWindowDimensions from '../hooks/useWindowDimesion';
 import RoomControls from '../components/RoomControls';
 import Video from '../components/Video';
-import Audio from '../components/Audio';
 
 import { Room as WebRoom } from '../lib/webrtc';
 import { roomJWTprovider, getRoomPermissions } from '../actions';
@@ -35,6 +17,7 @@ import {
   initRoom, addUpdateParticipant, removeParticipant, removeRole, cleanRoom,
 } from '../reducers/roomSlice';
 import subscribeToRoleChanges, { ROLES } from '../utils/roles';
+import ParticipantsCollection from '../components/ParticipantsCollection';
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -57,87 +40,47 @@ function Room() {
   const roomRef = useRef();
   const remoteStreamsRef = useRef(new Map());
   const currentUser = useSelector((state) => state.user);
-  const roomData = useSelector((state) => state.room);
+  // const roomData = useSelector((state) => state.room);
   const dispatch = useDispatch();
-
-  const theme = useTheme();
-  const isXs = useMediaQuery(theme.breakpoints.only('xs'));
-  const isSm = useMediaQuery(theme.breakpoints.between('sm', 'md'));
-  const isMd = useMediaQuery(theme.breakpoints.between('md', 'lg'));
-  const isLg = useMediaQuery(theme.breakpoints.between('lg', 'xl'));
-
-  const getScreenSizeBreakpoint = () => {
-    if (isXs) {
-      return 'xs';
-    } if (isSm) {
-      return 'sm';
-    } if (isMd) {
-      return 'md';
-    } if (isLg) {
-      return 'lg';
-    }
-    return 'xl';
-  };
-
-  // this are arbitrary values, we'll revisit this
-  const getLimitOfCameras = {
-    xs: 1,
-    sm: 2,
-    md: 3,
-    lg: 4,
-    xl: 6,
-  };
+  const { width = 0, height = 0 } = useWindowDimensions();
+  const headerHeight = 153.6; // 8vh
+  let gap = 10;
+  const paddingY = height < 600 ? 10 : 40;
+  const paddingX = width < 800 ? 40 : 60;
 
   const setRemoteStreamsRef = (data) => {
     remoteStreamsRef.current = data;
     setRemoteStreams(Array.from(data.values()));
   };
 
-  // It's possible that visibleParitcipants will eventually not need to be in the state,
-  // if it ends up being a component property passed in by the parent component.
-  // for now it needs to be in the state so that the "Add Participant" test button can work
-  const rowsLimit = { xs: 2, sm: 3, md: 4 };
-  const tilesPerRowLimit = { xs: 2, sm: 3, md: 6 };
-  // it's assumed that we'll get a maximum of rowsLimit*tilesPerRowLimit visibleParticipants
-  // if this precondition isn't true then the video grid can't be expected to render properly
-  const calculateTilesPerRow = (screenSize) => {
-    // screenSize should be either 'xs', 'sm' or 'md'
-    /* This function attempts to distribute the tiles between
-    rows as evenly as possible. It does so while trying to mantain
-    the amount of tiles per row bigger or equal that the total amount
-    of rows, as this looks better than the opposite relation. */
-    const tilesAmount = remoteStreams.length;
-    let rows = 1;
-    while (rows <= rowsLimit[screenSize]) {
-      const tilesPerRow = Math.ceil(tilesAmount / (rows + 1));
-      if (
-        tilesPerRow >= rows + 1
-      ) {
-        rows += 1;
-      } else {
-        break;
-      }
+  const participantsCount = remoteStreams.length;
+
+  let collectionWidth = width - paddingX * 2;
+  if (isSharingScreen) {
+    if (participantsCount < 6) {
+      collectionWidth = width * 0.25 - paddingX;
+    } else {
+      collectionWidth = width * 0.33 - paddingX / 2;
     }
-    /*
-    TODO? fix the "7" case (ask Nico Reyes)
-    const finalTilesPerRow = Math.ceil(tilesAmount / (rows));
-    const tilesInLastRow = finalTilesPerRow % rows;
-    if (finalTilesPerRow - (tilesInLastRow) >= 2) {
-      rows -= 1;
+
+    collectionWidth = Math.max(collectionWidth, 160);
+  }
+  let collectionHeight = height - headerHeight - paddingY * 2;
+  // let screenShareWidth = isSharingScreen ? width - collectionWidth : 0;
+  let direction = 'row';
+  if (width < height) {
+    gap = 8;
+    collectionWidth = width - paddingX * 2;
+    if (isSharingScreen) {
+      direction = 'column';
+      // screenShareWidth = width;
+      collectionHeight = height - headerHeight - (width / 4) * 3;
     }
-    */
-    return Math.min(
-      tilesPerRowLimit[screenSize],
-      Math.ceil(tilesAmount / rows),
-    );
-  };
-  const tilesPerRow = {
-    xs: calculateTilesPerRow('xs'),
-    sm: calculateTilesPerRow('sm'),
-    md: calculateTilesPerRow('md'),
-    lg: calculateTilesPerRow('lg'),
-    xl: calculateTilesPerRow('xl'),
-  };
+  }
+  const scaleFactor = 2.25;
+  const rows = Math.max(Math.ceil(collectionHeight / (90 * scaleFactor)), 1);
+  const columns = Math.max(Math.ceil(collectionWidth / (160 * scaleFactor)), 1);
+  const participantsPerPage = Math.round(rows * columns);
 
   const leaveRoom = async () => {
     if (roomRef.current) {
@@ -349,6 +292,7 @@ function Room() {
     right: 0,
     marginLeft: '2vw',
     marginRight: '2vw',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
   };
 
   return (
@@ -360,32 +304,24 @@ function Room() {
       {
         room ? (
           <Box style={{
-            position: 'relative', marginLeft: '2vw', marginRight: '2vw',
+            display: 'flex',
+            width: '100%',
+            height: '100%',
+            alignItems: 'center',
+            position: 'relative',
+            justifyContent: 'center',
+            direction: { direction },
           }}
           >
-            <Grid sx={{ width: '65vw', height: '60vh' }} container spacing={2} columns={tilesPerRow} alignItems="center" justifyContent="center">
-              {
-                remoteStreams.slice(0, getLimitOfCameras[getScreenSizeBreakpoint()]).map(({
-                  videoStream, name, audioMuted, videoMuted, speaking
-                }) => (
-                  <Grid item xs={1} sm={1} md={1} key={videoStream.id}>
-                    <Box>
-                      <Video
-                        stream={videoStream}
-                        isAudioMuted={audioMuted || false}
-                        isVideoMuted={videoMuted || false}
-                        isSpeaking={speaking || false}
-                        name={name}
-                      />
-                      <Typography variant="caption" display="block" gutterBottom>
-                        {roomData.participants
-                          .find((part) => part.name === name)?.role}
-                      </Typography>
-                    </Box>
-                  </Grid>
-                ))
-              }
-            </Grid>
+            <ParticipantsCollection
+              gap={gap}
+              width={collectionWidth}
+              height={collectionHeight}
+              participantsPerPage={participantsPerPage}
+              participantsCount={participantsCount}
+            >
+              {remoteStreams}
+            </ParticipantsCollection>
             <div style={localStreamStyle}>
               <Video
                 stream={localStream}
@@ -402,16 +338,6 @@ function Room() {
           </div>
         )
       }
-      <div>
-        {remoteStreams.map(({
-          audioStream,
-        }) => (
-          <Audio
-            stream={audioStream}
-          />
-        ))}
-      </div>
-
       <RoomControls
         updateScreenShare={updateScreenShare}
         isSharingScreen={isSharingScreen}
