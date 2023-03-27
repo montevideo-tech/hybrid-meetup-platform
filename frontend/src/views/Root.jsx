@@ -48,8 +48,16 @@ function Root() {
       <div style={{ height: '8vh' }}>
         <AppBar position="relative" sx={{ height: '100%', justifyContent: 'center' }}>
           <Toolbar>
-            <MenuItem variant="h6" sx={{ flexGrow: 1, textDecoration: 'none' }} component={RouterLink} to="/">
-              Monte&lt;video&gt; Tech Summer Camp
+            <MenuItem
+              sx={{
+                flexGrow: 1,
+                textDecoration: 'none',
+                letterSpacing: 1,
+              }}
+              component={RouterLink}
+              to="/"
+            >
+              Hybridly
             </MenuItem>
             {auth?.email && auth?.token && (
               <div>
