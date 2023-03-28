@@ -42,7 +42,6 @@ function Root() {
         flexDirection: 'column',
         width: '100vw',
         height: '100vh',
-        backgroundColor: 'rgb(32,33,36)',
       }}
     >
       <div style={{ height: '8vh' }}>

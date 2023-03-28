@@ -310,6 +310,7 @@ function Room() {
             alignItems: 'center',
             position: 'relative',
             justifyContent: 'center',
+            backgroundColor: 'rgb(32,33,36)',
             direction: { direction },
           }}
           >
