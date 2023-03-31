@@ -286,13 +286,9 @@ function Room() {
   };
 
   const localStreamStyle = {
-    width: '25vw',
     position: 'fixed',
-    bottom: 0,
-    right: 0,
-    marginLeft: '2vw',
-    marginRight: '2vw',
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    bottom: 4,
+    right: 100,
   };
 
   return (
