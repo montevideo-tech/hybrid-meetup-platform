@@ -1,10 +1,15 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
+
 import {
   List, ListItem, ListItemButton, ListItemText, Typography, IconButton,
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import {
+  Delete as DeleteIcon,
+  Edit as EditIcon,
+} from '@mui/icons-material';
+
 import { useDispatch } from 'react-redux';
 import { deleteRoom } from '../actions';
 
@@ -43,7 +48,19 @@ function RoomsList(props) {
               <ListItemButton component={RouterLink} to={`/rooms/${room.providerId}`}>
                 <ListItemText primary={room.name} secondary={createdByStr} />
               </ListItemButton>
-              <IconButton aria-label="delete" size="large" onClick={() => dispatch(deleteRoom(room.providerId))}>
+              <IconButton
+                aria-label="edit"
+                size="large"
+                component={RouterLink}
+                to={`/rooms/${room.providerId}/edit`}
+              >
+                <EditIcon fontSize="inherit" />
+              </IconButton>
+              <IconButton
+                aria-label="delete"
+                size="large"
+                onClick={() => dispatch(deleteRoom(room.providerId))}
+              >
                 <DeleteIcon fontSize="inherit" />
               </IconButton>
             </ListItem>
