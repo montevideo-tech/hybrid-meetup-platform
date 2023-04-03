@@ -48,9 +48,21 @@ function Room() {
   const paddingY = height < 600 ? 10 : 40;
   const paddingX = width < 800 ? 40 : 60;
 
+  // To add a new criteria to the comparator you need to
+  // Decide if it's higher or lower pririoty compared to the already established
+  // if it's higher you must add the 'if' before otherwise add it after.
+  const comparator = (participant1, participant2) => {
+    if (participant1.speaking > participant2.speaking) {
+      return -1;
+    }
+
+    return 1;
+  };
+
   const setRemoteStreamsRef = (data) => {
     remoteStreamsRef.current = data;
-    setRemoteStreams(Array.from(data.values()));
+    const remoteStreamsSorted = Array.from(data.values()).sort(comparator);
+    setRemoteStreams(remoteStreamsSorted);
   };
 
   const participantsCount = remoteStreams.length;
