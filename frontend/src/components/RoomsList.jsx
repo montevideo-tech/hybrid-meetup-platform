@@ -1,10 +1,15 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
+
 import {
   Grid, Card, CardContent, CardActions, Typography, IconButton,
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import {
+  Delete as DeleteIcon,
+  Edit as EditIcon,
+} from '@mui/icons-material';
+
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import Button from '@mui/material/Button';
@@ -77,6 +82,14 @@ function RoomsList(props) {
                   </StyledButton>
                   <IconButton aria-label="delete" size="medium" onClick={() => dispatch(deleteRoom(room.providerId))}>
                     <DeleteIcon fontSize="inherit" />
+                  </IconButton>
+                  <IconButton
+                    aria-label="edit"
+                    size="medium"
+                    component={RouterLink}
+                    to={`/rooms/${room.providerId}/edit`}
+                  >
+                    <EditIcon fontSize="inherit" />
                   </IconButton>
                 </CardActions>
               </StyledCard>
