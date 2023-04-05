@@ -4,7 +4,7 @@ import {
 import { useLoaderData, Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Box, CircularProgress,
+  Button, Box, CircularProgress,
 } from '@mui/material';
 
 import useWindowDimensions from '../hooks/useWindowDimesion';
@@ -18,6 +18,7 @@ import {
 } from '../reducers/roomSlice';
 import subscribeToRoleChanges, { ROLES } from '../utils/roles';
 import ParticipantsCollection from '../components/ParticipantsCollection';
+import addMultipleUsers from '../scripts/addMultipleUsers';
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -159,6 +160,8 @@ function Room() {
         null,
         () => { setRoomNotFound(true); },
       );
+
+      console.log('roomId', roomId);
       const newRoom = new WebRoom(JWT);
       const newParticipant = await newRoom.join();
 
@@ -225,6 +228,7 @@ function Room() {
         p.on('StoppedSpeaking', () => {
           updateIsSpeakingStatus(p.id, false);
         });
+        console.log('previous to get Room PERMISSIONS', roomId, p.displayName);
         const participantData = await getRoomPermissions(roomId, p.displayName);
         if (participantData.length > 0) {
           dispatch(addUpdateParticipant({
@@ -305,6 +309,13 @@ function Room() {
 
   return (
     <>
+      <Button
+        size="large"
+        disabled={!localTracks.video}
+        onClick={() => addMultipleUsers()}
+      >
+        ADD USER
+      </Button>
       {
         roomNotFound
         && <Navigate to="/rooms/404" />
