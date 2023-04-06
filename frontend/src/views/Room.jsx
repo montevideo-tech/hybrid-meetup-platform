@@ -56,6 +56,10 @@ function Room() {
       return -1;
     }
 
+    if (participant1.lastSpokenTime > participant2.lastSpokenTime) {
+      return -1;
+    }
+
     return 1;
   };
 
@@ -121,6 +125,9 @@ function Room() {
   const updateIsSpeakingStatus = (id, newStatus) => {
     const streamData = remoteStreamsRef.current.get(id);
     streamData.speaking = newStatus;
+    if (newStatus) {
+      streamData.lastSpokenTime = Date.now();
+    }
     setRemoteStreamsRef(remoteStreamsRef.current);
   };
 
@@ -198,7 +205,12 @@ function Room() {
           remoteStreamsRef.current.set(
             remoteParticipant.id,
             {
-              audioStream, videoStream, [`${track.kind}Muted`]: track.muted, speaking: false, name: remoteParticipant.displayName,
+              audioStream,
+              videoStream,
+              [`${track.kind}Muted`]: track.muted,
+              speaking: false,
+              name: remoteParticipant.displayName,
+              lastSpokenTime: 0
             },
           );
         }
