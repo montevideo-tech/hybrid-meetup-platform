@@ -89,6 +89,7 @@ export class LocalParticipant extends Participant {
       throw new Error('Unexpected parameters passes to publishTracks');
     }
 
+    console.log('TTP', tracksToPublish);
     const publishedTracks = await this.provider.publishTracks(tracksToPublish); // returns Mux Track
     return publishedTracks.map((t) => new Track(t)); // wrap into our Track
   }
@@ -101,6 +102,7 @@ export class LocalParticipant extends Participant {
       audio: false,
     };
     const screenStreams = await getDisplayMedia(displayMediaOptions);
+    console.log('TTP Screen Share', screenStreams);
     const publishedTracks = await this.provider.publishTracks(screenStreams); // returns Mux Track
     return publishedTracks.map((t) => new Track(t)); // wrap into our Track
   }

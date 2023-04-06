@@ -149,7 +149,6 @@ export const roomJWTprovider = async (
         },
       },
     );
-    console.log('response from roomJWT provider', response);
     onSuccess && onSuccess(response);
     /* eslint-disable consistent-return */
     return response.data.spaceToken;
