@@ -49,9 +49,25 @@ function Room() {
   const paddingY = height < 600 ? 10 : 40;
   const paddingX = width < 800 ? 40 : 60;
 
+  // To add a new criteria to the comparator you need to
+  // Decide if it's higher or lower pririoty compared to the already established
+  // if it's higher you must add the 'if' before otherwise add it after.
+  const comparator = (participant1, participant2) => {
+    if (participant1.speaking > participant2.speaking) {
+      return -1;
+    }
+
+    if (participant1.lastSpokenTime > participant2.lastSpokenTime) {
+      return -1;
+    }
+
+    return 1;
+  };
+
   const setRemoteStreamsRef = (data) => {
     remoteStreamsRef.current = data;
-    setRemoteStreams(Array.from(data.values()));
+    const remoteStreamsSorted = Array.from(data.values()).sort(comparator);
+    setRemoteStreams(remoteStreamsSorted);
   };
 
   const participantsCount = remoteStreams.length;
@@ -112,6 +128,9 @@ function Room() {
   const updateIsSpeakingStatus = (id, newStatus) => {
     const streamData = remoteStreamsRef.current.get(id);
     streamData.speaking = newStatus;
+    if (newStatus) {
+      streamData.lastSpokenTime = Date.now();
+    }
     setRemoteStreamsRef(remoteStreamsRef.current);
   };
   // initialize room
@@ -196,7 +215,8 @@ function Room() {
               [`${track.kind}Muted`]: track.muted,
               speaking: false,
               name: remoteParticipant.displayName,
-              isSharingScreen // set isSharingScreen for remote participant
+              isSharingScreen, // set isSharingScreen for remote participant
+              lastSpokenTime: 0
             },
           );
         }
@@ -305,13 +325,9 @@ function Room() {
   };
 
   const localStreamStyle = {
-    width: '25vw',
     position: 'fixed',
-    bottom: 0,
-    right: 0,
-    marginLeft: '2vw',
-    marginRight: '2vw',
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    bottom: 4,
+    right: 100,
   };
 
   return (
@@ -329,6 +345,7 @@ function Room() {
             alignItems: 'center',
             position: 'relative',
             justifyContent: 'center',
+            backgroundColor: 'rgb(32,33,36)',
             direction: { direction },
           }}
           >

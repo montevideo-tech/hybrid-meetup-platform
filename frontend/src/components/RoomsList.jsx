@@ -1,19 +1,49 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
+
 import {
-  List, ListItem, ListItemButton, ListItemText, Typography, IconButton,
+  Grid, Card, CardContent, CardActions, Typography, IconButton,
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import {
+  Delete as DeleteIcon,
+  Edit as EditIcon,
+} from '@mui/icons-material';
+
 import { useDispatch } from 'react-redux';
+import styled from 'styled-components';
+import Button from '@mui/material/Button';
 import { deleteRoom } from '../actions';
+
+const StyledButton = styled(Button)`
+  &&.custom-button {
+    background-color: #652ead;
+    color: #ffffff;
+  }
+  &&.custom-button:hover {
+    background-color: #391052;
+  }
+  &&.custom-button:disabled {
+    background-color: #cccccc;
+  }
+`;
+
+const StyledCard = styled(Card)`
+  &&.custom-card {
+    border: 1px solid #f0e4ff;
+    box-shadow: 0px 3px 2px rgba(77, 71, 71, 0.349);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+`;
 
 function RoomsList(props) {
   const dispatch = useDispatch();
   const { list } = props; // TODO use store
   return (
     list.length ? (
-      <List>
+      <Grid container spacing={2}>
         {list.map((room) => {
           const {
             id, name, providerId, createdBy,
@@ -36,20 +66,37 @@ function RoomsList(props) {
           }
 
           return (
-            <ListItem
-              key={room.id}
-              sx={{ pl: 0 }}
-            >
-              <ListItemButton component={RouterLink} to={`/rooms/${room.providerId}`}>
-                <ListItemText primary={room.name} secondary={createdByStr} />
-              </ListItemButton>
-              <IconButton aria-label="delete" size="large" onClick={() => dispatch(deleteRoom(room.providerId))}>
-                <DeleteIcon fontSize="inherit" />
-              </IconButton>
-            </ListItem>
+            <Grid item xs={12} sm={6} md={4} key={room.id}>
+              <StyledCard className="custom-card">
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="div">
+                    {room.name}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {createdByStr}
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <StyledButton className="custom-button" component={RouterLink} to={`/rooms/${room.providerId}`}>
+                    Join Room
+                  </StyledButton>
+                  <IconButton aria-label="delete" size="medium" onClick={() => dispatch(deleteRoom(room.providerId))}>
+                    <DeleteIcon fontSize="inherit" />
+                  </IconButton>
+                  <IconButton
+                    aria-label="edit"
+                    size="medium"
+                    component={RouterLink}
+                    to={`/rooms/${room.providerId}/edit`}
+                  >
+                    <EditIcon fontSize="inherit" />
+                  </IconButton>
+                </CardActions>
+              </StyledCard>
+            </Grid>
           );
         })}
-      </List>
+      </Grid>
     ) : (
       <Typography variant="body1">There are no rooms yet!</Typography>
     )
