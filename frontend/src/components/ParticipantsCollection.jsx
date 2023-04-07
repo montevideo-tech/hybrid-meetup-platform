@@ -16,6 +16,7 @@ function ParticipantsCollection(props) {
   } = props;
 
   const [currentPage, setCurrentPage] = useState(1);
+  // const [selectedParticipant, setSelectedParticipant] = useState(null);
 
   const numberPages = useMemo(() => {
     if (participantsCount >= participantsPerPage) {
@@ -50,6 +51,20 @@ function ParticipantsCollection(props) {
   };
 
   const widthBetweenPagination = numberPages === 1 ? width : width - 80;
+
+  // const handleParticipantSelection = (participant) => {
+  //   setSelectedParticipant(participant);
+  // };
+
+  // const selectedParticipantStyle = {
+  //   border: '2px solid blue',
+  //   transform: 'scale(1.5)',
+  // };
+
+  // const normalParticipantStyle = {
+  //   border: 'none',
+  //   transform: 'none',
+  // };
 
   return (
     <Box style={{
@@ -111,6 +126,9 @@ function ParticipantsCollection(props) {
               isVideoMuted={videoMuted || false}
               isSpeaking={speaking || false}
               name={name}
+              // style={selectedParticipant === name
+              //   ? selectedParticipantStyle : normalParticipantStyle}
+              // onClick={() => handleParticipantSelection(name)}
             />
           ))}
         </ParticipantLayout>

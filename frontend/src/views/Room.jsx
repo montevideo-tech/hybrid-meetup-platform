@@ -18,6 +18,7 @@ import {
 } from '../reducers/roomSlice';
 import subscribeToRoleChanges, { ROLES } from '../utils/roles';
 import ParticipantsCollection from '../components/ParticipantsCollection';
+import ShareScreen from '../components/ShareScreen';
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -31,9 +32,9 @@ function Room() {
   const [localTracks, setLocalTracks] = useState({ video: null, audio: null });
   const [isSharingScreen, setIsSharingScreen] = useState(false);
   const [screenRoom, setScreenRoom] = useState();
-
   const [remoteStreams, setRemoteStreams] = useState([]);
   const [roomNotFound, setRoomNotFound] = useState(false);
+
   const roomId = useLoaderData();
 
   // create reference to access room state var in useEffect cleanup func
@@ -66,17 +67,19 @@ function Room() {
     collectionWidth = Math.max(collectionWidth, 160);
   }
   let collectionHeight = height - headerHeight - paddingY * 2;
-  // let screenShareWidth = isSharingScreen ? width - collectionWidth : 0;
+  let screenShareWidth = isSharingScreen
+    ? Math.min(width - collectionWidth - paddingX * 2, width - paddingX * 2) : 0;
   let direction = 'row';
   if (width < height) {
     gap = 8;
     collectionWidth = width - paddingX * 2;
     if (isSharingScreen) {
       direction = 'column';
-      // screenShareWidth = width;
       collectionHeight = height - headerHeight - (width / 4) * 3;
+      screenShareWidth = width - paddingX * 2;
     }
   }
+
   const scaleFactor = 2.25;
   const rows = Math.max(Math.ceil(collectionHeight / (90 * scaleFactor)), 1);
   const columns = Math.max(Math.ceil(collectionWidth / (160 * scaleFactor)), 1);
@@ -111,7 +114,6 @@ function Room() {
     streamData.speaking = newStatus;
     setRemoteStreamsRef(remoteStreamsRef.current);
   };
-
   // initialize room
   useEffect(() => {
     const updateParticipantRoles = async () => {
@@ -155,9 +157,7 @@ function Room() {
         participants: [{ name: currentUser.email, role: ROLES.GUEST }],
       }));
 
-      // participantsRef.current = [...participantsRef.current,
-      //   { name: currentUser.email, role: ROLES.GUEST }];
-      // setParticipants(participantsRef.current);
+      // add event handler for TrackStarted event
       newRoom.on('ParticipantTrackSubscribed', (remoteParticipant, track) => {
         // if there's already a stream for this participant, add the track to it
         // this avoid having two different streams for the audio/video tracks of the
@@ -177,16 +177,26 @@ function Room() {
         } else {
           const audioStream = new MediaStream();
           const videoStream = new MediaStream();
+          let isSharingScreen = false;
+
           if (track.kind === 'audio') {
             audioStream.addTrack(track.mediaStreamTrack);
           } else {
             videoStream.addTrack(track.mediaStreamTrack);
           }
-
+          if (track.provider.source === 'screenshare') {
+            isSharingScreen = true;
+            setIsSharingScreen(true);
+          }
           remoteStreamsRef.current.set(
             remoteParticipant.id,
             {
-              audioStream, videoStream, [`${track.kind}Muted`]: track.muted, speaking: false, name: remoteParticipant.displayName,
+              audioStream,
+              videoStream,
+              [`${track.kind}Muted`]: track.muted,
+              speaking: false,
+              name: remoteParticipant.displayName,
+              isSharingScreen // set isSharingScreen for remote participant
             },
           );
         }
@@ -226,6 +236,8 @@ function Room() {
       newRoom.on('ParticipantLeft', (p) => {
         remoteStreamsRef.current.delete(p.id);
         setRemoteStreamsRef(remoteStreamsRef.current);
+        // if a participant who was sharing a screen leaves the room for remoteParticipants
+        setIsSharingScreen(false);
         dispatch(removeParticipant({ name: p.displayName }));
       });
       setRoom(newRoom);
@@ -241,7 +253,6 @@ function Room() {
       });
       setLocalStream(stream);
       setLocalTracks(newLocalTracks);
-      // setUserParticipant(newParticipant);
       subscribeToRemoteStreams(newRoom);
       subscribeToRoleChanges(roomId, handleRoleChange);
     };
@@ -262,16 +273,24 @@ function Room() {
     if (!isSharingScreen) {
       const JWT = await roomJWTprovider(roomId, `${currentUser.email}-screen-share`, null, null, () => { setRoomNotFound(true); });
       const newScreenRoom = new WebRoom(JWT);
-      const newParticipant = await newScreenRoom.join();
+      const newlocalParticipant = await newScreenRoom.join();
       setScreenRoom(newScreenRoom);
-      const tracks = await newParticipant.startScreenShare();
+      const tracks = await newlocalParticipant.startScreenShare();
       const stream = new MediaStream();
+      const audioStream = new MediaStream();
+      const videoStream = new MediaStream();
       const newLocalTracks = { ...localTracks };
 
       tracks.forEach((track) => {
+        if (track.kind === 'audio') {
+          audioStream.addTrack(track.mediaStreamTrack);
+        } else {
+          videoStream.addTrack(track.mediaStreamTrack);
+        }
         stream.addTrack(track.mediaStreamTrack);
         newLocalTracks[track.kind] = track;
       });
+
       setLocalTracks({ ...localTracks });
       // add listener on `Stop sharing` browser's button
       stream.getVideoTracks()[0]
@@ -320,8 +339,25 @@ function Room() {
               participantsPerPage={participantsPerPage}
               participantsCount={participantsCount}
             >
-              {remoteStreams}
+              {remoteStreams.filter((p) => !p.isSharingScreen)}
             </ParticipantsCollection>
+
+            {isSharingScreen
+            && (
+            <Box
+              style={{
+                display: 'flex',
+                maxHeight: '100%',
+                width: `${screenShareWidth}px`,
+                position: 'relative',
+              }}
+            >
+              <ShareScreen width={`${screenShareWidth}px`}>
+                {remoteStreams.find((p) => p.isSharingScreen)}
+              </ShareScreen>
+            </Box>
+            )}
+
             <div style={localStreamStyle}>
               <Video
                 stream={localStream}

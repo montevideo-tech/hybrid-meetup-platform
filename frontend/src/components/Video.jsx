@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
@@ -7,6 +8,8 @@ import {
 } from '@mui/material';
 import {
   MicOffOutlined as MicOffOutlinedIcon,
+  PushPinOutlined as PushPinOutlinedIcon,
+  PushPinRounded as PushPinRoundedIcon,
 } from '@mui/icons-material';
 import ParticipantInfo from './ParticipantInfo';
 import logo from '../assets/MVDTSC.png';
@@ -15,8 +18,23 @@ function Video(props) {
   const videoRef = useRef();
   const {
     // eslint-disable-next-line no-unused-vars
-    stream, isStreamLocal, isAudioMuted, isVideoMuted, isSpeaking, size, name, width, height,
+    stream,
+    isStreamLocal,
+    isAudioMuted,
+    isVideoMuted,
+    isSpeaking,
+    size,
+    name,
+    width,
+    height,
+    onClick,
+    style,
   } = props;
+  // const [isPinned, setIsPinned] = useState(false);
+
+  // const handlePinClick = () => {
+  // setIsPinned(!isPinned); // Cambiar el valor de la variable de estado al hacer clic en el icono
+  // };
 
   useEffect(() => {
     if (!stream) {
@@ -34,17 +52,20 @@ function Video(props) {
   const outlineWidth = 3;
 
   return (
-    <Box sx={{
-      position: 'relative',
-      width: `${width - outlineWidth * 2}px`,
-      height: `${height - outlineWidth * 2}px`,
-      minWidth: '160px',
-      minHeight: '90px',
-      background: 'rgb(60,64,67)',
-      borderRadius: '5px',
-      overflow: 'hidden',
-      border: `${isSpeaking ? '5px solid red' : {}}`,
-    }}
+    <Box
+      onClick={onClick}
+      sx={{
+        position: 'relative',
+        width: `${width - outlineWidth * 2}px`,
+        height: `${height - outlineWidth * 2}px`,
+        minWidth: '160px',
+        minHeight: '90px',
+        background: 'rgb(60,64,67)',
+        borderRadius: '5px',
+        overflow: 'hidden',
+        border: `${isSpeaking ? '5px solid red' : {}}`,
+        ...style,
+      }}
     >
       {isVideoMuted && (
         <img
@@ -84,6 +105,22 @@ function Video(props) {
           <MicOffOutlinedIcon sx={{ ml: '2px' }} />
         </IconButton>
       )}
+
+      {/* <IconButton
+        onClick={handlePinClick}
+        sx={{
+          position: 'absolute',
+          bottom: 10,
+          left: 10,
+          color: 'white',
+          bgcolor: 'rgba(0, 0, 0, 0.2)',
+          border: '2px solid',
+          fontSize: `${size * 2}%`,
+        }}
+      >
+        {isPinned
+          ? <PushPinRoundedIcon sx={{ ml: '2px' }} /> : <PushPinOutlinedIcon sx={{ ml: '2px' }} />}
+      </IconButton> */}
     </Box>
   );
 }
@@ -99,6 +136,8 @@ Video.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
   name: PropTypes.string,
+  onClick: PropTypes.func,
+  style: PropTypes.shape({}),
 };
 
 Video.defaultProps = {
@@ -111,6 +150,8 @@ Video.defaultProps = {
   name: '',
   width: 160,
   height: 90,
+  onClick: () => {},
+  style: {},
 };
 
 export default Video;
