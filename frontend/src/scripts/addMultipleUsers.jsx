@@ -1,3 +1,4 @@
+import { LocalTrack, TrackSource, TrackKind } from '@mux/spaces-web';
 import { Room as WebRoom } from '../lib/webrtc';
 import { roomJWTprovider } from '../actions';
 import videoURL from './jonaInTheLab.mp4';
@@ -38,26 +39,24 @@ const addMultipleUsers = async () => {
 
   const video = await getVideoTrackFromMP4();
 
-  const provider = {
-    isPublished: false,
-    track: video,
-    kind: 2,
-    height: 720,
-    width: 1280,
-    muted: true,
-    name: 'JonaInTheLab',
-    source: 'other',
-  };
+  const localTrack = new LocalTrack({
+    source: TrackSource.Other,
+  });
 
-  const elem = {};
+  localTrack.kind = TrackKind.Video;
+  localTrack.track = video;
+  localTrack.name = 'jona_in_the_lab';
+  localTrack.tid = video.id;
 
-  elem.provider = provider;
   const params = {};
 
-  params.tracks = [elem];
+  params.tracks = [localTrack];
 
-  const tracks = newParticipant.publishTracks(params);
-  console.log('Tracks', tracks);
+  newParticipant.publishTracks(params);
+};
+
+const kickOutEveryoneOut = async () => {
+
 };
 
 export default addMultipleUsers;

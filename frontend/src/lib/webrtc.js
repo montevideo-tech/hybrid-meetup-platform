@@ -81,7 +81,9 @@ export class LocalParticipant extends Participant {
     let tracksToPublish;
     if (params.tracks) {
       const { tracks } = params;
-      tracksToPublish = tracks.map((t) => t.provider); // Mux Tracks required to be published
+      console.log('Tracks', tracks);
+      // tracksToPublish = tracks.map((t) => t.provider); // Mux Tracks required to be published
+      tracksToPublish = tracks;
     } else if (params.constraints) {
       // TODO handle screen share
       tracksToPublish = await getUserMedia(params.constraints);
@@ -89,9 +91,10 @@ export class LocalParticipant extends Participant {
       throw new Error('Unexpected parameters passes to publishTracks');
     }
 
-    console.log('TTP', tracksToPublish);
     const publishedTracks = await this.provider.publishTracks(tracksToPublish); // returns Mux Track
+    console.log('Published tracks', publishedTracks);
     return publishedTracks.map((t) => new Track(t)); // wrap into our Track
+    // return null;
   }
 
   async startScreenShare() {

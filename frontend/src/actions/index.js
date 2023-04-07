@@ -219,7 +219,6 @@ export const getRoomPermissions = async (
         },
       },
     );
-    console.log('Response', response);
     onSuccess && onSuccess(response);
     return response.data.roomsData.data;
   } catch (error) {
