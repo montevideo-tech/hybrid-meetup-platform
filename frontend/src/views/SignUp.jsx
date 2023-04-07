@@ -7,10 +7,8 @@ import * as Yup from 'yup';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
+import { useTheme } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -18,8 +16,14 @@ import IconButton from '@mui/material/IconButton';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
 import Alert from '@mui/material/Alert';
+import {
+  StyledButton,
+  StyledLink,
+  StyledHeader,
+  StyledAvatar,
+  formVariants
+} from '../themes/componentsStyles';
 import { signUp } from '../actions';
 
 const StyledContainer = styled(Box)`
@@ -33,45 +37,14 @@ const StyledForm = styled(Box)`
   &.form {
     max-width: 400px;
   }
-  background-color: #fff;
+  background-color: ${({ theme }) => theme.palette.background.paper}; 
   border-radius: 10px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-  padding: 2rem;
+  box-shadow: ${({ theme }) => theme.shadows[3]};
+  padding: ${({ theme }) => theme.spacing(4)};
 `;
-
-const StyledButton = styled(Button)`
-  &&.custom-button {
-    background-color: #652ead;
-    color: #ffffff;
-  }
-  &&.custom-button:hover {
-    background-color: #391052;
-  }
-  &&.custom-button:disabled {
-    background-color: #cccccc;
-  }
-`;
-
-const StyledLink = styled(Link)`
-  color: #007bff;
-`;
-
-const StyledHeader = styled(Typography)`
-  font-weight: bold;
-  text-align: center;
-`;
-
-const StyledAvatar = styled(Avatar)`
-  background-color: #dbbcd7;
-`;
-
-const formVariants = {
-  initial: { opacity: 0, y: 100 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.7 } },
-  exit: { opacity: 0, y: -100, transition: { duration: 0.7 } }
-};
 
 function SignUp() {
+  const theme = useTheme();
   const navigate = useNavigate();
   const validationSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
@@ -119,8 +92,8 @@ function SignUp() {
         animate="animate"
         exit="exit"
       >
-        <StyledForm component="form" onSubmit={handleSubmit(onSubmit)} className="form">
-          <StyledAvatar>
+        <StyledForm theme={theme} component="form" onSubmit={handleSubmit(onSubmit)} className="form">
+          <StyledAvatar theme={theme}>
             <LockOutlinedIcon />
           </StyledAvatar>
           <StyledHeader variant="h5">
@@ -209,6 +182,7 @@ function SignUp() {
             helperText={errors.confirmPassword?.message}
           />
           <StyledButton
+            theme={theme}
             type="submit"
             fullWidth
             variant="contained"
@@ -220,7 +194,7 @@ function SignUp() {
           </StyledButton>
           <Grid container justifyContent="flex-end">
             <Grid item>
-              <StyledLink component={RouterLink} to="/signIn" variant="body2">
+              <StyledLink theme={theme} component={RouterLink} to="/signIn" variant="body2">
                 Already have an account? Sign In
               </StyledLink>
             </Grid>
