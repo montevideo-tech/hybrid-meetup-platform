@@ -1,28 +1,51 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import Alert from '@mui/material/Alert';
+import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import styled from 'styled-components';
+import { useTheme } from '@mui/material/styles';
+import TextField from '@mui/material/TextField';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import EmailIcon from '@mui/icons-material/Email';
+import Alert from '@mui/material/Alert';
+import {
+  StyledButton,
+  StyledLink,
+  StyledHeader,
+  StyledAvatar,
+  formVariants
+} from '../themes/componentsStyles';
 import { signInWithEmail } from '../actions';
+
+const StyledContainer = styled(Box)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 90vh;
+`;
+
+const StyledForm = styled(Box)`
+background-color: ${({ theme }) => theme.palette.background.paper};  
+border-radius: 10px;
+  box-shadow: ${({ theme }) => theme.shadows[5]};
+  padding: ${({ theme }) => theme.spacing(4)};
+`;
 
 function SignIn() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const theme = useTheme();
   const validationSchema = Yup.object().shape({
     email: Yup.string().required('Email is required').email('Email is invalid'),
     password: Yup.string().required('Password is required'),
@@ -37,6 +60,7 @@ function SignIn() {
   });
 
   const [alert, setAlert] = useState({ type: 'success', message: null });
+  const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (data) => {
     const onSuccess = () => {
@@ -49,71 +73,93 @@ function SignIn() {
   };
 
   return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
+    <StyledContainer>
+      <motion.div
+        variants={formVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
       >
-        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Sign In
-        </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <StyledForm theme={theme} component="form" onSubmit={handleSubmit(onSubmit)}>
+          <StyledAvatar theme={theme}>
+            <LockOutlinedIcon />
+          </StyledAvatar>
+          <StyledHeader variant="h5">
+            Sign In
+          </StyledHeader>
           <TextField
             margin="normal"
-            required
             fullWidth
             id="email"
             label="Email Address"
             name="email"
             autoFocus
             {...register('email')}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <EmailIcon />
+                </InputAdornment>
+              )
+            }}
             error={!!errors.email}
+            helperText={errors.email?.message}
           />
-          <Typography variant="inherit" color="textSecondary">
-            {errors.email?.message}
-          </Typography>
           <TextField
             margin="normal"
-            required
             fullWidth
             name="password"
             label="Password"
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             id="password"
             {...register('password')}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <LockOutlinedIcon />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() => setShowPassword(!showPassword)}
+                    onMouseDown={(event) => event.preventDefault()}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
             error={!!errors.password}
+            helperText={errors.password?.message}
           />
-          <Typography variant="inherit" color="textSecondary">
-            {errors.password?.message}
-          </Typography>
-          <Button
+          <StyledButton
+            theme={theme}
+            type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-            onClick={handleSubmit(async (data) => onSubmit(data))}
+            disabled={Object.keys(errors).length > 0}
+            sx={{ mt: 2, mb: 1 }}
           >
             Sign In
-          </Button>
-          <Grid container>
+          </StyledButton>
+          <Grid container justifyContent="flex-end">
             <Grid item>
-              <Link component={RouterLink} to="/signUp" variant="body2">
+              <StyledLink theme={theme} component={RouterLink} to="/signUp" variant="body2">
                 Don't have an account? Sign Up
-              </Link>
+              </StyledLink>
             </Grid>
           </Grid>
-          {alert.message
-            && <Alert severity={alert.type}>{alert.message}</Alert>}
-        </Box>
-      </Box>
-    </Container>
+          {alert.message && (
+            <Alert severity={alert.type} sx={{ mt: 2 }}>
+              {alert.message}
+            </Alert>
+          )}
+        </StyledForm>
+      </motion.div>
+    </StyledContainer>
   );
 }
 
