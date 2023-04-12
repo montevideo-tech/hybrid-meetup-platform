@@ -81,8 +81,6 @@ export class LocalParticipant extends Participant {
     let tracksToPublish;
     if (params.tracks) {
       const { tracks } = params;
-      console.log('Tracks', tracks);
-      // tracksToPublish = tracks.map((t) => t.provider); // Mux Tracks required to be published
       tracksToPublish = tracks;
     } else if (params.constraints) {
       // TODO handle screen share
@@ -92,9 +90,7 @@ export class LocalParticipant extends Participant {
     }
 
     const publishedTracks = await this.provider.publishTracks(tracksToPublish); // returns Mux Track
-    console.log('Published tracks', publishedTracks);
     return publishedTracks.map((t) => new Track(t)); // wrap into our Track
-    // return null;
   }
 
   async startScreenShare() {
@@ -105,7 +101,6 @@ export class LocalParticipant extends Participant {
       audio: false,
     };
     const screenStreams = await getDisplayMedia(displayMediaOptions);
-    console.log('TTP Screen Share', screenStreams);
     const publishedTracks = await this.provider.publishTracks(screenStreams); // returns Mux Track
     return publishedTracks.map((t) => new Track(t)); // wrap into our Track
   }

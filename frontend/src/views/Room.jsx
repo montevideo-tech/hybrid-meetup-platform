@@ -247,15 +247,6 @@ function Room() {
         p.on('StoppedSpeaking', () => {
           updateIsSpeakingStatus(p.id, false);
         });
-        console.log('previous to get Room PERMISSIONS', roomId, p.displayName);
-        // const participantData = await getRoomPermissions(roomId, p.displayName);
-        // if (participantData.length > 0) {
-        //   dispatch(addUpdateParticipant({
-        //     name: participantData[0].userEmail,
-        //     role: participantData[0]['rooms-permission'].name,
-        //     id: participantData[0].id,
-        //   }));
-        // } else { dispatch(addUpdateParticipant({ name: p.displayName, role: ROLES.GUEST })); }
       });
 
       newRoom.on('ParticipantLeft', (p) => {

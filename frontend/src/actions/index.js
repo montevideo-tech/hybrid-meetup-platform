@@ -207,8 +207,6 @@ export const getRoomPermissions = async (
     return;
   }
   try {
-    console.log('providerId', roomId);
-    console.log('userEmail', userEmail);
     const response = await mvdTech.post(
       '/get-room-permission',
       JSON.stringify({ providerId: roomId, userEmail }),
@@ -222,7 +220,6 @@ export const getRoomPermissions = async (
     onSuccess && onSuccess(response);
     return response.data.roomsData.data;
   } catch (error) {
-    console.log('error!!!', error);
     onError && onError(error);
     throw new Error(`unexpected ${error.response.status} response`);
   }

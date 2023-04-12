@@ -3,9 +3,6 @@ import { LocalTrack, TrackSource, TrackKind } from '@mux/spaces-web';
 import { Room as WebRoom } from '../lib/webrtc';
 import { roomJWTprovider } from '../actions';
 import videoURL0 from './videos/video0.mp4';
-// import videoURL1 from './videos/video1.mp4';
-// import videoURL2 from './videos/video2.mp4';
-// import videoURL3 from './videos/video3.mp4';
 
 const videos = [videoURL0];
 
