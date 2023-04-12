@@ -1,3 +1,4 @@
+// Room
 import {
   React, useState, useEffect, useRef,
 } from 'react';
@@ -18,7 +19,7 @@ import {
 } from '../reducers/roomSlice';
 import subscribeToRoleChanges, { ROLES } from '../utils/roles';
 import ParticipantsCollection from '../components/ParticipantsCollection';
-import addMultipleUsers from '../scripts/addMultipleUsers';
+import addFakeParticipant from '../scripts/addFakeParticipant';
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -308,15 +309,31 @@ function Room() {
     right: 100,
   };
 
+  const addManyParticipants = (numberOfParticipants) => {
+    let videoNumber = 0;
+    for (let i = 0; i < numberOfParticipants; i++) {
+      addFakeParticipant(roomId, `testing${i}@hotmail.com`, videoNumber);
+      videoNumber++;
+      if (videoNumber > 0) {
+        videoNumber = 0;
+      }
+    }
+  };
+
   return (
     <>
-      <Button
-        size="large"
-        disabled={!localTracks.video}
-        onClick={() => addMultipleUsers()}
-      >
-        ADD USER
-      </Button>
+      {
+        currentUser?.role === 'admin' && (
+          <Button
+            size="large"
+            disabled={!localTracks.video}
+            onClick={() => addManyParticipants(8)}
+          >
+            ADD USER
+          </Button>
+        )
+      }
+
       {
         roomNotFound
         && <Navigate to="/rooms/404" />
