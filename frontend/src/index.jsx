@@ -2,7 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Provider } from 'react-redux';
-
+import { ThemeProvider } from '@mui/material';
+import theme from './themes/theme';
 import './index.css';
 import { store } from './store';
 
@@ -89,4 +90,8 @@ const router = createBrowserRouter([
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<Provider store={store}><RouterProvider router={router} /></Provider>);
+root.render(
+  <ThemeProvider theme={theme}>
+    <Provider store={store}><RouterProvider router={router} /></Provider>
+  </ThemeProvider>
+);
