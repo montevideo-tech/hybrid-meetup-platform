@@ -1,10 +1,11 @@
+// Room
 import {
   React, useState, useEffect, useRef,
 } from 'react';
 import { useLoaderData, Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Box, CircularProgress,
+  Button, Box, CircularProgress,
 } from '@mui/material';
 
 import useWindowDimensions from '../hooks/useWindowDimesion';
@@ -18,6 +19,7 @@ import {
 } from '../reducers/roomSlice';
 import subscribeToRoleChanges, { ROLES } from '../utils/roles';
 import ParticipantsCollection from '../components/ParticipantsCollection';
+import addFakeParticipant from '../scripts/addFakeParticipant';
 import ShareScreen from '../components/ShareScreen';
 
 export async function roomLoader({ params }) {
@@ -168,6 +170,8 @@ function Room() {
         null,
         () => { setRoomNotFound(true); },
       );
+
+      console.log('roomId', roomId);
       const newRoom = new WebRoom(JWT);
       const newParticipant = await newRoom.join();
 
@@ -243,14 +247,6 @@ function Room() {
         p.on('StoppedSpeaking', () => {
           updateIsSpeakingStatus(p.id, false);
         });
-        const participantData = await getRoomPermissions(roomId, p.displayName);
-        if (participantData.length > 0) {
-          dispatch(addUpdateParticipant({
-            name: participantData[0].userEmail,
-            role: participantData[0]['rooms-permission'].name,
-            id: participantData[0].id,
-          }));
-        } else { dispatch(addUpdateParticipant({ name: p.displayName, role: ROLES.GUEST })); }
       });
 
       newRoom.on('ParticipantLeft', (p) => {
@@ -330,8 +326,31 @@ function Room() {
     right: 100,
   };
 
+  const addManyParticipants = (numberOfParticipants) => {
+    let videoNumber = 0;
+    for (let i = 0; i < numberOfParticipants; i++) {
+      addFakeParticipant(roomId, `testing${i}@hotmail.com`, videoNumber);
+      videoNumber++;
+      if (videoNumber > 0) {
+        videoNumber = 0;
+      }
+    }
+  };
+
   return (
     <>
+      {
+        currentUser?.role === 'admin' && (
+          <Button
+            size="large"
+            disabled={!localTracks.video}
+            onClick={() => addManyParticipants(8)}
+          >
+            ADD USER
+          </Button>
+        )
+      }
+
       {
         roomNotFound
         && <Navigate to="/rooms/404" />
