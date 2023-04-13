@@ -252,7 +252,7 @@ function Room() {
         } else { dispatch(addUpdateParticipant({ name: p.displayName, role: ROLES.GUEST })); }
       });
 
-      newRoom.on('ParticipantLeft', async (p) => {
+      newRoom.on('ParticipantLeft', (p) => {
         // Check if the participant who left the room was sharing screen
         if (remoteStreamsRef.current.get(p.id)?.isSharingScreen) {
           setIsSharingScreen(false);
