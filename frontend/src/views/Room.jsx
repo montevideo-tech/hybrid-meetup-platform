@@ -34,7 +34,6 @@ function Room() {
   const [screenRoom, setScreenRoom] = useState();
   const [remoteStreams, setRemoteStreams] = useState([]);
   const [roomNotFound, setRoomNotFound] = useState(false);
-
   const roomId = useLoaderData();
 
   // create reference to access room state var in useEffect cleanup func
@@ -205,7 +204,7 @@ function Room() {
           }
           if (track.provider.source === 'screenshare') {
             isSharingScreen = true;
-            setIsSharingScreen(true);
+            setIsSharingScreen(isSharingScreen);
           }
           remoteStreamsRef.current.set(
             remoteParticipant.id,
@@ -253,13 +252,16 @@ function Room() {
         } else { dispatch(addUpdateParticipant({ name: p.displayName, role: ROLES.GUEST })); }
       });
 
-      newRoom.on('ParticipantLeft', (p) => {
+      newRoom.on('ParticipantLeft', async (p) => {
+        // Check if the participant who left the room was sharing screen
+        if (remoteStreamsRef.current.get(p.id)?.isSharingScreen) {
+          setIsSharingScreen(false);
+        }
         remoteStreamsRef.current.delete(p.id);
         setRemoteStreamsRef(remoteStreamsRef.current);
-        // if a participant who was sharing a screen leaves the room for remoteParticipants
-        setIsSharingScreen(false);
         dispatch(removeParticipant({ name: p.displayName }));
       });
+
       setRoom(newRoom);
       roomRef.current = newRoom;
       const tracks = await newParticipant.publishTracks(
@@ -282,14 +284,7 @@ function Room() {
       leaveRoom();
     };
   }, []);
-
-  const updateLocalTracksMuted = (kind, muted) => {
-    localTracks[kind].muted = muted;
-    setLocalTracks({ ...localTracks });
-  };
-
   const updateScreenShare = async () => {
-    // TODO add flag isSharingScreen
     if (!isSharingScreen) {
       const JWT = await roomJWTprovider(roomId, `${currentUser.email}-screen-share`, null, null, () => { setRoomNotFound(true); });
       const newScreenRoom = new WebRoom(JWT);
@@ -322,6 +317,11 @@ function Room() {
     }
 
     setIsSharingScreen(!isSharingScreen);
+  };
+
+  const updateLocalTracksMuted = (kind, muted) => {
+    localTracks[kind].muted = muted;
+    setLocalTracks({ ...localTracks });
   };
 
   const localStreamStyle = {
