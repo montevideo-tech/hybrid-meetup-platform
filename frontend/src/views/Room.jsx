@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 
 import useWindowDimensions from '../hooks/useWindowDimesion';
+import useUserPermission from '../hooks/useUserPermission';
 import RoomControls from '../components/RoomControls';
 import Video from '../components/Video';
 
@@ -28,6 +29,7 @@ export async function roomLoader({ params }) {
 
 function Room() {
   const [room, setRoom] = useState();
+  const userRole = useUserPermission();
   // const [userParticipant, setUserParticipant] = useState();
   const [localStream, setLocalStream] = useState();
   // this helps keep track of muting/unmuting with RoomControls
@@ -36,15 +38,11 @@ function Room() {
   const [screenRoom, setScreenRoom] = useState();
   const [remoteStreams, setRemoteStreams] = useState([]);
   const [roomNotFound, setRoomNotFound] = useState(false);
-
   const roomId = useLoaderData();
-
   // create reference to access room state var in useEffect cleanup func
   const roomRef = useRef();
   const remoteStreamsRef = useRef(new Map());
   const currentUser = useSelector((state) => state.user);
-  const participants = useSelector((state) => state.room.participants);
-  const [participantRole, setParticipantRole] = useState();
   // const roomData = useSelector((state) => state.room);
   const dispatch = useDispatch();
   const { width = 0, height = 0 } = useWindowDimensions();
@@ -66,11 +64,6 @@ function Room() {
     }
 
     return 1;
-  };
-
-  const getUserRole = () => {
-    const participant = participants.find((p) => p.name === currentUser.email);
-    if (participant) setParticipantRole(participant.role);
   };
   const setRemoteStreamsRef = (data) => {
     remoteStreamsRef.current = data;
@@ -283,10 +276,6 @@ function Room() {
     };
   }, []);
 
-  useEffect(() => {
-    getUserRole();
-  }, [participants]);
-
   const updateLocalTracksMuted = (kind, muted) => {
     localTracks[kind].muted = muted;
     setLocalTracks({ ...localTracks });
@@ -418,7 +407,7 @@ function Room() {
         )
       }
       <RoomControls
-        permissionRole={participantRole}
+        permissionRole={userRole}
         updateScreenShare={updateScreenShare}
         isSharingScreen={isSharingScreen}
         localTracks={localTracks}
