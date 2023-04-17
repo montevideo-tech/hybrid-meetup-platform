@@ -10,10 +10,11 @@ import {
   Edit as EditIcon,
 } from '@mui/icons-material';
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Button from '@mui/material/Button';
 import { deleteRoom } from '../actions';
+import { ROLES } from '../utils/roles';
 
 const StyledButton = styled(Button)`
   &&.custom-button {
@@ -40,6 +41,7 @@ const StyledCard = styled(Card)`
 
 function RoomsList(props) {
   const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.user);
   const { list } = props; // TODO use store
   return (
     list.length ? (
@@ -76,22 +78,32 @@ function RoomsList(props) {
                     {createdByStr}
                   </Typography>
                 </CardContent>
-                <CardActions>
-                  <StyledButton className="custom-button" component={RouterLink} to={`/rooms/${room.providerId}`}>
-                    Join Room
-                  </StyledButton>
-                  <IconButton aria-label="delete" size="medium" onClick={() => dispatch(deleteRoom(room.providerId))}>
-                    <DeleteIcon fontSize="inherit" />
-                  </IconButton>
-                  <IconButton
-                    aria-label="edit"
-                    size="medium"
-                    component={RouterLink}
-                    to={`/rooms/${room.providerId}/edit`}
-                  >
-                    <EditIcon fontSize="inherit" />
-                  </IconButton>
-                </CardActions>
+                {currentUser?.role === ROLES.USER
+                  ? (
+                    <CardActions>
+                      <StyledButton className="custom-button" component={RouterLink} to={`/rooms/${room.providerId}`}>
+                        Join Room
+                      </StyledButton>
+                    </CardActions>
+                  )
+                  : (
+                    <CardActions>
+                      <StyledButton className="custom-button" component={RouterLink} to={`/rooms/${room.providerId}`}>
+                        Join Room
+                      </StyledButton>
+                      <IconButton aria-label="delete" size="medium" onClick={() => dispatch(deleteRoom(room.providerId))}>
+                        <DeleteIcon fontSize="inherit" />
+                      </IconButton>
+                      <IconButton
+                        aria-label="edit"
+                        size="medium"
+                        component={RouterLink}
+                        to={`/rooms/${room.providerId}/edit`}
+                      >
+                        <EditIcon fontSize="inherit" />
+                      </IconButton>
+                    </CardActions>
+                  )}
               </StyledCard>
             </Grid>
           );
