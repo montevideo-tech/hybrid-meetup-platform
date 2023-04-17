@@ -81,7 +81,7 @@ export class LocalParticipant extends Participant {
     let tracksToPublish;
     if (params.tracks) {
       const { tracks } = params;
-      tracksToPublish = tracks.map((t) => t.provider); // Mux Tracks required to be published
+      tracksToPublish = tracks;
     } else if (params.constraints) {
       // TODO handle screen share
       tracksToPublish = await getUserMedia(params.constraints);
