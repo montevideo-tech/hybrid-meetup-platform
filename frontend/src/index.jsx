@@ -6,7 +6,7 @@ import { ThemeProvider } from '@mui/material';
 import theme from './themes/theme';
 import './index.css';
 import { store } from './store';
-
+import IsAdmin from './components/IsAdmin';
 import Root from './views/Root';
 import SignIn from './views/SignIn';
 import SignUp from './views/SignUp';
@@ -47,9 +47,9 @@ const router = createBrowserRouter([
       {
         path: '/rooms/:roomId/edit',
         element: (
-          <RequireAuth>
+          <IsAdmin>
             <EditRoom />
-          </RequireAuth>
+          </IsAdmin>
         ),
         loader: roomLoader,
       },
