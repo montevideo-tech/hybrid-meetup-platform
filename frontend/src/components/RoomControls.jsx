@@ -18,7 +18,13 @@ function RoomControls(props) {
   const navigate = useNavigate();
 
   const {
-    updateScreenShare, isSharingScreen, localTracks, updateLocalTracksMuted, leaveRoom, disabled,
+    updateScreenShare,
+    isSharingScreen,
+    localTracks,
+    updateLocalTracksMuted,
+    leaveRoom,
+    disabled,
+    permissionRole
   } = props;
 
   const toggleMuteTrack = (t) => {
@@ -80,22 +86,26 @@ function RoomControls(props) {
           </Button>
         </div>
       </Tooltip>
+      {
+        permissionRole === 'PRESENTER' && (
+          <Tooltip title={!isSharingScreen ? 'Share screen' : 'Stop sharing screen'}>
+            <div style={{ padding: '2px' }}>
+              <Button
+                size="large"
+                hover="onHoverTest"
+                onClick={() => shareScreen()}
+              >
+                {!isSharingScreen ? (
+                  <ScreenShareIcon />
+                ) : (
+                  <StopScreenShareIcon />
+                )}
+              </Button>
+            </div>
+          </Tooltip>
+        )
+      }
 
-      <Tooltip title={!isSharingScreen ? 'Share screen' : 'Stop sharing screen'}>
-        <div style={{ padding: '2px' }}>
-          <Button
-            size="large"
-            hover="onHoverTest"
-            onClick={() => shareScreen()}
-          >
-            {!isSharingScreen ? (
-              <ScreenShareIcon />
-            ) : (
-              <StopScreenShareIcon />
-            )}
-          </Button>
-        </div>
-      </Tooltip>
       <Tooltip title="Leave room">
         <div style={{ padding: '2px' }}>
           <Button
@@ -119,13 +129,14 @@ RoomControls.propTypes = {
   leaveRoom: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
   isSharingScreen: PropTypes.bool,
+  permissionRole: PropTypes.string,
 };
 
 RoomControls.defaultProps = {
   localTracks: { audio: null, video: null },
   disabled: true,
   isSharingScreen: false,
-
+  permissionRole: 'GUEST',
 };
 
 export default RoomControls;
