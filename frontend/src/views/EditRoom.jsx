@@ -13,7 +13,7 @@ export async function roomLoader({ params }) {
 function EditRoom() {
   const roomId = useLoaderData();
   const [email, setEmail] = useState('');
-  const [roleToAdd, setRoleToAdd] = useState('host');
+  const [roleToAdd, setRoleToAdd] = useState('presenter');
   // TODO:
   // get actual hosts/presenters from db
   const [roles, setRoles] = useState({ hosts: [], presenters: [] });
@@ -147,13 +147,10 @@ function EditRoom() {
               select
               label="Role"
               sx={{ width: 1, marginBottom: '1vh' }}
-              defaultValue="host"
+              defaultValue="presenter"
               value={roleToAdd}
               onChange={(e) => setRoleToAdd(e.target.value)}
             >
-              <MenuItem value="host">
-                Host
-              </MenuItem>
               <MenuItem value="presenter">
                 Presenter
               </MenuItem>
