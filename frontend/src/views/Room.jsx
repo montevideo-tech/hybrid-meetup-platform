@@ -207,7 +207,7 @@ function Room() {
           }
           if (track.provider.source === 'screenshare') {
             isSharingScreen = true;
-            setIsSharingScreen(true);
+            setIsSharingScreen(isSharingScreen);
           }
           remoteStreamsRef.current.set(
             remoteParticipant.id,
@@ -247,12 +247,15 @@ function Room() {
         });
       });
       newRoom.on('ParticipantLeft', (p) => {
+        // Check if the participant who left the room was sharing screen
+        if (remoteStreamsRef.current.get(p.id)?.isSharingScreen) {
+          setIsSharingScreen(false);
+        }
         remoteStreamsRef.current.delete(p.id);
         setRemoteStreamsRef(remoteStreamsRef.current);
-        // if a participant who was sharing a screen leaves the room for remoteParticipants
-        setIsSharingScreen(false);
         dispatch(removeParticipant({ name: p.displayName }));
       });
+
       setRoom(newRoom);
       roomRef.current = newRoom;
       const tracks = await newParticipant.publishTracks(
@@ -275,14 +278,7 @@ function Room() {
       leaveRoom();
     };
   }, []);
-
-  const updateLocalTracksMuted = (kind, muted) => {
-    localTracks[kind].muted = muted;
-    setLocalTracks({ ...localTracks });
-  };
-
   const updateScreenShare = async () => {
-    // TODO add flag isSharingScreen
     if (!isSharingScreen) {
       const JWT = await roomJWTprovider(roomId, `${currentUser.email}-screen-share`, null, null, () => { setRoomNotFound(true); });
       const newScreenRoom = new WebRoom(JWT);
@@ -316,6 +312,12 @@ function Room() {
 
     setIsSharingScreen(!isSharingScreen);
   };
+
+  const updateLocalTracksMuted = (kind, muted) => {
+    localTracks[kind].muted = muted;
+    setLocalTracks({ ...localTracks });
+  };
+
   const localStreamStyle = {
     position: 'fixed',
     bottom: 4,
