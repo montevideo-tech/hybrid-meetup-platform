@@ -1,11 +1,13 @@
 import { supabase } from '../lib/api';
 
 export const ROLES = {
+  // app roles
+  ADMIN: 'admin',
+  USER: 'user',
+  // room permissions
   HOST: 'HOST',
   PRESENTER: 'PRESENTER',
   GUEST: 'GUEST',
-  ADMIN: 'admin',
-  USER: 'user'
 };
 
 const subscribeToRoleChanges = (roomId, handleRoleChange) => {
