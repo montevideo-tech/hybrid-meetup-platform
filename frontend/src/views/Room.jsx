@@ -1,13 +1,15 @@
+// Room
 import {
   React, useState, useEffect, useRef,
 } from 'react';
 import { useLoaderData, Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Box, CircularProgress,
+  Button, Box, CircularProgress,
 } from '@mui/material';
 
 import useWindowDimensions from '../hooks/useWindowDimesion';
+import useUserPermission from '../hooks/useUserPermission';
 import RoomControls from '../components/RoomControls';
 import Video from '../components/Video';
 
@@ -18,6 +20,7 @@ import {
 } from '../reducers/roomSlice';
 import subscribeToRoleChanges, { ROLES } from '../utils/roles';
 import ParticipantsCollection from '../components/ParticipantsCollection';
+import addFakeParticipant from '../scripts/addFakeParticipant';
 import ShareScreen from '../components/ShareScreen';
 
 export async function roomLoader({ params }) {
@@ -26,6 +29,7 @@ export async function roomLoader({ params }) {
 
 function Room() {
   const [room, setRoom] = useState();
+  const userRole = useUserPermission();
   // const [userParticipant, setUserParticipant] = useState();
   const [localStream, setLocalStream] = useState();
   // this helps keep track of muting/unmuting with RoomControls
@@ -35,7 +39,6 @@ function Room() {
   const [remoteStreams, setRemoteStreams] = useState([]);
   const [roomNotFound, setRoomNotFound] = useState(false);
   const roomId = useLoaderData();
-
   // create reference to access room state var in useEffect cleanup func
   const roomRef = useRef();
   const remoteStreamsRef = useRef(new Map());
@@ -62,7 +65,6 @@ function Room() {
 
     return 1;
   };
-
   const setRemoteStreamsRef = (data) => {
     remoteStreamsRef.current = data;
     const remoteStreamsSorted = Array.from(data.values()).sort(comparator);
@@ -142,7 +144,6 @@ function Room() {
         id: part.id,
       })));
     };
-
     const subscribeToRemoteStreams = async (r) => {
       const { remoteParticipants } = r;
       const rps = Array.from(remoteParticipants.values());
@@ -167,6 +168,8 @@ function Room() {
         null,
         () => { setRoomNotFound(true); },
       );
+
+      console.log('roomId', roomId);
       const newRoom = new WebRoom(JWT);
       const newParticipant = await newRoom.join();
 
@@ -242,16 +245,7 @@ function Room() {
         p.on('StoppedSpeaking', () => {
           updateIsSpeakingStatus(p.id, false);
         });
-        const participantData = await getRoomPermissions(roomId, p.displayName);
-        if (participantData.length > 0) {
-          dispatch(addUpdateParticipant({
-            name: participantData[0].userEmail,
-            role: participantData[0]['rooms-permission'].name,
-            id: participantData[0].id,
-          }));
-        } else { dispatch(addUpdateParticipant({ name: p.displayName, role: ROLES.GUEST })); }
       });
-
       newRoom.on('ParticipantLeft', (p) => {
         // Check if the participant who left the room was sharing screen
         if (remoteStreamsRef.current.get(p.id)?.isSharingScreen) {
@@ -330,8 +324,31 @@ function Room() {
     right: 100,
   };
 
+  const addManyParticipants = (numberOfParticipants) => {
+    let videoNumber = 0;
+    for (let i = 0; i < numberOfParticipants; i++) {
+      addFakeParticipant(roomId, `testing${i}@hotmail.com`, videoNumber);
+      videoNumber++;
+      if (videoNumber > 0) {
+        videoNumber = 0;
+      }
+    }
+  };
+
   return (
     <>
+      {
+        currentUser?.role === 'admin' && (
+          <Button
+            size="large"
+            disabled={!localTracks.video}
+            onClick={() => addManyParticipants(8)}
+          >
+            ADD USER
+          </Button>
+        )
+      }
+
       {
         roomNotFound
         && <Navigate to="/rooms/404" />
@@ -360,20 +377,20 @@ function Room() {
             </ParticipantsCollection>
 
             {isSharingScreen
-            && (
-            <Box
-              style={{
-                display: 'flex',
-                maxHeight: '100%',
-                width: `${screenShareWidth}px`,
-                position: 'relative',
-              }}
-            >
-              <ShareScreen width={`${screenShareWidth}px`}>
-                {remoteStreams.find((p) => p.isSharingScreen)}
-              </ShareScreen>
-            </Box>
-            )}
+              && (
+                <Box
+                  style={{
+                    display: 'flex',
+                    maxHeight: '100%',
+                    width: `${screenShareWidth}px`,
+                    position: 'relative',
+                  }}
+                >
+                  <ShareScreen width={`${screenShareWidth}px`}>
+                    {remoteStreams.find((p) => p.isSharingScreen)}
+                  </ShareScreen>
+                </Box>
+              )}
 
             <div style={localStreamStyle}>
               <Video
@@ -392,6 +409,7 @@ function Room() {
         )
       }
       <RoomControls
+        permissionRole={userRole}
         updateScreenShare={updateScreenShare}
         isSharingScreen={isSharingScreen}
         localTracks={localTracks}

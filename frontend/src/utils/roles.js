@@ -4,6 +4,8 @@ export const ROLES = {
   HOST: 'HOST',
   PRESENTER: 'PRESENTER',
   GUEST: 'GUEST',
+  ADMIN: 'admin',
+  USER: 'user'
 };
 
 const subscribeToRoleChanges = (roomId, handleRoleChange) => {
