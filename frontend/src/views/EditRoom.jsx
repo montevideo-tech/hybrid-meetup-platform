@@ -1,23 +1,27 @@
 import { React, useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { useLoaderData } from 'react-router-dom';
 import {
   List, ListItem, IconButton, Typography, TextField, MenuItem, Button, Card,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { giveUserRoleOnRoom } from '../actions';
+import { getRoomPermissions, giveUserRoleOnRoom } from '../actions';
+import { addUpdateParticipant } from '../reducers/roomSlice';
+import { ROLES } from '../utils/roles';
 
 export async function roomLoader({ params }) {
   return params.roomId;
 }
 
 function EditRoom() {
+  const participants = useSelector((state) => state.room.participants);
+  const dispatch = useDispatch();
   const roomId = useLoaderData();
   const [email, setEmail] = useState('');
   const [roleToAdd, setRoleToAdd] = useState('host');
   // TODO:
   // get actual hosts/presenters from db
   const [roles, setRoles] = useState({ hosts: [], presenters: [] });
-
   const handleAddRole = async () => {
     const currentHosts = roles.hosts;
     const currentPresenters = roles.presenters;
@@ -34,6 +38,24 @@ function EditRoom() {
         presenters: [...currentPresenters, email],
       });
     }
+  };
+  const getRoles = () => {
+    const rolesCopy = { ...roles };
+    const newPresenters = [];
+    const newHosts = [];
+
+    for (let i = 0; i < participants.length; i++) {
+      if (participants[i].role === ROLES.PRESENTER) {
+        // Agregar el nombre del participante al nuevo array de presentadores
+        newPresenters.push(participants[i].name);
+      } else if (participants[i].role === ROLES.HOST) {
+        // Agregar el nombre del participante al nuevo array de presentadores
+        newHosts.push(participants[i].name);
+      }
+    }
+    rolesCopy.hosts = [...rolesCopy.hosts, ...newHosts];
+    rolesCopy.presenters = [...rolesCopy.presenters, ...newPresenters];
+    setRoles(rolesCopy);
   };
 
   const handleDeleteRole = (e, r) => {
@@ -54,11 +76,18 @@ function EditRoom() {
   };
 
   useEffect(() => {
+    // TODO It would be a good idea to make this function reusable.
+    const updateParticipantRoles = async () => {
+      const initialParticipantRoles = await getRoomPermissions(roomId);
+      initialParticipantRoles.map((part) => dispatch(addUpdateParticipant({
+        name: part.userEmail,
+        role: part['rooms-permission'].name,
+        id: part.id,
+      })));
+    };
     // here we load the existing roles (TODO)
-    setRoles({
-      hosts: ['some@email.com', 'other@email.com'],
-      presenters: ['loremipsum@sitamet.com'],
-    }); // hardcoded for testing purposes
+    updateParticipantRoles();
+    getRoles();
   }, []);
 
   return (
