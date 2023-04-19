@@ -16,8 +16,8 @@ import {
 
 import { useDispatch, useSelector } from 'react-redux';
 import { supabase } from '../lib/api';
-import { createRoom, addRoomToDb } from '../actions';
-
+import { createRoom, addRoomToDb, giveUserRoleOnRoom } from '../actions';
+import { ROLES } from '../utils/roles';
 import RoomsList from '../components/RoomsList';
 
 function Rooms() {
@@ -100,6 +100,20 @@ function Rooms() {
   useEffect(() => {
     setUser(currentUser);
   }, [currentUser]);
+
+  const handleAdminHostPermission = async () => {
+    if (roomsList) {
+      roomsList.forEach(async (room) => {
+        const roomId = room.providerId;
+        if (currentUser?.role === ROLES.ADMIN) {
+          await giveUserRoleOnRoom(currentUser.email, roomId, ROLES.HOST);
+        }
+      });
+    }
+  };
+  useEffect(() => {
+    handleAdminHostPermission();
+  }, [roomsList]);
 
   useEffect(() => {
     const getRoomsList = async () => {
