@@ -28,6 +28,8 @@ function Video(props) {
     width,
     height,
     onClick,
+    isAdmin,
+    setParticipantKick,
     style,
   } = props;
   // const [isPinned, setIsPinned] = useState(false);
@@ -88,7 +90,12 @@ function Video(props) {
         <track kind="captions" />
       </video>
       {name && (
-      <ParticipantInfo name={name} parentHeight={height} />
+      <ParticipantInfo
+        name={name}
+        parentHeight={height}
+        isAdmin={isAdmin}
+        setParticipantKick={setParticipantKick}
+      />
       )}
       {isAudioMuted && (
         <IconButton
@@ -138,6 +145,8 @@ Video.propTypes = {
   name: PropTypes.string,
   onClick: PropTypes.func,
   style: PropTypes.shape({}),
+  isAdmin: PropTypes.bool,
+  setParticipantKick: PropTypes.string,
 };
 
 Video.defaultProps = {
@@ -152,6 +161,8 @@ Video.defaultProps = {
   height: 90,
   onClick: () => {},
   style: {},
+  isAdmin: false,
+  setParticipantKick: '',
 };
 
 export default Video;

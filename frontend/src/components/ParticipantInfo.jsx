@@ -1,18 +1,17 @@
-/* eslint-disable react/require-default-props */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Typography } from '@mui/material';
+import {
+  Box, Tooltip, Typography, IconButton
+} from '@mui/material';
+import { ExitToApp as ExitToAppIcon } from '@mui/icons-material';
 
 function ParticipantInfo(props) {
   const {
-    name, parentHeight,
+    name, parentHeight, isAdmin, setParticipantKick
   } = props;
 
-  let height = '40px';
+  let height = '30px';
   let fontSize = '14px';
-  if (parentHeight <= 250) {
-    height = '30px';
-  }
   if (parentHeight <= 200) {
     height = '20px';
     fontSize = '10px';
@@ -22,39 +21,64 @@ function ParticipantInfo(props) {
     fontSize = '10px';
   }
 
-  // eslint-disable-next-line jsx-a11y/media-has-caption
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
+    <Box
+      sx={{
         position: 'absolute',
-        bottom: '0',
-        left: '0',
+        bottom: 0,
+        left: 0,
         width: '100%',
-        height: { height },
-        color: 'transparent',
-        backgroundColor: 'transparent',
-        justifyContent: 'center',
+        bgcolor: 'rgba(0, 0, 0, 0.7)',
+        color: 'white',
+        display: 'flex',
+        justifyContent: 'space-between',
         alignItems: 'center',
+        padding: '0px 6px',
+        boxSizing: 'border-box',
+        height: { height }
       }}
     >
-      <Typography variant="h6" fontWeight="700" fontSize={fontSize} color="white">
+      <Typography
+        variant="h6"
+        fontWeight="700"
+        fontSize={fontSize}
+        sx={{
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}
+      >
         {name}
       </Typography>
 
-    </div>
+      {isAdmin && (
+      <Tooltip title="Remove participant from the call">
+        <IconButton
+          onClick={() => { setParticipantKick(name); }}
+          sx={{
+            color: 'white',
+          }}
+        >
+          <ExitToAppIcon />
+        </IconButton>
+      </Tooltip>
+      )}
+    </Box>
   );
 }
 
 ParticipantInfo.propTypes = {
   name: PropTypes.string,
   parentHeight: PropTypes.number,
+  isAdmin: PropTypes.bool,
+  setParticipantKick: PropTypes.string,
 };
 
 ParticipantInfo.defaultProps = {
   name: '',
   parentHeight: 40,
+  isAdmin: false,
+  setParticipantKick: '',
 };
 
 export default ParticipantInfo;

@@ -12,7 +12,14 @@ import ParticipantLayout from './ParticipantLayout';
 
 function ParticipantsCollection(props) {
   const {
-    width, height, participantsPerPage, participantsCount, gap, children,
+    width,
+    height,
+    participantsPerPage,
+    participantsCount,
+    gap,
+    children,
+    isAdmin,
+    setParticipantKick,
   } = props;
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -65,7 +72,6 @@ function ParticipantsCollection(props) {
   //   border: 'none',
   //   transform: 'none',
   // };
-
   return (
     <Box style={{
       display: 'flex',
@@ -126,6 +132,8 @@ function ParticipantsCollection(props) {
               isVideoMuted={videoMuted || false}
               isSpeaking={speaking || false}
               name={name}
+              isAdmin={isAdmin}
+              setParticipantKick={setParticipantKick}
               // style={selectedParticipant === name
               //   ? selectedParticipantStyle : normalParticipantStyle}
               // onClick={() => handleParticipantSelection(name)}
@@ -170,6 +178,8 @@ ParticipantsCollection.propTypes = {
   gap: PropTypes.number,
   participantsPerPage: PropTypes.number,
   participantsCount: PropTypes.number,
+  isAdmin: PropTypes.bool,
+  setParticipantKick: PropTypes.string,
 
 };
 
@@ -180,6 +190,8 @@ ParticipantsCollection.defaultProps = {
   gap: 10,
   participantsPerPage: MAX_PARTICIPANTS_PER_PAGE,
   participantsCount: 1,
+  isAdmin: false,
+  setParticipantKick: '',
 };
 
 export default ParticipantsCollection;

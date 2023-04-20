@@ -39,6 +39,8 @@ function Room() {
   const [remoteStreams, setRemoteStreams] = useState([]);
   const [roomNotFound, setRoomNotFound] = useState(false);
   const roomId = useLoaderData();
+  const [participantKick, setParticipantKick] = useState(null);
+  const [kickedParticipants, setKickedParticipants] = useState([]);
   // create reference to access room state var in useEffect cleanup func
   const roomRef = useRef();
   const remoteStreamsRef = useRef(new Map());
@@ -103,12 +105,81 @@ function Room() {
   const columns = Math.max(Math.ceil(collectionWidth / (160 * scaleFactor)), 1);
   const participantsPerPage = Math.round(rows * columns);
 
+  useEffect(() => { console.log('roomRef.remoteParticipants', roomRef.remoteParticipants); }, [roomRef]);
+
   const leaveRoom = async () => {
     if (roomRef.current) {
       // await userParticipant.unpublishAllTracks(); // also stops them
       await roomRef.current.leave();
     }
   };
+
+  useEffect(() => {
+    console.log('cambia participantKick---->', participantKick);
+  }, [participantKick]);
+
+  // useEffect(() => {
+  //   if (participantKick) {
+  //     console.log('se selecciono un participante para remover');
+
+  //     let participantId;
+
+  //     remoteStreamsRef.current.forEach((participant, id) => {
+  //       if (participant.name === participantKick) {
+  //         participantId = id;
+  //       }
+  //     });
+
+  //     console.log('participantId', participantId);
+  //     console.log('remoteStreamsRef.current antes de borrarlo', remoteStreamsRef.current);
+
+  //     // Aquí se agrega el participante expulsado a la lista de kickedParticipants
+  //     setKickedParticipants([...kickedParticipants, participantKick]);
+
+  //     console.log('remoteStreamsRef.current despues de borrarlo', remoteStreamsRef.current);
+  //     setParticipantKick(null);
+  //   }
+  // }, [participantKick]);
+
+  // useEffect(() => {
+  //   if (participantKick) {
+  //     console.log('se selecciono un participante para remover');
+
+  //     let participantId;
+
+  //     remoteStreamsRef.current.forEach((participant, id) => {
+  //       if (participant.name === participantKick) {
+  //         participantId = id;
+  //       }
+  //     });
+
+  //     console.log('participantId', participantId);
+  //     console.log('remoteStreamsRef.current antes de borrarlo', remoteStreamsRef.current);
+  //     remoteStreamsRef.current.delete(participantId);
+  //     setRemoteStreamsRef(remoteStreamsRef.current);
+  //     console.log('remoteStreamsRef.current despues de borrarlo', remoteStreamsRef.current);
+  //     dispatch(removeParticipant({ name: participantKick }));
+  //     setParticipantKick(null);
+  //   }
+  // }, [participantKick]);
+  useEffect(() => {
+    if (participantKick) {
+      console.log('se selecciono un participante para remover');
+
+      let participantId;
+
+      remoteStreamsRef.current.forEach((participant, id) => {
+        if (participant.name === participantKick) {
+          participantId = id;
+        }
+      });
+
+      // Emitir el evento ParticipantLeft
+      room.emit('ParticipantLeft', { id: participantId });
+    }
+  }, [participantKick]);
+
+  console.log('remoteStreams------', remoteStreams);
 
   const handleRoleChange = (payload) => {
     if (payload.eventType === 'INSERT') {
@@ -247,6 +318,7 @@ function Room() {
         });
       });
       newRoom.on('ParticipantLeft', (p) => {
+        console.log('ParticipantLeft se ejecutoooo');
         // Check if the participant who left the room was sharing screen
         if (remoteStreamsRef.current.get(p.id)?.isSharingScreen) {
           setIsSharingScreen(false);
@@ -255,6 +327,25 @@ function Room() {
         setRemoteStreamsRef(remoteStreamsRef.current);
         dispatch(removeParticipant({ name: p.displayName }));
       });
+      // newRoom.on('ParticipantLeft', (p) => {
+      //   // Check if the participant who left the room was sharing screen
+      //   if (remoteStreamsRef.current.get(p.id)?.isSharingScreen) {
+      //     setIsSharingScreen(false);
+      //   }
+
+      //   // Aquí se comprueba si el participante que abandonó la sala fue expulsado
+      //   const isKickedParticipant = kickedParticipants.includes(p.displayName);
+
+      //   if (!isKickedParticipant) {
+      //     remoteStreamsRef.current.delete(p.id);
+      //     setRemoteStreamsRef(remoteStreamsRef.current);
+      //   } else {
+      //     // Si fue expulsado, se elimina de la lista de kickedParticipants
+      //     setKickedParticipants(kickedParticipants.filter((name) => name !== p.displayName));
+      //   }
+
+      //   dispatch(removeParticipant({ name: p.displayName }));
+      // });
 
       setRoom(newRoom);
       roomRef.current = newRoom;
@@ -372,6 +463,8 @@ function Room() {
               height={collectionHeight}
               participantsPerPage={participantsPerPage}
               participantsCount={participantsCount}
+              isAdmin={isUserAdmin}
+              setParticipantKick={setParticipantKick}
             >
               {remoteStreams.filter((p) => !p.isSharingScreen)}
             </ParticipantsCollection>
