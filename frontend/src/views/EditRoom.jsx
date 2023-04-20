@@ -46,10 +46,8 @@ function EditRoom() {
 
     for (let i = 0; i < participants.length; i++) {
       if (participants[i].role === ROLES.PRESENTER) {
-        // Agregar el nombre del participante al nuevo array de presentadores
         newPresenters.push(participants[i].name);
       } else if (participants[i].role === ROLES.HOST) {
-        // Agregar el nombre del participante al nuevo array de presentadores
         newHosts.push(participants[i].name);
       }
     }
