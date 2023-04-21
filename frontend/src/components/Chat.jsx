@@ -11,8 +11,6 @@ function Chat() {
   const [content, setContent] = useState('');
   const { email } = useSelector((state) => state.user);
   const roomId = useLoaderData();
-  console.log('roomId', roomId);
-  console.log('email', email);
   const [messages, setMessages] = useState([]);
 
   async function fetchMessages() {
@@ -21,7 +19,7 @@ function Chat() {
       .select('*')
       .order('created_at', { ascending: true });
     if (error) {
-      console.log('error en fetchMessages', error);
+      console.log('Error Fetching Messages:', error);
     } else {
       setMessages(data);
     }
@@ -29,9 +27,6 @@ function Chat() {
 
   useEffect(() => {
     fetchMessages();
-  }, []);
-
-  useEffect(() => {
     subscribeToNewMessages();
   }, [messages]);
 
@@ -42,7 +37,6 @@ function Chat() {
     onSendMessage({ email, content, providerId: roomId }, fetchMessages);
     setContent('');
   };
-  console.log(messages);
   return (
     <ChatContainer>
       <ChatContent>

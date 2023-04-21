@@ -1,10 +1,9 @@
 import { supabase } from '../lib/api';
 
 export async function onSendMessage(message, fetchMessages) {
-  console.log('message que mandamos en onSend', message);
   const { error } = await supabase.from('message-chat').insert([message]);
   if (error) {
-    console.error('error en onSendMessage', error);
+    console.error('Error Sending Messages: ', error);
   }
   fetchMessages();
 }
