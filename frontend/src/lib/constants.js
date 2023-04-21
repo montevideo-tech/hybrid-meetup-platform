@@ -5,3 +5,5 @@ export const { REACT_APP_MUX_SPACE_ID } = process.env;
 export const { REACT_APP_MUX_SPACE_JWT } = process.env;
 
 export const MAX_PARTICIPANTS_PER_PAGE = 25;
+
+export const TESTING_MODE = false;
