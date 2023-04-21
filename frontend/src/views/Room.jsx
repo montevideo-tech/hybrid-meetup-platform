@@ -22,6 +22,7 @@ import subscribeToRoleChanges, { ROLES } from '../utils/roles';
 import ParticipantsCollection from '../components/ParticipantsCollection';
 import addFakeParticipant from '../scripts/addFakeParticipant';
 import ShareScreen from '../components/ShareScreen';
+import { TESTING_MODE } from '../lib/constants';
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -338,7 +339,7 @@ function Room() {
   return (
     <>
       {
-        isUserAdmin && (
+        isUserAdmin && TESTING_MODE && (
           <Button
             size="large"
             disabled={!localTracks.video}
