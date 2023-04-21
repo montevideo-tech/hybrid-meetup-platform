@@ -23,6 +23,7 @@ import ParticipantsCollection from '../components/ParticipantsCollection';
 import addFakeParticipant from '../scripts/addFakeParticipant';
 import ShareScreen from '../components/ShareScreen';
 import { TESTING_MODE } from '../lib/constants';
+import Chat from '../components/Chat';
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -362,11 +363,11 @@ function Room() {
             height: '100%',
             alignItems: 'center',
             position: 'relative',
-            justifyContent: 'center',
             backgroundColor: 'rgb(32,33,36)',
             direction: { direction },
           }}
           >
+            <Chat />
             <ParticipantsCollection
               gap={gap}
               width={collectionWidth}
@@ -392,7 +393,6 @@ function Room() {
                   </ShareScreen>
                 </Box>
               )}
-
             <div style={localStreamStyle}>
               <Video
                 stream={localStream}
