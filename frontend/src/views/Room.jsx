@@ -321,9 +321,9 @@ function Room() {
   };
 
   const localStreamStyle = {
-    position: 'fixed',
-    bottom: 4,
-    right: 100,
+    position: 'absolute',
+    bottom: 55,
+    right: 350,
   };
 
   const addManyParticipants = (numberOfParticipants) => {
@@ -359,26 +359,29 @@ function Room() {
         room ? (
           <Box style={{
             display: 'flex',
+            justifyContent: 'flex-end',
             width: '100%',
             height: '100%',
-            alignItems: 'center',
+            alignItems: 'flex-start',
             position: 'relative',
             backgroundColor: 'rgb(32,33,36)',
             direction: { direction },
           }}
           >
-            <Chat />
-            <ParticipantsCollection
-              gap={gap}
-              width={collectionWidth}
-              height={collectionHeight}
-              participantsPerPage={participantsPerPage}
-              participantsCount={participantsCount}
-            >
-              {remoteStreams.filter((p) => !p.isSharingScreen)}
-            </ParticipantsCollection>
+            <Box style={{ marginTop: '10px' }}>
+              {participantsCount < 1 ? '' : (
+                <ParticipantsCollection
+                  gap={gap}
+                  width={(collectionWidth - 330)}
+                  height={(collectionHeight - 20)}
+                  participantsPerPage={participantsPerPage}
+                  participantsCount={participantsCount}
+                >
+                  {remoteStreams.filter((p) => !p.isSharingScreen)}
+                </ParticipantsCollection>
+              )}
 
-            {isSharingScreen
+              {isSharingScreen
               && (
                 <Box
                   style={{
@@ -393,13 +396,29 @@ function Room() {
                   </ShareScreen>
                 </Box>
               )}
-            <div style={localStreamStyle}>
-              <Video
-                stream={localStream}
-                isStreamLocal
+
+              <div style={localStreamStyle}>
+                <Video
+                  stream={localStream}
+                  isStreamLocal
+                />
+              </div>
+              <RoomControls
+                permissionRole={userRole}
+                updateScreenShare={updateScreenShare}
+                isSharingScreen={isSharingScreen}
+                localTracks={localTracks}
+                updateLocalTracksMuted={updateLocalTracksMuted}
+                leaveRoom={leaveRoom}
+                disabled={!room}
               />
-            </div>
+            </Box>
+
+            <Box>
+              <Chat />
+            </Box>
           </Box>
+
         ) : (
           <div style={{
             display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%',
@@ -409,15 +428,6 @@ function Room() {
           </div>
         )
       }
-      <RoomControls
-        permissionRole={userRole}
-        updateScreenShare={updateScreenShare}
-        isSharingScreen={isSharingScreen}
-        localTracks={localTracks}
-        updateLocalTracksMuted={updateLocalTracksMuted}
-        leaveRoom={leaveRoom}
-        disabled={!room}
-      />
     </>
   );
 }

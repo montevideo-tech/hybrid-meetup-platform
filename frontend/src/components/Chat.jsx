@@ -34,7 +34,7 @@ function Chat() {
     e.preventDefault();
     if (!email || !content) return;
 
-    onSendMessage({ email, content, providerId: roomId }, fetchMessages);
+    onSendMessage({ email, content, providerId: roomId });
     setContent('');
   };
   return (

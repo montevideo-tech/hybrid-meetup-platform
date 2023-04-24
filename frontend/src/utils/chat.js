@@ -1,11 +1,10 @@
 import { supabase } from '../lib/api';
 
-export async function onSendMessage(message, fetchMessages) {
+export async function onSendMessage(message) {
   const { error } = await supabase.from('message-chat').insert([message]);
   if (error) {
     console.error('Error Sending Messages: ', error);
   }
-  fetchMessages();
 }
 
 export function subscribeToNewMessages() {

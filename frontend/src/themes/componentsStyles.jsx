@@ -44,11 +44,13 @@ export const ChatContainer = styled.div`
   display: flex;
   flex-direction: column;
   background-color: #fff;
-  height: 80vh;
+  height: 88vh;
   border: 1px solid #fff;
-  border-radius: 10px;
-  padding: 10px;
-  margin-left: 10px;
+  border-radius: 8px;
+  padding: 8px;
+  margin-right: 8px;
+  margin-top: 8px;
+  max-width: 300px;
 `;
 
 export const ChatForm = styled.form`
