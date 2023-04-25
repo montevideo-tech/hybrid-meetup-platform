@@ -114,7 +114,7 @@ function ParticipantsCollection(props) {
         <ParticipantLayout
           width={widthBetweenPagination}
           height={height}
-          gap={gap - 6}
+          gap={gap}
         >
           {currentParticipants.map(({
             videoStream, name, audioMuted, videoMuted, speaking

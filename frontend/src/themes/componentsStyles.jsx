@@ -3,6 +3,7 @@ import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
+import { TextField } from '@mui/material';
 
 export const StyledButton = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
@@ -37,3 +38,37 @@ export const formVariants = {
   animate: { opacity: 1, y: 0, transition: { duration: 0.7 } },
   exit: { opacity: 0, y: -100, transition: { duration: 0.7 } }
 };
+
+// Chat Styles
+export const ChatContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  height: 88vh;
+  border: 1px solid #fff;
+  border-radius: 8px;
+  padding: 8px;
+  margin-right: 8px;
+  margin-top: 8px;
+  max-width: 300px;
+`;
+
+export const ChatForm = styled.form`
+  display: flex;
+  align-items: center;
+  margin-top: auto;
+`;
+
+export const ChatInput = styled(TextField)`
+  flex: 4;
+  margin-right: 10px;
+`;
+
+export const ChatButton = styled(Button)`
+  flex: 1;
+`;
+
+export const ChatContent = styled.div`
+flex-grow: 1;
+overflow-y: auto;
+`;
