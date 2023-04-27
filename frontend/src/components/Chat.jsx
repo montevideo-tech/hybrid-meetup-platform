@@ -57,7 +57,10 @@ function Chat() {
           placeholder="Message"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          style={{ flex: '4', marginRight: '10px' }}
+          multiline
+          minRows={1}
+          maxRows={3}
+          inputProps={{ maxLength: 150 }}
         />
         <ChatButton variant="contained" type="submit">
           Send

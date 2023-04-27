@@ -62,6 +62,7 @@ export const ChatForm = styled.form`
 export const ChatInput = styled(TextField)`
   flex: 4;
   margin-right: 10px;
+  overflow-y: auto;
 `;
 
 export const ChatButton = styled(Button)`
