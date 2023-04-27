@@ -348,7 +348,7 @@ function Room() {
       }
     }
   };
-
+  console.log(participantsCount);
   return (
     <>
       {
@@ -381,7 +381,7 @@ function Room() {
           }}
           >
             <Box style={{ marginTop: '10px' }}>
-              {remoteStreams > 0 && renderParticipantCollection()}
+              {participantsCount > 0 && renderParticipantCollection()}
 
               {isSharingScreen
               && (
