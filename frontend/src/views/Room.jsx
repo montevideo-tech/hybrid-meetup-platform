@@ -348,7 +348,6 @@ function Room() {
       }
     }
   };
-  console.log(participantsCount);
   return (
     <>
       {
