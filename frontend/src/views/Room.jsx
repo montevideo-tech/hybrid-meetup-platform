@@ -137,6 +137,18 @@ function Room() {
     }
     setRemoteStreamsRef(remoteStreamsRef.current);
   };
+
+  const renderParticipantCollection = () => (
+    <ParticipantsCollection
+      gap={gap}
+      width={(collectionWidth - 330)}
+      height={(collectionHeight - 20)}
+      participantsPerPage={participantsPerPage}
+      participantsCount={participantsCount}
+    >
+      {remoteStreams.filter((p) => !p.isSharingScreen)}
+    </ParticipantsCollection>
+  );
   // initialize room
   useEffect(() => {
     const updateParticipantRoles = async () => {
@@ -369,17 +381,7 @@ function Room() {
           }}
           >
             <Box style={{ marginTop: '10px' }}>
-              {participantsCount < 1 ? '' : (
-                <ParticipantsCollection
-                  gap={gap}
-                  width={(collectionWidth - 330)}
-                  height={(collectionHeight - 20)}
-                  participantsPerPage={participantsPerPage}
-                  participantsCount={participantsCount}
-                >
-                  {remoteStreams.filter((p) => !p.isSharingScreen)}
-                </ParticipantsCollection>
-              )}
+              {remoteStreams > 0 && renderParticipantCollection()}
 
               {isSharingScreen
               && (
