@@ -1,6 +1,7 @@
 import { React, useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useLoaderData } from 'react-router-dom';
+import { useLoaderData, useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 import {
   List, ListItem, IconButton, Typography, TextField, MenuItem, Button, Card,
 } from '@mui/material';
@@ -17,6 +18,7 @@ function EditRoom() {
   const participants = useSelector((state) => state.room.participants);
   const dispatch = useDispatch();
   const roomId = useLoaderData();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [roleToAdd, setRoleToAdd] = useState('presenter');
   // TODO:
@@ -96,11 +98,16 @@ function EditRoom() {
       flexDirection: 'column',
     }}
     >
-      <Typography component="h1" variant="h4" sx={{ textAlign: 'center' }}>
-        Edit Room
-        {' '}
-        {roomId}
-      </Typography>
+      <StyledContainer>
+        <Button variant="contained" onClick={() => navigate(`/rooms/${roomId}`)}>
+          Go to Room
+        </Button>
+        <Typography component="h1" variant="h4" sx={{ textAlign: 'center' }}>
+          Edit Room
+          {' '}
+          {roomId}
+        </Typography>
+      </StyledContainer>
       <div style={{ display: 'flex' }}>
         <Card variant="outlined">
           <div style={{ padding: '1vh 0.5vw' }}>
@@ -193,3 +200,9 @@ function EditRoom() {
 }
 
 export default EditRoom;
+
+const StyledContainer = styled.div`
+  display: grid;
+  grid-template-columns: 0.15fr 1fr;
+  gap: 15px;
+`;
