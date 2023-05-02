@@ -87,7 +87,7 @@ function RoomControls(props) {
         </div>
       </Tooltip>
       {
-        permissionRole === 'PRESENTER' && (
+        (permissionRole === 'PRESENTER' || permissionRole === 'HOST') && (
           <Tooltip title={!isSharingScreen ? 'Share screen' : 'Stop sharing screen'}>
             <div style={{ padding: '2px' }}>
               <Button
