@@ -315,6 +315,16 @@ function Room() {
     setIsSharingScreen(!isSharingScreen);
   };
 
+  useEffect(() => {
+    console.log('Before leaving isSharingScreen: ', isSharingScreen);
+    return () => {
+      console.log('After leaving isSharingScreen: ', isSharingScreen);
+      if (isSharingScreen) {
+        updateScreenShare();
+      }
+    };
+  }, [isSharingScreen]);
+
   const updateLocalTracksMuted = (kind, muted) => {
     localTracks[kind].muted = muted;
     setLocalTracks({ ...localTracks });
@@ -401,6 +411,7 @@ function Room() {
                 <Video
                   stream={localStream}
                   isStreamLocal
+                  onClick={() => { console.log('Is sharing screen', isSharingScreen); }}
                 />
               </div>
               <RoomControls
