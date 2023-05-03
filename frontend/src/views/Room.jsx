@@ -137,6 +137,44 @@ function Room() {
     }
     setRemoteStreamsRef(remoteStreamsRef.current);
   };
+
+  const updateScreenShare = async () => {
+    if (!isSharingScreen) {
+      const JWT = await roomJWTprovider(roomId, `${currentUser.email}-screen-share`, null, null, () => { setRoomNotFound(true); });
+      const newScreenRoom = new WebRoom(JWT);
+      const newlocalParticipant = await newScreenRoom.join();
+      setScreenRoom(newScreenRoom);
+      try {
+        const tracks = await newlocalParticipant.startScreenShare();
+        const stream = new MediaStream();
+        const audioStream = new MediaStream();
+        const videoStream = new MediaStream();
+        const newLocalTracks = { ...localTracks };
+
+        tracks.forEach((track) => {
+          if (track.kind === 'audio') {
+            audioStream.addTrack(track.mediaStreamTrack);
+          } else {
+            videoStream.addTrack(track.mediaStreamTrack);
+          }
+          stream.addTrack(track.mediaStreamTrack);
+          newLocalTracks[track.kind] = track;
+        });
+
+        setLocalTracks({ ...localTracks });
+        // add listener on `Stop sharing` browser's button
+        stream.getVideoTracks()[0]
+          .addEventListener('ended', () => {
+            newScreenRoom.leave();
+          });
+      } catch {
+        newScreenRoom.leave();
+      }
+    } else {
+      screenRoom.leave();
+    }
+  };
+
   // initialize room
   useEffect(() => {
     const updateParticipantRoles = async () => {
@@ -280,45 +318,6 @@ function Room() {
       leaveRoom();
     };
   }, []);
-  const updateScreenShare = async () => {
-    if (!isSharingScreen) {
-      const JWT = await roomJWTprovider(roomId, `${currentUser.email}-screen-share`, null, null, () => { setRoomNotFound(true); });
-      const newScreenRoom = new WebRoom(JWT);
-      const newlocalParticipant = await newScreenRoom.join();
-      setScreenRoom(newScreenRoom);
-      try {
-        const tracks = await newlocalParticipant.startScreenShare();
-        const stream = new MediaStream();
-        const audioStream = new MediaStream();
-        const videoStream = new MediaStream();
-        const newLocalTracks = { ...localTracks };
-
-        tracks.forEach((track) => {
-          if (track.kind === 'audio') {
-            audioStream.addTrack(track.mediaStreamTrack);
-          } else {
-            videoStream.addTrack(track.mediaStreamTrack);
-          }
-          stream.addTrack(track.mediaStreamTrack);
-          newLocalTracks[track.kind] = track;
-        });
-
-        setLocalTracks({ ...localTracks });
-        // add listener on `Stop sharing` browser's button
-        stream.getVideoTracks()[0]
-          .addEventListener('ended', () => {
-            newScreenRoom.leave();
-          });
-      } catch {
-        setIsSharingScreen(false);
-        newScreenRoom.leave();
-      }
-    } else {
-      screenRoom.leave();
-    }
-
-    setIsSharingScreen(!isSharingScreen);
-  };
 
   const updateLocalTracksMuted = (kind, muted) => {
     localTracks[kind].muted = muted;
