@@ -103,9 +103,7 @@ function EditRoom() {
           Go to Room
         </Button>
         <Typography component="h1" variant="h4" sx={{ textAlign: 'center' }}>
-          Edit Room
-          {' '}
-          {roomId}
+          {`Edit Room ${roomId}`}
         </Typography>
       </StyledContainer>
       <div style={{ display: 'flex' }}>
