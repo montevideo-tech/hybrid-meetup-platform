@@ -1,7 +1,6 @@
 import { React, useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLoaderData, useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
 import {
   List, ListItem, IconButton, Typography, TextField, MenuItem, Button, Card,
 } from '@mui/material';
