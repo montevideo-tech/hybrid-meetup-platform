@@ -14,7 +14,7 @@ import RoomControls from '../components/RoomControls';
 import Video from '../components/Video';
 
 import { Room as WebRoom } from '../lib/webrtc';
-import { roomJWTprovider, getRoomPermissions } from '../actions';
+import { roomJWTprovider } from '../actions';
 import {
   initRoom, addUpdateParticipant, removeParticipant, removeRole, cleanRoom,
 } from '../reducers/roomSlice';
@@ -24,6 +24,7 @@ import addFakeParticipant from '../scripts/addFakeParticipant';
 import ShareScreen from '../components/ShareScreen';
 import { TESTING_MODE } from '../lib/constants';
 import Chat from '../components/Chat';
+import { comparator, updateParticipantRoles } from '../utils/helpers';
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -57,17 +58,6 @@ function Room() {
   // To add a new criteria to the comparator you need to
   // Decide if it's higher or lower pririoty compared to the already established
   // if it's higher you must add the 'if' before otherwise add it after.
-  const comparator = (participant1, participant2) => {
-    if (participant1.speaking > participant2.speaking) {
-      return -1;
-    }
-
-    if (participant1.lastSpokenTime > participant2.lastSpokenTime) {
-      return -1;
-    }
-
-    return 1;
-  };
   const setRemoteStreamsRef = (data) => {
     remoteStreamsRef.current = data;
     const remoteStreamsSorted = Array.from(data.values()).sort(comparator);
@@ -150,15 +140,6 @@ function Room() {
     </ParticipantsCollection>
   );
 
-  const updateParticipantRoles = async () => {
-    const initialParticipantRoles = await getRoomPermissions(roomId);
-    initialParticipantRoles.map((part) => dispatch(addUpdateParticipant({
-      name: part.userEmail,
-      role: part['rooms-permission'].name,
-      id: part.id,
-    })));
-  };
-
   const subscribeToRemoteStreams = async (r) => {
     const { remoteParticipants } = r;
     const rps = Array.from(remoteParticipants.values());
@@ -172,7 +153,7 @@ function Room() {
       });
       await rp.subscribe();
     });
-    updateParticipantRoles();
+    updateParticipantRoles(roomId, dispatch);
   };
 
   const handleTrackMuted = (remoteParticipant, track) => {
