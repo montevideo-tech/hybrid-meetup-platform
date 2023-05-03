@@ -9,7 +9,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { giveUserRoleOnRoom } from '../actions';
 import { ROLES } from '../utils/roles';
 import { updateParticipantRoles } from '../utils/helpers';
-import styled from 'styled-components';
 
 export async function roomLoader({ params }) {
   return params.roomId;
