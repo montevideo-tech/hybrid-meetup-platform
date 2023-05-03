@@ -1,13 +1,13 @@
 import { React, useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useLoaderData } from 'react-router-dom';
 import {
   List, ListItem, IconButton, Typography, TextField, MenuItem, Button, Card,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { getRoomPermissions, giveUserRoleOnRoom } from '../actions';
-import { addUpdateParticipant } from '../reducers/roomSlice';
+import { giveUserRoleOnRoom } from '../actions';
 import { ROLES } from '../utils/roles';
+import { updateParticipantRoles } from '../utils/helpers';
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -74,19 +74,12 @@ function EditRoom() {
   };
 
   useEffect(() => {
-    // TODO It would be a good idea to make this function reusable.
-    const updateParticipantRoles = async () => {
-      const initialParticipantRoles = await getRoomPermissions(roomId);
-      initialParticipantRoles.map((part) => dispatch(addUpdateParticipant({
-        name: part.userEmail,
-        role: part['rooms-permission'].name,
-        id: part.id,
-      })));
-    };
-    // here we load the existing roles (TODO)
-    updateParticipantRoles();
     getRoles();
   }, []);
+
+  useEffect(() => {
+    updateParticipantRoles(roomId, dispatch);
+  }, [roles]);
 
   return (
     <div style={{
