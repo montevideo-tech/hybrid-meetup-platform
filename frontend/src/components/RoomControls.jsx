@@ -13,6 +13,7 @@ import {
   ScreenShare as ScreenShareIcon,
   StopScreenShare as StopScreenShareIcon,
 } from '@mui/icons-material';
+import { ROLES } from '../utils/roles';
 
 function RoomControls(props) {
   const navigate = useNavigate();
@@ -87,7 +88,7 @@ function RoomControls(props) {
         </div>
       </Tooltip>
       {
-        permissionRole === 'PRESENTER' && (
+        (permissionRole === ROLES.PRESENTER || permissionRole === ROLES.HOST) && (
           <Tooltip title={!isSharingScreen ? 'Share screen' : 'Stop sharing screen'}>
             <div style={{ padding: '2px' }}>
               <Button
