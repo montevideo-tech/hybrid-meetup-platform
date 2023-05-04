@@ -105,6 +105,26 @@ export class LocalParticipant extends Participant {
     return publishedTracks.map((t) => new Track(t)); // wrap into our Track
   }
 
+  async removeRemoteParticipant() {
+    // Define the custom event type and data
+    const eventType = 'my-custom-event';
+    const eventData = {
+      message: 'aaaa',
+    };
+
+    // Convert the event data to a JSON string
+    const payload = JSON.stringify({
+      type: eventType,
+      data: eventData,
+    });
+
+    try {
+      await this.provider.publishCustomEvent(payload);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   /**
    * Unpublish a list of local wrapped Tracks from the room.
    * The function also stops the tracks.
@@ -176,7 +196,17 @@ export class Room extends EventEmitter {
     );
     this.provider.on(
       SpaceEvent.ParticipantLeft,
-      (p) => this.emit('ParticipantLeft', new RemoteParticipant(p)),
+      (p) => {
+        console.log(p);
+        this.emit('ParticipantLeft', new RemoteParticipant(p));
+      },
+    );
+    this.provider.on(
+      'RemoveParticiapnt',
+      (p) => {
+        console.log(p);
+        this.emit('ParticipantLeft', new RemoteParticipant(p));
+      },
     );
     // When you have subscribed to a remote participant's track.
     // This means that you have begun receiving media from the associated participant track

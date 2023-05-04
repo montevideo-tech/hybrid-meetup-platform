@@ -32,6 +32,7 @@ export async function roomLoader({ params }) {
 
 function Room() {
   const [room, setRoom] = useState();
+  const [localParticipant, setLocalParticipant] = useState();
   const userRole = useUserPermission();
   // const [userParticipant, setUserParticipant] = useState();
   const [localStream, setLocalStream] = useState();
@@ -230,6 +231,7 @@ function Room() {
 
   const handleParticipantJoined = (p) => {
     p.subscribe();
+    // p.removeRemoteParticipant();
     p.on('StartedSpeaking', () => {
       updateIsSpeakingStatus(p.id, true);
     });
@@ -249,6 +251,7 @@ function Room() {
 
     const newRoom = new WebRoom(JWT);
     const newParticipant = await newRoom.join();
+    setLocalParticipant(newParticipant);
 
     dispatch(initRoom({
       id: roomId,
@@ -342,6 +345,11 @@ function Room() {
       }
     }
   };
+
+  const onClickRemove = () => {
+    localParticipant.removeRemoteParticipant();
+  };
+
   return (
     <>
       {
@@ -396,6 +404,7 @@ function Room() {
                 <Video
                   stream={localStream}
                   isStreamLocal
+                  onClick={onClickRemove}
                 />
               </div>
               <RoomControls

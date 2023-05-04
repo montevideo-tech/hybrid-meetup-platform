@@ -10,6 +10,7 @@ import {
   MicOffOutlined as MicOffOutlinedIcon,
   PushPinOutlined as PushPinOutlinedIcon,
   PushPinRounded as PushPinRoundedIcon,
+  DeleteRounded as DeleteOutlineIcon,
 } from '@mui/icons-material';
 import ParticipantInfo from './ParticipantInfo';
 import logo from '../assets/MVDTSC.png';
@@ -53,7 +54,7 @@ function Video(props) {
 
   return (
     <Box
-      onClick={onClick}
+      // onClick={onClick}
       sx={{
         position: 'relative',
         width: `${width - outlineWidth * 2}px`,
@@ -105,6 +106,20 @@ function Video(props) {
           <MicOffOutlinedIcon sx={{ ml: '2px' }} />
         </IconButton>
       )}
+      <IconButton
+        onClick={onClick}
+        disableRipple
+        sx={{
+          position: 'absolute',
+          top: 10,
+          right: 70,
+          color: 'white',
+          bgcolor: 'rgba(0, 0, 0, 0.2)',
+          border: '2px solid',
+        }}
+      >
+        <DeleteOutlineIcon sx={{ ml: '2px' }} />
+      </IconButton>
 
       {/* <IconButton
         onClick={handlePinClick}
