@@ -7,7 +7,7 @@ import { store } from '../store';
 function RequireAuth({ children }) {
   const isLoggedIn = !!store.getState().user?.token;
 
-  return isLoggedIn === true ? children : <Navigate to="/signIn" replace />;
+  return isLoggedIn ? children : <Navigate to="/signIn" replace />;
 }
 
 export default RequireAuth;
