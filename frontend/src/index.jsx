@@ -16,10 +16,8 @@ import ErrorPage from './views/errorPage';
 import Home from './views/Home';
 import RoomNotFound from './views/RoomNotFound';
 import EditRoom from './views/EditRoom';
-
 // import RoomTest from './components/RoomTest';
-import RequireAuth from './components/RequireAuth';
-import RedirectLoggedInUser from './components/RedirectLoggedInUser';
+import AuthRoute from './components/AuthRoute';
 
 const router = createBrowserRouter([
   {
@@ -38,9 +36,9 @@ const router = createBrowserRouter([
       {
         path: '/rooms/:roomId',
         element: (
-          <RequireAuth>
+          <AuthRoute requireAuth>
             <Room />
-          </RequireAuth>
+          </AuthRoute>
         ),
         loader: roomLoader,
       },
@@ -56,25 +54,25 @@ const router = createBrowserRouter([
       {
         path: '/signIn',
         element: (
-          <RedirectLoggedInUser>
+          <AuthRoute>
             <SignIn />
-          </RedirectLoggedInUser>
+          </AuthRoute>
         ),
       },
       {
         path: '/signUp',
         element: (
-          <RedirectLoggedInUser>
+          <AuthRoute>
             <SignUp />
-          </RedirectLoggedInUser>
+          </AuthRoute>
         ),
       },
       {
         path: '/rooms',
         element: (
-          <RequireAuth>
+          <AuthRoute requireAuth>
             <Rooms />
-          </RequireAuth>
+          </AuthRoute>
         ),
       },
       // {
