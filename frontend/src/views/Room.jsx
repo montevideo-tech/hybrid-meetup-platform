@@ -14,7 +14,7 @@ import RoomControls from '../components/RoomControls';
 import Video from '../components/Video';
 
 import { Room as WebRoom } from '../lib/webrtc';
-import { roomJWTprovider, getRoomPermissions } from '../actions';
+import { roomJWTprovider } from '../actions';
 import {
   initRoom, addUpdateParticipant, removeParticipant, removeRole, cleanRoom,
 } from '../reducers/roomSlice';
@@ -24,6 +24,7 @@ import addFakeParticipant from '../scripts/addFakeParticipant';
 import ShareScreen from '../components/ShareScreen';
 import { TESTING_MODE } from '../lib/constants';
 import Chat from '../components/Chat';
+import { comparator, updateParticipantRoles } from '../utils/helpers';
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -40,6 +41,7 @@ function Room() {
   const [screenRoom, setScreenRoom] = useState();
   const [remoteStreams, setRemoteStreams] = useState([]);
   const [roomNotFound, setRoomNotFound] = useState(false);
+  const [errorJoiningRoom, setErrorJoiningRoom] = useState(false);
   const roomId = useLoaderData();
   // create reference to access room state var in useEffect cleanup func
   const roomRef = useRef();
@@ -57,17 +59,6 @@ function Room() {
   // To add a new criteria to the comparator you need to
   // Decide if it's higher or lower pririoty compared to the already established
   // if it's higher you must add the 'if' before otherwise add it after.
-  const comparator = (participant1, participant2) => {
-    if (participant1.speaking > participant2.speaking) {
-      return -1;
-    }
-
-    if (participant1.lastSpokenTime > participant2.lastSpokenTime) {
-      return -1;
-    }
-
-    return 1;
-  };
   const setRemoteStreamsRef = (data) => {
     remoteStreamsRef.current = data;
     const remoteStreamsSorted = Array.from(data.values()).sort(comparator);
@@ -137,182 +128,208 @@ function Room() {
     }
     setRemoteStreamsRef(remoteStreamsRef.current);
   };
-  // initialize room
-  useEffect(() => {
-    const updateParticipantRoles = async () => {
-      const initialParticipantRoles = await getRoomPermissions(roomId);
-      initialParticipantRoles.map((part) => dispatch(addUpdateParticipant({
-        name: part.userEmail,
-        role: part['rooms-permission'].name,
-        id: part.id,
-      })));
-    };
-    const subscribeToRemoteStreams = async (r) => {
-      const { remoteParticipants } = r;
-      const rps = Array.from(remoteParticipants.values());
-      // Listen to all the participants that are already on the call
-      rps.map(async (rp) => {
-        rp.on('StartedSpeaking', () => {
-          updateIsSpeakingStatus(rp.connectionId, true);
-        });
-        rp.on('StoppedSpeaking', () => {
-          updateIsSpeakingStatus(rp.connectionId, false);
-        });
-        await rp.subscribe();
+
+  const renderParticipantCollection = () => (
+    <ParticipantsCollection
+      gap={gap}
+      width={(collectionWidth - 330)}
+      height={(collectionHeight - 20)}
+      participantsPerPage={participantsPerPage}
+      participantsCount={participantsCount}
+    >
+      {remoteStreams.filter((p) => !p.isSharingScreen)}
+    </ParticipantsCollection>
+  );
+
+  const subscribeToRemoteStreams = async (r) => {
+    const { remoteParticipants } = r;
+    const rps = Array.from(remoteParticipants.values());
+    // Listen to all the participants that are already on the call
+    rps.map(async (rp) => {
+      rp.on('StartedSpeaking', () => {
+        updateIsSpeakingStatus(rp.connectionId, true);
       });
-      updateParticipantRoles();
-    };
+      rp.on('StoppedSpeaking', () => {
+        updateIsSpeakingStatus(rp.connectionId, false);
+      });
+      await rp.subscribe();
+    });
+    updateParticipantRoles(roomId, dispatch);
+  };
 
-    const joinRoom = async () => {
-      const JWT = await roomJWTprovider(
-        roomId,
-        currentUser.email,
-        null,
-        null,
-        () => { setRoomNotFound(true); },
+  const handleTrackMuted = (remoteParticipant, track) => {
+    const streamData = remoteStreamsRef.current.get(remoteParticipant.id);
+    streamData[`${track.kind}Muted`] = true;
+    setRemoteStreamsRef(remoteStreamsRef.current);
+  };
+
+  const handleTrackUnmuted = (remoteParticipant, track) => {
+    const streamData = remoteStreamsRef.current.get(remoteParticipant.id);
+    streamData[`${track.kind}Muted`] = false;
+    setRemoteStreamsRef(remoteStreamsRef.current);
+  };
+
+  const handleTrackStarted = (remoteParticipant, track) => {
+    // if there's already a stream for this participant, add the track to it
+    // this avoid having two different streams for the audio/video tracks of the
+    // same participant.
+
+    if (remoteStreamsRef.current.has(remoteParticipant.id)) {
+      const streamData = remoteStreamsRef.current.get(remoteParticipant.id);
+      streamData[`${track.kind}Muted`] = track.muted;
+      const stream = new MediaStream();
+      stream.addTrack(track.mediaStreamTrack);
+      if (track.kind === 'audio') {
+        streamData.audioStream = stream;
+      } else {
+        streamData.videoStream = stream;
+      }
+      remoteStreamsRef.current.set(remoteParticipant.id, streamData);
+    } else {
+      const audioStream = new MediaStream();
+      const videoStream = new MediaStream();
+      let isSharingScreen = false;
+
+      if (track.kind === 'audio') {
+        audioStream.addTrack(track.mediaStreamTrack);
+      } else {
+        videoStream.addTrack(track.mediaStreamTrack);
+      }
+      if (track.provider.source === 'screenshare') {
+        isSharingScreen = true;
+        setIsSharingScreen(isSharingScreen);
+      }
+      remoteStreamsRef.current.set(
+        remoteParticipant.id,
+        {
+          audioStream,
+          videoStream,
+          [`${track.kind}Muted`]: track.muted,
+          speaking: false,
+          name: remoteParticipant.displayName,
+          isSharingScreen, // set isSharingScreen for remote participant
+          lastSpokenTime: 0
+        },
       );
+    }
+    setRemoteStreamsRef(remoteStreamsRef.current);
 
+    // add event handler for Muted/Unmuted events
+    track.on('Muted', handleTrackMuted);
+    track.on('Unmuted', handleTrackUnmuted);
+  };
+
+  const handleParticipantLeft = (p) => {
+    // Check if the participant who left the room was sharing screen
+    if (remoteStreamsRef.current.get(p.id)?.isSharingScreen) {
+      setIsSharingScreen(false);
+    }
+    remoteStreamsRef.current.delete(p.id);
+    setRemoteStreamsRef(remoteStreamsRef.current);
+    dispatch(removeParticipant({ name: p.displayName }));
+  };
+
+  const handleParticipantJoined = (p) => {
+    p.subscribe();
+    p.on('StartedSpeaking', () => {
+      updateIsSpeakingStatus(p.id, true);
+    });
+    p.on('StoppedSpeaking', () => {
+      updateIsSpeakingStatus(p.id, false);
+    });
+  };
+
+  const joinRoom = async () => {
+    const JWT = await roomJWTprovider(
+      roomId,
+      currentUser.email,
+      null,
+      null,
+      () => { setRoomNotFound(true); },
+    );
+
+    try {
       const newRoom = new WebRoom(JWT);
       const newParticipant = await newRoom.join();
+      if (newParticipant) {
+        dispatch(initRoom({
+          id: roomId,
+          participants: [{ name: currentUser.email, role: ROLES.GUEST }],
+        }));
 
-      dispatch(initRoom({
-        id: roomId,
-        participants: [{ name: currentUser.email, role: ROLES.GUEST }],
-      }));
+        // add event handler for TrackStarted event
+        newRoom.on('ParticipantTrackSubscribed', handleTrackStarted);
+        newRoom.on('ParticipantJoined', handleParticipantJoined);
+        newRoom.on('ParticipantLeft', handleParticipantLeft);
 
-      // add event handler for TrackStarted event
-      newRoom.on('ParticipantTrackSubscribed', (remoteParticipant, track) => {
-        // if there's already a stream for this participant, add the track to it
-        // this avoid having two different streams for the audio/video tracks of the
-        // same participant.
-
-        if (remoteStreamsRef.current.has(remoteParticipant.id)) {
-          const streamData = remoteStreamsRef.current.get(remoteParticipant.id);
-          streamData[`${track.kind}Muted`] = track.muted;
-          const stream = new MediaStream();
+        setRoom(newRoom);
+        roomRef.current = newRoom;
+        const tracks = await newParticipant.publishTracks(
+          { constraints: { video: true, audio: true } },
+        );
+        const stream = new MediaStream();
+        const newLocalTracks = { ...localTracks };
+        tracks.forEach((track) => {
           stream.addTrack(track.mediaStreamTrack);
-          if (track.kind === 'audio') {
-            streamData.audioStream = stream;
-          } else {
-            streamData.videoStream = stream;
-          }
-          remoteStreamsRef.current.set(remoteParticipant.id, streamData);
-        } else {
-          const audioStream = new MediaStream();
-          const videoStream = new MediaStream();
-          let isSharingScreen = false;
-
-          if (track.kind === 'audio') {
-            audioStream.addTrack(track.mediaStreamTrack);
-          } else {
-            videoStream.addTrack(track.mediaStreamTrack);
-          }
-          if (track.provider.source === 'screenshare') {
-            isSharingScreen = true;
-            setIsSharingScreen(isSharingScreen);
-          }
-          remoteStreamsRef.current.set(
-            remoteParticipant.id,
-            {
-              audioStream,
-              videoStream,
-              [`${track.kind}Muted`]: track.muted,
-              speaking: false,
-              name: remoteParticipant.displayName,
-              isSharingScreen, // set isSharingScreen for remote participant
-              lastSpokenTime: 0
-            },
-          );
-        }
-        setRemoteStreamsRef(remoteStreamsRef.current);
-
-        // add event handler for Muted/Unmuted events
-        track.on('Muted', () => {
-          const streamData = remoteStreamsRef.current.get(remoteParticipant.id);
-          streamData[`${track.kind}Muted`] = true;
-          setRemoteStreamsRef(remoteStreamsRef.current);
+          newLocalTracks[track.kind] = track;
         });
-        track.on('Unmuted', () => {
-          const streamData = remoteStreamsRef.current.get(remoteParticipant.id);
-          streamData[`${track.kind}Muted`] = false;
-          setRemoteStreamsRef(remoteStreamsRef.current);
-        });
-      });
+        setLocalStream(stream);
+        setLocalTracks(newLocalTracks);
+        subscribeToRemoteStreams(newRoom);
+        subscribeToRoleChanges(roomId, handleRoleChange);
+      } else {
+        setErrorJoiningRoom(true);
+        throw new Error('A duplicate session has been detected.');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-      newRoom.on('ParticipantJoined', async (p) => {
-        p.subscribe();
-        p.on('StartedSpeaking', () => {
-          updateIsSpeakingStatus(p.id, true);
-        });
-        p.on('StoppedSpeaking', () => {
-          updateIsSpeakingStatus(p.id, false);
-        });
-      });
-      newRoom.on('ParticipantLeft', (p) => {
-        // Check if the participant who left the room was sharing screen
-        if (remoteStreamsRef.current.get(p.id)?.isSharingScreen) {
-          setIsSharingScreen(false);
-        }
-        remoteStreamsRef.current.delete(p.id);
-        setRemoteStreamsRef(remoteStreamsRef.current);
-        dispatch(removeParticipant({ name: p.displayName }));
-      });
-
-      setRoom(newRoom);
-      roomRef.current = newRoom;
-      const tracks = await newParticipant.publishTracks(
-        { constraints: { video: true, audio: true } },
-      );
-      const stream = new MediaStream();
-      const newLocalTracks = { ...localTracks };
-      tracks.forEach((track) => {
-        stream.addTrack(track.mediaStreamTrack);
-        newLocalTracks[track.kind] = track;
-      });
-      setLocalStream(stream);
-      setLocalTracks(newLocalTracks);
-      subscribeToRemoteStreams(newRoom);
-      subscribeToRoleChanges(roomId, handleRoleChange);
-    };
+  // initialize room
+  useEffect(() => {
     joinRoom();
     return () => {
       dispatch(cleanRoom());
       leaveRoom();
     };
   }, []);
+
   const updateScreenShare = async () => {
     if (!isSharingScreen) {
       const JWT = await roomJWTprovider(roomId, `${currentUser.email}-screen-share`, null, null, () => { setRoomNotFound(true); });
       const newScreenRoom = new WebRoom(JWT);
       const newlocalParticipant = await newScreenRoom.join();
       setScreenRoom(newScreenRoom);
-      const tracks = await newlocalParticipant.startScreenShare();
-      const stream = new MediaStream();
-      const audioStream = new MediaStream();
-      const videoStream = new MediaStream();
-      const newLocalTracks = { ...localTracks };
+      try {
+        const tracks = await newlocalParticipant.startScreenShare();
+        const stream = new MediaStream();
+        const audioStream = new MediaStream();
+        const videoStream = new MediaStream();
+        const newLocalTracks = { ...localTracks };
 
-      tracks.forEach((track) => {
-        if (track.kind === 'audio') {
-          audioStream.addTrack(track.mediaStreamTrack);
-        } else {
-          videoStream.addTrack(track.mediaStreamTrack);
-        }
-        stream.addTrack(track.mediaStreamTrack);
-        newLocalTracks[track.kind] = track;
-      });
-
-      setLocalTracks({ ...localTracks });
-      // add listener on `Stop sharing` browser's button
-      stream.getVideoTracks()[0]
-        .addEventListener('ended', () => {
-          newScreenRoom.leave();
+        tracks.forEach((track) => {
+          if (track.kind === 'audio') {
+            audioStream.addTrack(track.mediaStreamTrack);
+          } else {
+            videoStream.addTrack(track.mediaStreamTrack);
+          }
+          stream.addTrack(track.mediaStreamTrack);
+          newLocalTracks[track.kind] = track;
         });
+
+        setLocalTracks({ ...localTracks });
+        // add listener on `Stop sharing` browser's button
+        stream.getVideoTracks()[0]
+          .addEventListener('ended', () => {
+            newScreenRoom.leave();
+          });
+      } catch {
+        newScreenRoom.leave();
+      }
     } else {
       screenRoom.leave();
     }
-
-    setIsSharingScreen(!isSharingScreen);
   };
 
   useEffect(() => () => {
@@ -333,16 +350,15 @@ function Room() {
   };
 
   const addManyParticipants = (numberOfParticipants) => {
-    let videoNumber = 0;
+    let videoNumber = 1;
     for (let i = 0; i < numberOfParticipants; i++) {
       addFakeParticipant(roomId, `testing${i}@hotmail.com`, videoNumber);
       videoNumber++;
-      if (videoNumber > 0) {
+      if (videoNumber > 3) {
         videoNumber = 0;
       }
     }
   };
-
   return (
     <>
       {
@@ -350,7 +366,7 @@ function Room() {
           <Button
             size="large"
             disabled={!localTracks.video}
-            onClick={() => addManyParticipants(8)}
+            onClick={() => addManyParticipants(3)}
           >
             ADD USER
           </Button>
@@ -375,33 +391,23 @@ function Room() {
           }}
           >
             <Box style={{ marginTop: '10px' }}>
-              {participantsCount < 1 ? '' : (
-                <ParticipantsCollection
-                  gap={gap}
-                  width={(collectionWidth - 330)}
-                  height={(collectionHeight - 20)}
-                  participantsPerPage={participantsPerPage}
-                  participantsCount={participantsCount}
-                >
-                  {remoteStreams.filter((p) => !p.isSharingScreen)}
-                </ParticipantsCollection>
-              )}
+              {participantsCount > 0 && renderParticipantCollection()}
 
               {isSharingScreen
-              && (
-                <Box
-                  style={{
-                    display: 'flex',
-                    maxHeight: '100%',
-                    width: `${screenShareWidth}px`,
-                    position: 'relative',
-                  }}
-                >
-                  <ShareScreen width={`${screenShareWidth}px`}>
-                    {remoteStreams.find((p) => p.isSharingScreen)}
-                  </ShareScreen>
-                </Box>
-              )}
+                && (
+                  <Box
+                    style={{
+                      display: 'flex',
+                      maxHeight: '100%',
+                      width: `${screenShareWidth}px`,
+                      position: 'relative',
+                    }}
+                  >
+                    <ShareScreen width={`${screenShareWidth}px`}>
+                      {remoteStreams.find((p) => p.isSharingScreen)}
+                    </ShareScreen>
+                  </Box>
+                )}
 
               <div style={localStreamStyle}>
                 <Video
@@ -430,7 +436,7 @@ function Room() {
             display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%',
           }}
           >
-            <CircularProgress />
+            {!errorJoiningRoom && <CircularProgress />}
           </div>
         )
       }
