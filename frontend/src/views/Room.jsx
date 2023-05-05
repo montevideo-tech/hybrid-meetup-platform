@@ -136,6 +136,7 @@ function Room() {
       height={(collectionHeight - 20)}
       participantsPerPage={participantsPerPage}
       participantsCount={participantsCount}
+      localParticipant={localParticipant}
     >
       {remoteStreams.filter((p) => !p.isSharingScreen)}
     </ParticipantsCollection>
@@ -215,8 +216,8 @@ function Room() {
     setRemoteStreamsRef(remoteStreamsRef.current);
 
     // add event handler for Muted/Unmuted events
-    track.on('Muted', handleTrackMuted);
-    track.on('Unmuted', handleTrackUnmuted);
+    track.on('Muted', () => handleTrackMuted(remoteParticipant, track));
+    track.on('Unmuted', () => handleTrackUnmuted(remoteParticipant, track));
   };
 
   const handleParticipantLeft = (p) => {
@@ -231,7 +232,6 @@ function Room() {
 
   const handleParticipantJoined = (p) => {
     p.subscribe();
-    // p.removeRemoteParticipant();
     p.on('StartedSpeaking', () => {
       updateIsSpeakingStatus(p.id, true);
     });
@@ -257,6 +257,12 @@ function Room() {
       id: roomId,
       participants: [{ name: currentUser.email, role: ROLES.GUEST }],
     }));
+
+    newRoom.on('RemoveRemoteParticipant', (resp) => {
+      if (resp.participantId === newParticipant.displayName) {
+        leaveRoom();
+      }
+    });
 
     // add event handler for TrackStarted event
     newRoom.on('ParticipantTrackSubscribed', handleTrackStarted);
@@ -346,10 +352,6 @@ function Room() {
     }
   };
 
-  const onClickRemove = () => {
-    localParticipant.removeRemoteParticipant();
-  };
-
   return (
     <>
       {
@@ -404,7 +406,6 @@ function Room() {
                 <Video
                   stream={localStream}
                   isStreamLocal
-                  onClick={onClickRemove}
                 />
               </div>
               <RoomControls

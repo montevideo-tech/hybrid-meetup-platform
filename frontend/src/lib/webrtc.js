@@ -105,19 +105,17 @@ export class LocalParticipant extends Participant {
     return publishedTracks.map((t) => new Track(t)); // wrap into our Track
   }
 
-  async removeRemoteParticipant() {
+  async removeRemoteParticipant(participantName) {
     // Define the custom event type and data
-    const eventType = 'my-custom-event';
+    const eventType = 'RemoveRemoteParticipant';
     const eventData = {
-      message: 'aaaa',
+      participantId: participantName,
     };
-
     // Convert the event data to a JSON string
     const payload = JSON.stringify({
       type: eventType,
       data: eventData,
     });
-
     try {
       await this.provider.publishCustomEvent(payload);
     } catch (e) {
@@ -214,6 +212,15 @@ export class Room extends EventEmitter {
     this.provider.on(
       SpaceEvent.ParticipantTrackSubscribed,
       (p, t) => this.emit('ParticipantTrackSubscribed', new RemoteParticipant(p), new Track(t)),
+    );
+    this.provider.on(
+      SpaceEvent.ParticipantCustomEventPublished,
+      (p, event) => {
+        const resp = JSON.parse(event.payload);
+        if (resp.type === 'RemoveRemoteParticipant') {
+          this.emit('RemoveRemoteParticipant', resp.data);
+        }
+      },
     );
   }
 

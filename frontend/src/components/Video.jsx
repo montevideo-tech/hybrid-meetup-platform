@@ -107,7 +107,7 @@ function Video(props) {
         </IconButton>
       )}
       <IconButton
-        onClick={onClick}
+        onClick={() => onClick(name)}
         disableRipple
         sx={{
           position: 'absolute',
