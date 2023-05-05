@@ -5,7 +5,7 @@ import {
 import { useLoaderData, Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Button, Box, CircularProgress,
+  Button, Box, CircularProgress, Slide,
 } from '@mui/material';
 
 import useWindowDimensions from '../hooks/useWindowDimesion';
@@ -33,6 +33,7 @@ export async function roomLoader({ params }) {
 function Room() {
   const [room, setRoom] = useState();
   const userRole = useUserPermission();
+  const [isChatVisible, setIsChatVisible] = useState(true);
   // const [userParticipant, setUserParticipant] = useState();
   const [localStream, setLocalStream] = useState();
   // this helps keep track of muting/unmuting with RoomControls
@@ -64,9 +65,14 @@ function Room() {
     setRemoteStreams(remoteStreamsSorted);
   };
 
+  const toggleChatVisibility = () => {
+    setIsChatVisible((prev) => !prev);
+  };
+
   const participantsCount = remoteStreams.length;
 
-  let collectionWidth = width - paddingX * 2;
+  let collectionWidth = isChatVisible ? (width - paddingX * 2 - 330) : (width - paddingX * 2);
+
   if (isSharingScreen) {
     if (participantsCount < 6) {
       collectionWidth = width * 0.25 - paddingX;
@@ -132,7 +138,7 @@ function Room() {
     <ParticipantsCollection
       gap={gap}
       width={(collectionWidth - 330)}
-      height={(collectionHeight - 20)}
+      height={(collectionHeight)}
       participantsPerPage={participantsPerPage}
       participantsCount={participantsCount}
     >
@@ -328,8 +334,8 @@ function Room() {
 
   const localStreamStyle = {
     position: 'absolute',
-    bottom: 55,
-    right: 350,
+    bottom: isChatVisible ? 55 : 30,
+    right: isChatVisible ? 350 : 50,
   };
 
   const addManyParticipants = (numberOfParticipants) => {
@@ -364,7 +370,7 @@ function Room() {
         room ? (
           <Box style={{
             display: 'flex',
-            justifyContent: 'flex-end',
+            justifyContent: isChatVisible ? 'flex-end' : 'center',
             width: '100%',
             height: '100%',
             alignItems: 'flex-start',
@@ -377,20 +383,20 @@ function Room() {
               {participantsCount > 0 && renderParticipantCollection()}
 
               {isSharingScreen
-              && (
-                <Box
-                  style={{
-                    display: 'flex',
-                    maxHeight: '100%',
-                    width: `${screenShareWidth}px`,
-                    position: 'relative',
-                  }}
-                >
-                  <ShareScreen width={`${screenShareWidth}px`}>
-                    {remoteStreams.find((p) => p.isSharingScreen)}
-                  </ShareScreen>
-                </Box>
-              )}
+                && (
+                  <Box
+                    style={{
+                      display: 'flex',
+                      maxHeight: '100%',
+                      width: `${screenShareWidth}px`,
+                      position: 'relative',
+                    }}
+                  >
+                    <ShareScreen width={`${screenShareWidth}px`}>
+                      {remoteStreams.find((p) => p.isSharingScreen)}
+                    </ShareScreen>
+                  </Box>
+                )}
 
               <div style={localStreamStyle}>
                 <Video
@@ -407,10 +413,26 @@ function Room() {
                 leaveRoom={leaveRoom}
                 disabled={!room}
               />
+              <Button
+                variant="contained"
+                size="large"
+                onClick={toggleChatVisibility}
+                sx={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: '66%',
+                  transform: 'translateX(-50%)',
+                }}
+              >
+                {isChatVisible ? 'Hide Chat' : 'Show Chat'}
+              </Button>
             </Box>
-
-            <Box>
-              <Chat />
+            <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+              <Slide direction="left" in={isChatVisible} mountOnEnter unmountOnExit>
+                <Box>
+                  <Chat />
+                </Box>
+              </Slide>
             </Box>
           </Box>
 
