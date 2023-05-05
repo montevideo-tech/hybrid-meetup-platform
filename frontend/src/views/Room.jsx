@@ -332,6 +332,12 @@ function Room() {
     }
   };
 
+  useEffect(() => () => {
+    if (isSharingScreen) {
+      updateScreenShare();
+    }
+  }, [isSharingScreen]);
+
   const updateLocalTracksMuted = (kind, muted) => {
     localTracks[kind].muted = muted;
     setLocalTracks({ ...localTracks });
