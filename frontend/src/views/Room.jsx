@@ -301,33 +301,35 @@ function Room() {
       const newScreenRoom = new WebRoom(JWT);
       const newlocalParticipant = await newScreenRoom.join();
       setScreenRoom(newScreenRoom);
-      const tracks = await newlocalParticipant.startScreenShare();
-      const stream = new MediaStream();
-      const audioStream = new MediaStream();
-      const videoStream = new MediaStream();
-      const newLocalTracks = { ...localTracks };
+      try {
+        const tracks = await newlocalParticipant.startScreenShare();
+        const stream = new MediaStream();
+        const audioStream = new MediaStream();
+        const videoStream = new MediaStream();
+        const newLocalTracks = { ...localTracks };
 
-      tracks.forEach((track) => {
-        if (track.kind === 'audio') {
-          audioStream.addTrack(track.mediaStreamTrack);
-        } else {
-          videoStream.addTrack(track.mediaStreamTrack);
-        }
-        stream.addTrack(track.mediaStreamTrack);
-        newLocalTracks[track.kind] = track;
-      });
-
-      setLocalTracks({ ...localTracks });
-      // add listener on `Stop sharing` browser's button
-      stream.getVideoTracks()[0]
-        .addEventListener('ended', () => {
-          newScreenRoom.leave();
+        tracks.forEach((track) => {
+          if (track.kind === 'audio') {
+            audioStream.addTrack(track.mediaStreamTrack);
+          } else {
+            videoStream.addTrack(track.mediaStreamTrack);
+          }
+          stream.addTrack(track.mediaStreamTrack);
+          newLocalTracks[track.kind] = track;
         });
+
+        setLocalTracks({ ...localTracks });
+        // add listener on `Stop sharing` browser's button
+        stream.getVideoTracks()[0]
+          .addEventListener('ended', () => {
+            newScreenRoom.leave();
+          });
+      } catch {
+        newScreenRoom.leave();
+      }
     } else {
       screenRoom.leave();
     }
-
-    setIsSharingScreen(!isSharingScreen);
   };
 
   const updateLocalTracksMuted = (kind, muted) => {
@@ -342,11 +344,11 @@ function Room() {
   };
 
   const addManyParticipants = (numberOfParticipants) => {
-    let videoNumber = 0;
+    let videoNumber = 1;
     for (let i = 0; i < numberOfParticipants; i++) {
       addFakeParticipant(roomId, `testing${i}@hotmail.com`, videoNumber);
       videoNumber++;
-      if (videoNumber > 0) {
+      if (videoNumber > 3) {
         videoNumber = 0;
       }
     }
@@ -358,7 +360,7 @@ function Room() {
           <Button
             size="large"
             disabled={!localTracks.video}
-            onClick={() => addManyParticipants(8)}
+            onClick={() => addManyParticipants(3)}
           >
             ADD USER
           </Button>
