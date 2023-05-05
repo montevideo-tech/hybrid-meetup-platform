@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-use-before-define */
 import React, { useState, useEffect } from 'react';
 
 import { Button, Grid } from '@mui/material';
@@ -143,7 +141,6 @@ function RoomTest() {
                 <Grid item key={stream.id}>
                   <Video
                     stream={stream}
-                    // eslint-disable-next-line react/jsx-boolean-value
                     isAudioMuted={false}
                     isVideoMuted={false}
                     isSpeaking={false}
@@ -158,7 +155,6 @@ function RoomTest() {
             <Video
               stream={localStream}
               isStreamLocal
-              // eslint-disable-next-line react/jsx-boolean-value
               isAudioMuted={localTracks.audio.muted}
               isVideoMuted={false}
               isSpeaking={false}

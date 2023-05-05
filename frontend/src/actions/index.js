@@ -1,7 +1,3 @@
-/* eslint-disable no-unused-expressions */
-/* eslint-disable import/prefer-default-export */
-/* eslint-disable consistent-return */
-
 import mvdTech from '../lib/api';
 import { login } from '../reducers/userSlice';
 
@@ -150,7 +146,6 @@ export const roomJWTprovider = async (
       },
     );
     onSuccess && onSuccess(response);
-    /* eslint-disable consistent-return */
     return response.data.spaceToken;
   } catch (error) {
     if (error.response.status === 404) {
@@ -185,7 +180,6 @@ export const giveUserRoleOnRoom = async (
       },
     );
     onSuccess && onSuccess(response);
-    /* eslint-disable consistent-return */
     return response.data;
   } catch (error) {
     if (error.response.status === 404) {

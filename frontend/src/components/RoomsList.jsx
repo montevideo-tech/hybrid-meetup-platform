@@ -19,7 +19,6 @@ function RoomsList(props) {
 }
 
 RoomsList.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
   list: PropTypes.array,
 };
 
