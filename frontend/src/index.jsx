@@ -19,8 +19,7 @@ import EditRoom from './views/EditRoom';
 import { RoomsLayout } from './layout/RoomsLayout';
 
 // import RoomTest from './components/RoomTest';
-import RequireAuth from './components/RequireAuth';
-import RedirectLoggedInUser from './components/RedirectLoggedInUser';
+import AuthRoute from './components/AuthRoute';
 
 const router = createBrowserRouter([
   {
@@ -35,18 +34,14 @@ const router = createBrowserRouter([
       {
         path: '/rooms',
         element: (
-          <RequireAuth>
+          <AuthRoute requireAuth>
             <RoomsLayout />
-          </RequireAuth>
+          </AuthRoute>
         ),
         children: [
           {
             path: '',
-            element: (
-              <RequireAuth>
-                <Rooms />
-              </RequireAuth>
-            ),
+            element: <Rooms />,
           },
           {
             path: '404',
@@ -73,17 +68,17 @@ const router = createBrowserRouter([
       {
         path: '/signIn',
         element: (
-          <RedirectLoggedInUser>
+          <AuthRoute>
             <SignIn />
-          </RedirectLoggedInUser>
+          </AuthRoute>
         ),
       },
       {
         path: '/signUp',
         element: (
-          <RedirectLoggedInUser>
+          <AuthRoute>
             <SignUp />
-          </RedirectLoggedInUser>
+          </AuthRoute>
         ),
       },
       // {

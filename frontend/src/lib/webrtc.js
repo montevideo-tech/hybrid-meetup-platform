@@ -193,9 +193,13 @@ export class Room extends EventEmitter {
    * Returns the local participant.
    */
   async join() {
-    const participant = await this.provider.join();
-    const localParticipant = new LocalParticipant(participant);
-    return localParticipant;
+    try {
+      const participant = await this.provider.join();
+      const localParticipant = new LocalParticipant(participant);
+      return localParticipant;
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   /**
