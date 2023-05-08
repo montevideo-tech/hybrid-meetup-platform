@@ -2,7 +2,7 @@
 import {
   React, useState, useEffect, useRef,
 } from 'react';
-import { useLoaderData, Navigate } from 'react-router-dom';
+import { useLoaderData, Navigate, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   Button, Box, CircularProgress,
@@ -32,6 +32,7 @@ export async function roomLoader({ params }) {
 
 function Room() {
   const [room, setRoom] = useState();
+  const [localParticipant, setLocalParticipant] = useState();
   const userRole = useUserPermission();
   // const [userParticipant, setUserParticipant] = useState();
   const [localStream, setLocalStream] = useState();
@@ -55,6 +56,7 @@ function Room() {
   let gap = 10;
   const paddingY = height < 600 ? 10 : 40;
   const paddingX = width < 800 ? 40 : 60;
+  const navigate = useNavigate();
 
   // To add a new criteria to the comparator you need to
   // Decide if it's higher or lower pririoty compared to the already established
@@ -136,6 +138,8 @@ function Room() {
       height={(collectionHeight - 20)}
       participantsPerPage={participantsPerPage}
       participantsCount={participantsCount}
+      localParticipant={localParticipant}
+      permissionRole={userRole}
     >
       {remoteStreams.filter((p) => !p.isSharingScreen)}
     </ParticipantsCollection>
@@ -215,8 +219,8 @@ function Room() {
     setRemoteStreamsRef(remoteStreamsRef.current);
 
     // add event handler for Muted/Unmuted events
-    track.on('Muted', handleTrackMuted);
-    track.on('Unmuted', handleTrackUnmuted);
+    track.on('Muted', () => handleTrackMuted(remoteParticipant, track));
+    track.on('Unmuted', () => handleTrackUnmuted(remoteParticipant, track));
   };
 
   const handleParticipantLeft = (p) => {
@@ -251,11 +255,19 @@ function Room() {
     try {
       const newRoom = new WebRoom(JWT);
       const newParticipant = await newRoom.join();
+      setLocalParticipant(newParticipant);
       if (newParticipant) {
         dispatch(initRoom({
           id: roomId,
           participants: [{ name: currentUser.email, role: ROLES.GUEST }],
         }));
+
+        newRoom.on('RemoveRemoteParticipant', (resp) => {
+          if (resp.participantId === newParticipant.displayName) {
+            leaveRoom();
+            navigate('/rooms');
+          }
+        });
 
         // add event handler for TrackStarted event
         newRoom.on('ParticipantTrackSubscribed', handleTrackStarted);
@@ -359,6 +371,7 @@ function Room() {
       }
     }
   };
+
   return (
     <>
       {

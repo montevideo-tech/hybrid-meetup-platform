@@ -104,6 +104,22 @@ export class LocalParticipant extends Participant {
     return publishedTracks.map((t) => new Track(t)); // wrap into our Track
   }
 
+  async removeRemoteParticipant(participantName) {
+    const eventType = 'RemoveRemoteParticipant';
+    const eventData = {
+      participantId: participantName,
+    };
+    const payload = JSON.stringify({
+      type: eventType,
+      data: eventData,
+    });
+    try {
+      await this.provider.publishCustomEvent(payload);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   /**
    * Unpublish a list of local wrapped Tracks from the room.
    * The function also stops the tracks.
@@ -183,6 +199,15 @@ export class Room extends EventEmitter {
     this.provider.on(
       SpaceEvent.ParticipantTrackSubscribed,
       (p, t) => this.emit('ParticipantTrackSubscribed', new RemoteParticipant(p), new Track(t)),
+    );
+    this.provider.on(
+      SpaceEvent.ParticipantCustomEventPublished,
+      (p, event) => {
+        const resp = JSON.parse(event.payload);
+        if (resp.type === 'RemoveRemoteParticipant') {
+          this.emit('RemoveRemoteParticipant', resp.data);
+        }
+      },
     );
   }
 

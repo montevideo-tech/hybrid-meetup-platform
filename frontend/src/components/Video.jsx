@@ -9,9 +9,11 @@ import {
   MicOffOutlined as MicOffOutlinedIcon,
   PushPinOutlined as PushPinOutlinedIcon,
   PushPinRounded as PushPinRoundedIcon,
+  DeleteRounded as DeleteOutlineIcon,
 } from '@mui/icons-material';
 import ParticipantInfo from './ParticipantInfo';
 import logo from '../assets/MVDTSC.png';
+import { ROLES } from '../utils/roles';
 
 function Video(props) {
   const videoRef = useRef();
@@ -27,6 +29,7 @@ function Video(props) {
     height,
     onClick,
     style,
+    permissionRole,
   } = props;
   // const [isPinned, setIsPinned] = useState(false);
 
@@ -51,7 +54,6 @@ function Video(props) {
 
   return (
     <Box
-      onClick={onClick}
       sx={{
         position: 'relative',
         width: `${width - outlineWidth * 2}px`,
@@ -103,6 +105,22 @@ function Video(props) {
           <MicOffOutlinedIcon sx={{ ml: '2px' }} />
         </IconButton>
       )}
+      {permissionRole === ROLES.HOST && (
+        <IconButton
+          onClick={() => onClick(name)}
+          disableRipple
+          sx={{
+            position: 'absolute',
+            top: 10,
+            right: 70,
+            color: 'white',
+            bgcolor: 'rgba(0, 0, 0, 0.2)',
+            border: '2px solid',
+          }}
+        >
+          <DeleteOutlineIcon sx={{ ml: '2px' }} />
+        </IconButton>
+      )}
 
       {/* <IconButton
         onClick={handlePinClick}
@@ -135,6 +153,7 @@ Video.propTypes = {
   name: PropTypes.string,
   onClick: PropTypes.func,
   style: PropTypes.shape({}),
+  permissionRole: PropTypes.string,
 };
 
 Video.defaultProps = {
@@ -149,6 +168,7 @@ Video.defaultProps = {
   height: 90,
   onClick: () => {},
   style: {},
+  permissionRole: ROLES.GUEST,
 };
 
 export default Video;
