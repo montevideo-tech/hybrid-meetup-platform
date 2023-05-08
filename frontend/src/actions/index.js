@@ -1,9 +1,6 @@
-/* eslint-disable no-unused-expressions */
-/* eslint-disable import/prefer-default-export */
-/* eslint-disable consistent-return */
-
 import mvdTech from '../lib/api';
 import { login } from '../reducers/userSlice';
+import { VITE_SUPABASE_KEY } from '../lib/constants';
 
 export const signInWithEmail = (data, onSuccess = null, onError = null) => async (dispatch) => {
   if (!data || !data.email || !data.password) {
@@ -20,7 +17,7 @@ export const signInWithEmail = (data, onSuccess = null, onError = null) => async
       JSON.stringify({ user }),
       {
         headers: {
-          Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+          Authorization: `Bearer ${VITE_SUPABASE_KEY}`,
           'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
         },
       },
@@ -58,7 +55,7 @@ export const signUp = (data, onSuccess = null, onError = null) => async () => {
       JSON.stringify({ user }),
       {
         headers: {
-          Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+          Authorization: `Bearer ${VITE_SUPABASE_KEY}`,
           'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
         },
       },
@@ -76,7 +73,7 @@ export const createRoom = (onSuccess = null, onError = null) => async () => {
       JSON.stringify({}),
       {
         headers: {
-          Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+          Authorization: `Bearer ${VITE_SUPABASE_KEY}`,
           'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
         },
       },
@@ -93,7 +90,7 @@ export const deleteRoom = (providerId, onSuccess = null, onError = null) => asyn
       `/spaces/${providerId}`,
       {
         headers: {
-          Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+          Authorization: `Bearer ${VITE_SUPABASE_KEY}`,
           'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
         },
       },
@@ -116,7 +113,7 @@ export const addRoomToDb = (data, onSuccess = null, onError = null) => async () 
       JSON.stringify({ table: 'rooms', ...data }),
       {
         headers: {
-          Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+          Authorization: `Bearer ${VITE_SUPABASE_KEY}`,
           'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
         },
       },
@@ -144,13 +141,12 @@ export const roomJWTprovider = async (
       JSON.stringify({ spaceId: roomId, participantId }),
       {
         headers: {
-          Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+          Authorization: `Bearer ${VITE_SUPABASE_KEY}`,
           'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
         },
       },
     );
     onSuccess && onSuccess(response);
-    /* eslint-disable consistent-return */
     return response.data.spaceToken;
   } catch (error) {
     if (error.response.status === 404) {
@@ -179,13 +175,12 @@ export const giveUserRoleOnRoom = async (
       JSON.stringify({ userEmail: email, providerId: roomId, permission: roleToAdd }),
       {
         headers: {
-          Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+          Authorization: `Bearer ${VITE_SUPABASE_KEY}`,
           'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
         },
       },
     );
     onSuccess && onSuccess(response);
-    /* eslint-disable consistent-return */
     return response.data;
   } catch (error) {
     if (error.response.status === 404) {
@@ -212,7 +207,7 @@ export const getRoomPermissions = async (
       JSON.stringify({ providerId: roomId, userEmail }),
       {
         headers: {
-          Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+          Authorization: `Bearer ${VITE_SUPABASE_KEY}`,
           'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
         },
       },

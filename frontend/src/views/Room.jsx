@@ -2,7 +2,7 @@
 import {
   React, useState, useEffect, useRef,
 } from 'react';
-import { useLoaderData, Navigate } from 'react-router-dom';
+import { useLoaderData, Navigate, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   Button, Box, CircularProgress, Slide,
@@ -32,6 +32,7 @@ export async function roomLoader({ params }) {
 
 function Room() {
   const [room, setRoom] = useState();
+  const [localParticipant, setLocalParticipant] = useState();
   const userRole = useUserPermission();
   const [isChatVisible, setIsChatVisible] = useState(true);
   // const [userParticipant, setUserParticipant] = useState();
@@ -42,6 +43,7 @@ function Room() {
   const [screenRoom, setScreenRoom] = useState();
   const [remoteStreams, setRemoteStreams] = useState([]);
   const [roomNotFound, setRoomNotFound] = useState(false);
+  const [errorJoiningRoom, setErrorJoiningRoom] = useState(false);
   const roomId = useLoaderData();
   // create reference to access room state var in useEffect cleanup func
   const roomRef = useRef();
@@ -55,6 +57,7 @@ function Room() {
   let gap = 10;
   const paddingY = height < 600 ? 10 : 40;
   const paddingX = width < 800 ? 40 : 60;
+  const navigate = useNavigate();
 
   // To add a new criteria to the comparator you need to
   // Decide if it's higher or lower pririoty compared to the already established
@@ -141,6 +144,8 @@ function Room() {
       height={(collectionHeight)}
       participantsPerPage={participantsPerPage}
       participantsCount={participantsCount}
+      localParticipant={localParticipant}
+      permissionRole={userRole}
     >
       {remoteStreams.filter((p) => !p.isSharingScreen)}
     </ParticipantsCollection>
@@ -220,8 +225,8 @@ function Room() {
     setRemoteStreamsRef(remoteStreamsRef.current);
 
     // add event handler for Muted/Unmuted events
-    track.on('Muted', handleTrackMuted);
-    track.on('Unmuted', handleTrackUnmuted);
+    track.on('Muted', () => handleTrackMuted(remoteParticipant, track));
+    track.on('Unmuted', () => handleTrackUnmuted(remoteParticipant, track));
   };
 
   const handleParticipantLeft = (p) => {
@@ -253,34 +258,50 @@ function Room() {
       () => { setRoomNotFound(true); },
     );
 
-    const newRoom = new WebRoom(JWT);
-    const newParticipant = await newRoom.join();
+    try {
+      const newRoom = new WebRoom(JWT);
+      const newParticipant = await newRoom.join();
+      setLocalParticipant(newParticipant);
+      if (newParticipant) {
+        dispatch(initRoom({
+          id: roomId,
+          participants: [{ name: currentUser.email, role: ROLES.GUEST }],
+        }));
 
-    dispatch(initRoom({
-      id: roomId,
-      participants: [{ name: currentUser.email, role: ROLES.GUEST }],
-    }));
+        newRoom.on('RemoveRemoteParticipant', (resp) => {
+          if (resp.participantId === newParticipant.displayName) {
+            leaveRoom();
+            navigate('/rooms');
+          }
+        });
 
-    // add event handler for TrackStarted event
-    newRoom.on('ParticipantTrackSubscribed', handleTrackStarted);
-    newRoom.on('ParticipantJoined', handleParticipantJoined);
-    newRoom.on('ParticipantLeft', handleParticipantLeft);
+        // add event handler for TrackStarted event
+        newRoom.on('ParticipantTrackSubscribed', handleTrackStarted);
+        newRoom.on('ParticipantJoined', handleParticipantJoined);
+        newRoom.on('ParticipantLeft', handleParticipantLeft);
 
-    setRoom(newRoom);
-    roomRef.current = newRoom;
-    const tracks = await newParticipant.publishTracks(
-      { constraints: { video: true, audio: true } },
-    );
-    const stream = new MediaStream();
-    const newLocalTracks = { ...localTracks };
-    tracks.forEach((track) => {
-      stream.addTrack(track.mediaStreamTrack);
-      newLocalTracks[track.kind] = track;
-    });
-    setLocalStream(stream);
-    setLocalTracks(newLocalTracks);
-    subscribeToRemoteStreams(newRoom);
-    subscribeToRoleChanges(roomId, handleRoleChange);
+        setRoom(newRoom);
+        roomRef.current = newRoom;
+        const tracks = await newParticipant.publishTracks(
+          { constraints: { video: true, audio: true } },
+        );
+        const stream = new MediaStream();
+        const newLocalTracks = { ...localTracks };
+        tracks.forEach((track) => {
+          stream.addTrack(track.mediaStreamTrack);
+          newLocalTracks[track.kind] = track;
+        });
+        setLocalStream(stream);
+        setLocalTracks(newLocalTracks);
+        subscribeToRemoteStreams(newRoom);
+        subscribeToRoleChanges(roomId, handleRoleChange);
+      } else {
+        setErrorJoiningRoom(true);
+        throw new Error('A duplicate session has been detected.');
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // initialize room
@@ -298,34 +319,42 @@ function Room() {
       const newScreenRoom = new WebRoom(JWT);
       const newlocalParticipant = await newScreenRoom.join();
       setScreenRoom(newScreenRoom);
-      const tracks = await newlocalParticipant.startScreenShare();
-      const stream = new MediaStream();
-      const audioStream = new MediaStream();
-      const videoStream = new MediaStream();
-      const newLocalTracks = { ...localTracks };
+      try {
+        const tracks = await newlocalParticipant.startScreenShare();
+        const stream = new MediaStream();
+        const audioStream = new MediaStream();
+        const videoStream = new MediaStream();
+        const newLocalTracks = { ...localTracks };
 
-      tracks.forEach((track) => {
-        if (track.kind === 'audio') {
-          audioStream.addTrack(track.mediaStreamTrack);
-        } else {
-          videoStream.addTrack(track.mediaStreamTrack);
-        }
-        stream.addTrack(track.mediaStreamTrack);
-        newLocalTracks[track.kind] = track;
-      });
-
-      setLocalTracks({ ...localTracks });
-      // add listener on `Stop sharing` browser's button
-      stream.getVideoTracks()[0]
-        .addEventListener('ended', () => {
-          newScreenRoom.leave();
+        tracks.forEach((track) => {
+          if (track.kind === 'audio') {
+            audioStream.addTrack(track.mediaStreamTrack);
+          } else {
+            videoStream.addTrack(track.mediaStreamTrack);
+          }
+          stream.addTrack(track.mediaStreamTrack);
+          newLocalTracks[track.kind] = track;
         });
+
+        setLocalTracks({ ...localTracks });
+        // add listener on `Stop sharing` browser's button
+        stream.getVideoTracks()[0]
+          .addEventListener('ended', () => {
+            newScreenRoom.leave();
+          });
+      } catch {
+        newScreenRoom.leave();
+      }
     } else {
       screenRoom.leave();
     }
-
-    setIsSharingScreen(!isSharingScreen);
   };
+
+  useEffect(() => () => {
+    if (isSharingScreen) {
+      updateScreenShare();
+    }
+  }, [isSharingScreen]);
 
   const updateLocalTracksMuted = (kind, muted) => {
     localTracks[kind].muted = muted;
@@ -339,15 +368,16 @@ function Room() {
   };
 
   const addManyParticipants = (numberOfParticipants) => {
-    let videoNumber = 0;
+    let videoNumber = 1;
     for (let i = 0; i < numberOfParticipants; i++) {
       addFakeParticipant(roomId, `testing${i}@hotmail.com`, videoNumber);
       videoNumber++;
-      if (videoNumber > 0) {
+      if (videoNumber > 3) {
         videoNumber = 0;
       }
     }
   };
+
   return (
     <>
       {
@@ -355,7 +385,7 @@ function Room() {
           <Button
             size="large"
             disabled={!localTracks.video}
-            onClick={() => addManyParticipants(8)}
+            onClick={() => addManyParticipants(3)}
           >
             ADD USER
           </Button>
@@ -441,7 +471,7 @@ function Room() {
             display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%',
           }}
           >
-            <CircularProgress />
+            {!errorJoiningRoom && <CircularProgress />}
           </div>
         )
       }
