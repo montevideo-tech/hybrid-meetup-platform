@@ -35,17 +35,13 @@ const router = createBrowserRouter([
         path: '/rooms',
         element: (
           <AuthRoute requireAuth>
-            <Room />
+            <RoomsLayout />
           </AuthRoute>
         ),
         children: [
           {
             path: '',
-            element: (
-              <RequireAuth>
-                <Rooms />
-              </RequireAuth>
-            ),
+            element: <Rooms />,
           },
           {
             path: '404',
@@ -82,14 +78,6 @@ const router = createBrowserRouter([
         element: (
           <AuthRoute>
             <SignUp />
-          </AuthRoute>
-        ),
-      },
-      {
-        path: '/rooms',
-        element: (
-          <AuthRoute requireAuth>
-            <Rooms />
           </AuthRoute>
         ),
       },
