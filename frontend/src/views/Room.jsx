@@ -2,7 +2,7 @@
 import {
   React, useState, useEffect, useRef,
 } from 'react';
-import { useLoaderData, Navigate } from 'react-router-dom';
+import { useLoaderData, Navigate, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   Button, Box, CircularProgress,
@@ -55,6 +55,7 @@ function Room() {
   let gap = 10;
   const paddingY = height < 600 ? 10 : 40;
   const paddingX = width < 800 ? 40 : 60;
+  const navigate = useNavigate();
 
   // To add a new criteria to the comparator you need to
   // Decide if it's higher or lower pririoty compared to the already established
@@ -137,6 +138,7 @@ function Room() {
       participantsPerPage={participantsPerPage}
       participantsCount={participantsCount}
       localParticipant={localParticipant}
+      permissionRole={userRole}
     >
       {remoteStreams.filter((p) => !p.isSharingScreen)}
     </ParticipantsCollection>
@@ -261,6 +263,7 @@ function Room() {
     newRoom.on('RemoveRemoteParticipant', (resp) => {
       if (resp.participantId === newParticipant.displayName) {
         leaveRoom();
+        navigate('/rooms');
       }
     });
 

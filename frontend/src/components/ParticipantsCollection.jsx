@@ -10,10 +10,18 @@ import { MAX_PARTICIPANTS_PER_PAGE } from '../lib/constants';
 import Audio from './Audio';
 import Video from './Video';
 import ParticipantLayout from './ParticipantLayout';
+import { ROLES } from '../utils/roles';
 
 function ParticipantsCollection(props) {
   const {
-    width, height, participantsPerPage, participantsCount, gap, children, localParticipant,
+    width,
+    height,
+    participantsPerPage,
+    participantsCount,
+    gap,
+    children,
+    localParticipant,
+    permissionRole,
   } = props;
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -125,6 +133,7 @@ function ParticipantsCollection(props) {
             videoStream, name, audioMuted, videoMuted, speaking
           }) => (
             <Video
+              permissionRole={permissionRole}
               key={name}
               stream={videoStream}
               isAudioMuted={audioMuted || false}
@@ -177,6 +186,7 @@ ParticipantsCollection.propTypes = {
   participantsPerPage: PropTypes.number,
   participantsCount: PropTypes.number,
   localParticipant: LocalParticipant,
+  permissionRole: PropTypes.string,
 };
 
 ParticipantsCollection.defaultProps = {
@@ -187,6 +197,7 @@ ParticipantsCollection.defaultProps = {
   participantsPerPage: MAX_PARTICIPANTS_PER_PAGE,
   participantsCount: 1,
   localParticipant: null,
+  permissionRole: ROLES.GUEST,
 };
 
 export default ParticipantsCollection;

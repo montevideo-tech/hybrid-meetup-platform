@@ -106,20 +106,18 @@ export class LocalParticipant extends Participant {
   }
 
   async removeRemoteParticipant(participantName) {
-    // Define the custom event type and data
     const eventType = 'RemoveRemoteParticipant';
     const eventData = {
       participantId: participantName,
     };
-    // Convert the event data to a JSON string
     const payload = JSON.stringify({
       type: eventType,
       data: eventData,
     });
     try {
       await this.provider.publishCustomEvent(payload);
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      console.error(error);
     }
   }
 
@@ -194,17 +192,7 @@ export class Room extends EventEmitter {
     );
     this.provider.on(
       SpaceEvent.ParticipantLeft,
-      (p) => {
-        console.log(p);
-        this.emit('ParticipantLeft', new RemoteParticipant(p));
-      },
-    );
-    this.provider.on(
-      'RemoveParticiapnt',
-      (p) => {
-        console.log(p);
-        this.emit('ParticipantLeft', new RemoteParticipant(p));
-      },
+      (p) => this.emit('ParticipantLeft', new RemoteParticipant(p)),
     );
     // When you have subscribed to a remote participant's track.
     // This means that you have begun receiving media from the associated participant track
