@@ -332,10 +332,13 @@ function Room() {
     }
   };
 
-  useEffect(() => () => {
-    if (isSharingScreen) {
-      updateScreenShare();
-    }
+  // eslint-disable-next-line arrow-body-style
+  useEffect(() => {
+    return () => {
+      if (isSharingScreen) {
+        updateScreenShare();
+      }
+    };
   }, [isSharingScreen]);
 
   const updateLocalTracksMuted = (kind, muted) => {
