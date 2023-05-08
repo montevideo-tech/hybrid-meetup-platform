@@ -56,7 +56,6 @@ function Video(props) {
 
   return (
     <Box
-      // onClick={onClick}
       sx={{
         position: 'relative',
         width: `${width - outlineWidth * 2}px`,
