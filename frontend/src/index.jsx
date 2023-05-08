@@ -12,10 +12,12 @@ import SignIn from './views/SignIn';
 import SignUp from './views/SignUp';
 import Room, { roomLoader } from './views/Room';
 import Rooms from './views/Rooms';
-import ErrorPage from './views/errorPage';
+import ErrorPage from './views/ErrorPage';
 import Home from './views/Home';
 import RoomNotFound from './views/RoomNotFound';
 import EditRoom from './views/EditRoom';
+import { RoomsLayout } from './layout/RoomsLayout';
+
 // import RoomTest from './components/RoomTest';
 import AuthRoute from './components/AuthRoute';
 
@@ -30,26 +32,38 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: '/rooms/404',
-        element: <RoomNotFound />,
-      },
-      {
-        path: '/rooms/:roomId',
+        path: '/rooms',
         element: (
           <AuthRoute requireAuth>
-            <Room />
+            <RoomsLayout />
           </AuthRoute>
         ),
-        loader: roomLoader,
-      },
-      {
-        path: '/rooms/:roomId/edit',
-        element: (
-          <IsAdmin>
-            <EditRoom />
-          </IsAdmin>
-        ),
-        loader: roomLoader,
+        children: [
+          {
+            path: '',
+            element: <Rooms />,
+          },
+          {
+            path: '404',
+            element: <RoomNotFound />,
+          },
+          {
+            path: ':roomId',
+            element: (
+              <Room />
+            ),
+            loader: roomLoader,
+          },
+          {
+            path: ':roomId/edit',
+            element: (
+              <IsAdmin>
+                <EditRoom />
+              </IsAdmin>
+            ),
+            loader: roomLoader,
+          },
+        ]
       },
       {
         path: '/signIn',
@@ -64,14 +78,6 @@ const router = createBrowserRouter([
         element: (
           <AuthRoute>
             <SignUp />
-          </AuthRoute>
-        ),
-      },
-      {
-        path: '/rooms',
-        element: (
-          <AuthRoute requireAuth>
-            <Rooms />
           </AuthRoute>
         ),
       },
