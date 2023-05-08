@@ -1,4 +1,3 @@
-/* eslint-disable max-classes-per-file */
 import EventEmitter from 'events';
 import {
   Space, SubscriptionMode, getUserMedia, getDisplayMedia, SpaceEvent, ParticipantEvent, TrackEvent,

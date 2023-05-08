@@ -41,10 +41,9 @@ export function RoomsLayout() {
     <RootContainer>
       <AppbarContainer>
         <AppBar position="relative" sx={{ height: '100%', justifyContent: 'center' }}>
-          <Toolbar>
+          <Toolbar sx={{ justifyContent: 'space-between' }}>
             <MenuItem
               sx={{
-                flexGrow: 1,
                 textDecoration: 'none',
                 letterSpacing: 1,
               }}
@@ -69,7 +68,7 @@ export function RoomsLayout() {
                 id="menu-appbar"
                 anchorEl={anchorEl}
                 anchorOrigin={{
-                  vertical: 'top',
+                  vertical: 'bottom',
                   horizontal: 'right',
                 }}
                 keepMounted
