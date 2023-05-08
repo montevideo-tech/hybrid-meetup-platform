@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
@@ -17,7 +16,6 @@ import logo from '../assets/MVDTSC.png';
 function Video(props) {
   const videoRef = useRef();
   const {
-    // eslint-disable-next-line no-unused-vars
     stream,
     isStreamLocal,
     isAudioMuted,
@@ -126,7 +124,6 @@ function Video(props) {
 }
 
 Video.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
   stream: PropTypes.object,
   isStreamLocal: PropTypes.bool,
   isAudioMuted: PropTypes.bool,

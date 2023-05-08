@@ -2,7 +2,6 @@ import { Navigate } from 'react-router-dom';
 import React from 'react';
 import { store } from '../store';
 
-// eslint-disable-next-line react/prop-types
 function IsAdmin({ children }) {
   const isLoggedIn = store.getState().user?.token;
   if (isLoggedIn) {

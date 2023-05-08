@@ -1,4 +1,3 @@
-/* eslint-disable react/require-default-props */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Typography } from '@mui/material';
@@ -22,7 +21,6 @@ function ParticipantInfo(props) {
     fontSize = '10px';
   }
 
-  // eslint-disable-next-line jsx-a11y/media-has-caption
   return (
     <div
       style={{

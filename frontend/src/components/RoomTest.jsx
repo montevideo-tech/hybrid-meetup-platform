@@ -1,11 +1,9 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-use-before-define */
 import React, { useState, useEffect } from 'react';
 
 import { Button, Grid } from '@mui/material';
 
 import { Room } from '../lib/webrtc';
-import { REACT_APP_MUX_SPACE_JWT } from '../lib/constants';
+import { VITE_MUX_SPACE_JWT } from '../lib/constants';
 
 import Video from './Video';
 import RoomControls from './RoomControls';
@@ -39,7 +37,7 @@ function RoomTest() {
   const joinRoom = async () => {
     setLoading(true);
     try {
-      const newRoom = new Room(REACT_APP_MUX_SPACE_JWT);
+      const newRoom = new Room(VITE_MUX_SPACE_JWT);
       const newParticipant = await newRoom.join();
 
       newRoom.on('ParticipantTrackSubscribed', (remoteParticipant, track) => {
@@ -143,7 +141,6 @@ function RoomTest() {
                 <Grid item key={stream.id}>
                   <Video
                     stream={stream}
-                    // eslint-disable-next-line react/jsx-boolean-value
                     isAudioMuted={false}
                     isVideoMuted={false}
                     isSpeaking={false}
@@ -158,7 +155,6 @@ function RoomTest() {
             <Video
               stream={localStream}
               isStreamLocal
-              // eslint-disable-next-line react/jsx-boolean-value
               isAudioMuted={localTracks.audio.muted}
               isVideoMuted={false}
               isSpeaking={false}

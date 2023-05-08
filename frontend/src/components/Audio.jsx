@@ -21,12 +21,10 @@ function Audio(props) {
     }
   }, [stream]);
 
-  // eslint-disable-next-line jsx-a11y/media-has-caption
   return <audio ref={audioref} autoPlay />;
 }
 
 Audio.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
   stream: PropTypes.object,
   // isStreamLocal: PropTypes.bool,
   // isAudioMuted: PropTypes.bool,
