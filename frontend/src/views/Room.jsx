@@ -255,7 +255,7 @@ function Room() {
     try {
       const newRoom = new WebRoom(JWT);
       const newParticipant = await newRoom.join();
-    setLocalParticipant(newParticipant);
+      setLocalParticipant(newParticipant);
       if (newParticipant) {
         dispatch(initRoom({
           id: roomId,
@@ -263,13 +263,13 @@ function Room() {
         }));
 
         newRoom.on('RemoveRemoteParticipant', (resp) => {
-      if (resp.participantId === newParticipant.displayName) {
-        leaveRoom();
-        navigate('/rooms');
-      }
-    });
+          if (resp.participantId === newParticipant.displayName) {
+            leaveRoom();
+            navigate('/rooms');
+          }
+        });
 
-    // add event handler for TrackStarted event
+        // add event handler for TrackStarted event
         newRoom.on('ParticipantTrackSubscribed', handleTrackStarted);
         newRoom.on('ParticipantJoined', handleParticipantJoined);
         newRoom.on('ParticipantLeft', handleParticipantLeft);
