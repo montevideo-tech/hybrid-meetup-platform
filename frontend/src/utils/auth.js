@@ -1,6 +1,7 @@
 // TODO: DELETE WHEN MIGRATION TO STORE IS COMPLETED
 
 // import mvdTech from '../lib/api';
+// import { VITE_SUPABASE_KEY } from './constants';
 
 // async function signUp(data, onSuccess = null, onError = null) {
 //   const user = {
@@ -11,7 +12,7 @@
 //   try {
 //     const response = await mvdTech.post('/sign-up', JSON.stringify({ user }), {
 //       headers: {
-//         Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+//         Authorization: `Bearer ${VITE_SUPABASE_KEY}`,
 //         'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
 //       },
 //     });
@@ -30,7 +31,7 @@
 //   try {
 //     const response = await mvdTech.post('/sign-in', JSON.stringify({ user }), {
 //       headers: {
-//         Authorization: `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+//         Authorization: `Bearer ${VITE_SUPABASE_KEY}`,
 //         'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
 //       },
 //     });

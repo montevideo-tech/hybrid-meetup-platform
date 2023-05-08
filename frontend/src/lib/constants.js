@@ -1,5 +1,6 @@
 export const { VITE_SUPABASE_URL } = import.meta.env;
 export const { VITE_SUPABASE_KEY } = import.meta.env;
+export const { VITE_SUPABASE_FUNCTIONS_URL } = import.meta.env;
 
 export const { VITE_MUX_SPACE_ID } = import.meta.env;
 export const { VITE_MUX_SPACE_JWT } = import.meta.env;

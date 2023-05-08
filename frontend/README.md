@@ -23,6 +23,6 @@ Follow the MUX docs [here](https://docs.mux.com/guides/video/build-real-time-vid
 
 Set the following env variable to the signed JWT:
 
-- `REACT_APP_MUX_SPACE_JWT`
+- `VITE_MUX_SPACE_JWT`
 
 You can find the docs for the MUX Spaces SDK [here](https://devdocs.mux.com/spaces-web/latest/modules.html).
