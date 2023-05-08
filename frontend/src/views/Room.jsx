@@ -1,30 +1,30 @@
 // Room
-import {
-  React, useState, useEffect, useRef,
-} from 'react';
-import { useLoaderData, Navigate, useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import {
-  Button, Box, CircularProgress, Slide,
-} from '@mui/material';
+import { React, useState, useEffect, useRef } from "react";
+import { useLoaderData, Navigate, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { Button, Box, CircularProgress, Slide } from "@mui/material";
 
-import useWindowDimensions from '../hooks/useWindowDimesion';
-import useUserPermission from '../hooks/useUserPermission';
-import RoomControls from '../components/RoomControls';
-import Video from '../components/Video';
+import useWindowDimensions from "../hooks/useWindowDimesion";
+import useUserPermission from "../hooks/useUserPermission";
+import RoomControls from "../components/RoomControls";
+import Video from "../components/Video";
 
-import { Room as WebRoom } from '../lib/webrtc';
-import { roomJWTprovider } from '../actions';
+import { Room as WebRoom } from "../lib/webrtc";
+import { roomJWTprovider } from "../actions";
 import {
-  initRoom, addUpdateParticipant, removeParticipant, removeRole, cleanRoom,
-} from '../reducers/roomSlice';
-import subscribeToRoleChanges, { ROLES } from '../utils/roles';
-import ParticipantsCollection from '../components/ParticipantsCollection';
-import addFakeParticipant from '../scripts/addFakeParticipant';
-import ShareScreen from '../components/ShareScreen';
-import { TESTING_MODE } from '../lib/constants';
-import Chat from '../components/Chat';
-import { comparator, updateParticipantRoles } from '../utils/helpers';
+  initRoom,
+  addUpdateParticipant,
+  removeParticipant,
+  removeRole,
+  cleanRoom,
+} from "../reducers/roomSlice";
+import subscribeToRoleChanges, { ROLES } from "../utils/roles";
+import ParticipantsCollection from "../components/ParticipantsCollection";
+import addFakeParticipant from "../scripts/addFakeParticipant";
+import ShareScreen from "../components/ShareScreen";
+import { TESTING_MODE } from "../lib/constants";
+import Chat from "../components/Chat";
+import { comparator, updateParticipantRoles } from "../utils/helpers";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -74,7 +74,9 @@ function Room() {
 
   const participantsCount = remoteStreams.length;
 
-  let collectionWidth = isChatVisible ? (width - paddingX * 2 - 330) : (width - paddingX * 2);
+  let collectionWidth = isChatVisible
+    ? width - paddingX * 2 - 330
+    : width - paddingX * 2;
 
   if (isSharingScreen) {
     if (participantsCount < 6) {
@@ -87,13 +89,14 @@ function Room() {
   }
   let collectionHeight = height - headerHeight - paddingY * 2;
   let screenShareWidth = isSharingScreen
-    ? Math.min(width - collectionWidth - paddingX * 2, width - paddingX * 2) : 0;
-  let direction = 'row';
+    ? Math.min(width - collectionWidth - paddingX * 2, width - paddingX * 2)
+    : 0;
+  let direction = "row";
   if (width < height) {
     gap = 8;
     collectionWidth = width - paddingX * 2;
     if (isSharingScreen) {
-      direction = 'column';
+      direction = "column";
       collectionHeight = height - headerHeight - (width / 4) * 3;
       screenShareWidth = width - paddingX * 2;
     }
@@ -112,17 +115,19 @@ function Room() {
   };
 
   const handleRoleChange = (payload) => {
-    if (payload.eventType === 'INSERT') {
+    if (payload.eventType === "INSERT") {
       const { id, userEmail } = payload;
-      const permission = payload['rooms-permission'].name;
-      dispatch(addUpdateParticipant({
-        name: userEmail,
-        role: permission,
-        id,
-      }));
+      const permission = payload["rooms-permission"].name;
+      dispatch(
+        addUpdateParticipant({
+          name: userEmail,
+          role: permission,
+          id,
+        })
+      );
     }
     // Supabase realtime only sends the ID that was deleted from the rooms-data table
-    if (payload.eventType === 'DELETE') {
+    if (payload.eventType === "DELETE") {
       const { id } = payload.old;
       dispatch(removeRole({ id }));
     }
@@ -140,8 +145,8 @@ function Room() {
   const renderParticipantCollection = () => (
     <ParticipantsCollection
       gap={gap}
-      width={(collectionWidth - 330)}
-      height={(collectionHeight)}
+      width={collectionWidth - 330}
+      height={collectionHeight}
       participantsPerPage={participantsPerPage}
       participantsCount={participantsCount}
       localParticipant={localParticipant}
@@ -156,10 +161,10 @@ function Room() {
     const rps = Array.from(remoteParticipants.values());
     // Listen to all the participants that are already on the call
     rps.map(async (rp) => {
-      rp.on('StartedSpeaking', () => {
+      rp.on("StartedSpeaking", () => {
         updateIsSpeakingStatus(rp.connectionId, true);
       });
-      rp.on('StoppedSpeaking', () => {
+      rp.on("StoppedSpeaking", () => {
         updateIsSpeakingStatus(rp.connectionId, false);
       });
       await rp.subscribe();
@@ -189,7 +194,7 @@ function Room() {
       streamData[`${track.kind}Muted`] = track.muted;
       const stream = new MediaStream();
       stream.addTrack(track.mediaStreamTrack);
-      if (track.kind === 'audio') {
+      if (track.kind === "audio") {
         streamData.audioStream = stream;
       } else {
         streamData.videoStream = stream;
@@ -200,33 +205,30 @@ function Room() {
       const videoStream = new MediaStream();
       let isSharingScreen = false;
 
-      if (track.kind === 'audio') {
+      if (track.kind === "audio") {
         audioStream.addTrack(track.mediaStreamTrack);
       } else {
         videoStream.addTrack(track.mediaStreamTrack);
       }
-      if (track.provider.source === 'screenshare') {
+      if (track.provider.source === "screenshare") {
         isSharingScreen = true;
         setIsSharingScreen(isSharingScreen);
       }
-      remoteStreamsRef.current.set(
-        remoteParticipant.id,
-        {
-          audioStream,
-          videoStream,
-          [`${track.kind}Muted`]: track.muted,
-          speaking: false,
-          name: remoteParticipant.displayName,
-          isSharingScreen, // set isSharingScreen for remote participant
-          lastSpokenTime: 0
-        },
-      );
+      remoteStreamsRef.current.set(remoteParticipant.id, {
+        audioStream,
+        videoStream,
+        [`${track.kind}Muted`]: track.muted,
+        speaking: false,
+        name: remoteParticipant.displayName,
+        isSharingScreen, // set isSharingScreen for remote participant
+        lastSpokenTime: 0,
+      });
     }
     setRemoteStreamsRef(remoteStreamsRef.current);
 
     // add event handler for Muted/Unmuted events
-    track.on('Muted', () => handleTrackMuted(remoteParticipant, track));
-    track.on('Unmuted', () => handleTrackUnmuted(remoteParticipant, track));
+    track.on("Muted", () => handleTrackMuted(remoteParticipant, track));
+    track.on("Unmuted", () => handleTrackUnmuted(remoteParticipant, track));
   };
 
   const handleParticipantLeft = (p) => {
@@ -241,10 +243,10 @@ function Room() {
 
   const handleParticipantJoined = (p) => {
     p.subscribe();
-    p.on('StartedSpeaking', () => {
+    p.on("StartedSpeaking", () => {
       updateIsSpeakingStatus(p.id, true);
     });
-    p.on('StoppedSpeaking', () => {
+    p.on("StoppedSpeaking", () => {
       updateIsSpeakingStatus(p.id, false);
     });
   };
@@ -255,7 +257,9 @@ function Room() {
       currentUser.email,
       null,
       null,
-      () => { setRoomNotFound(true); },
+      () => {
+        setRoomNotFound(true);
+      }
     );
 
     try {
@@ -263,28 +267,30 @@ function Room() {
       const newParticipant = await newRoom.join();
       setLocalParticipant(newParticipant);
       if (newParticipant) {
-        dispatch(initRoom({
-          id: roomId,
-          participants: [{ name: currentUser.email, role: ROLES.GUEST }],
-        }));
+        dispatch(
+          initRoom({
+            id: roomId,
+            participants: [{ name: currentUser.email, role: ROLES.GUEST }],
+          })
+        );
 
-        newRoom.on('RemoveRemoteParticipant', (resp) => {
+        newRoom.on("RemoveRemoteParticipant", (resp) => {
           if (resp.participantId === newParticipant.displayName) {
             leaveRoom();
-            navigate('/rooms');
+            navigate("/rooms");
           }
         });
 
         // add event handler for TrackStarted event
-        newRoom.on('ParticipantTrackSubscribed', handleTrackStarted);
-        newRoom.on('ParticipantJoined', handleParticipantJoined);
-        newRoom.on('ParticipantLeft', handleParticipantLeft);
+        newRoom.on("ParticipantTrackSubscribed", handleTrackStarted);
+        newRoom.on("ParticipantJoined", handleParticipantJoined);
+        newRoom.on("ParticipantLeft", handleParticipantLeft);
 
         setRoom(newRoom);
         roomRef.current = newRoom;
-        const tracks = await newParticipant.publishTracks(
-          { constraints: { video: true, audio: true } },
-        );
+        const tracks = await newParticipant.publishTracks({
+          constraints: { video: true, audio: true },
+        });
         const stream = new MediaStream();
         const newLocalTracks = { ...localTracks };
         tracks.forEach((track) => {
@@ -297,7 +303,7 @@ function Room() {
         subscribeToRoleChanges(roomId, handleRoleChange);
       } else {
         setErrorJoiningRoom(true);
-        throw new Error('A duplicate session has been detected.');
+        throw new Error("A duplicate session has been detected.");
       }
     } catch (error) {
       console.error(error);
@@ -315,7 +321,15 @@ function Room() {
 
   const updateScreenShare = async () => {
     if (!isSharingScreen) {
-      const JWT = await roomJWTprovider(roomId, `${currentUser.email}-screen-share`, null, null, () => { setRoomNotFound(true); });
+      const JWT = await roomJWTprovider(
+        roomId,
+        `${currentUser.email}-screen-share`,
+        null,
+        null,
+        () => {
+          setRoomNotFound(true);
+        }
+      );
       const newScreenRoom = new WebRoom(JWT);
       const newlocalParticipant = await newScreenRoom.join();
       setScreenRoom(newScreenRoom);
@@ -327,7 +341,7 @@ function Room() {
         const newLocalTracks = { ...localTracks };
 
         tracks.forEach((track) => {
-          if (track.kind === 'audio') {
+          if (track.kind === "audio") {
             audioStream.addTrack(track.mediaStreamTrack);
           } else {
             videoStream.addTrack(track.mediaStreamTrack);
@@ -338,10 +352,9 @@ function Room() {
 
         setLocalTracks({ ...localTracks });
         // add listener on `Stop sharing` browser's button
-        stream.getVideoTracks()[0]
-          .addEventListener('ended', () => {
-            newScreenRoom.leave();
-          });
+        stream.getVideoTracks()[0].addEventListener("ended", () => {
+          newScreenRoom.leave();
+        });
       } catch {
         newScreenRoom.leave();
       }
@@ -350,11 +363,14 @@ function Room() {
     }
   };
 
-  useEffect(() => () => {
-    if (isSharingScreen) {
-      updateScreenShare();
-    }
-  }, [isSharingScreen]);
+  useEffect(
+    () => () => {
+      if (isSharingScreen) {
+        updateScreenShare();
+      }
+    },
+    [isSharingScreen]
+  );
 
   const updateLocalTracksMuted = (kind, muted) => {
     localTracks[kind].muted = muted;
@@ -362,7 +378,7 @@ function Room() {
   };
 
   const localStreamStyle = {
-    position: 'absolute',
+    position: "absolute",
     bottom: isChatVisible ? 55 : 30,
     right: isChatVisible ? 350 : 50,
   };
@@ -380,101 +396,99 @@ function Room() {
 
   return (
     <>
-      {
-        isUserAdmin && TESTING_MODE && (
-          <Button
-            size="large"
-            disabled={!localTracks.video}
-            onClick={() => addManyParticipants(3)}
-          >
-            ADD USER
-          </Button>
-        )
-      }
+      {isUserAdmin && TESTING_MODE && (
+        <Button
+          size="large"
+          disabled={!localTracks.video}
+          onClick={() => addManyParticipants(3)}
+        >
+          ADD USER
+        </Button>
+      )}
 
-      {
-        roomNotFound
-        && <Navigate to="/rooms/404" />
-      }
-      {
-        room ? (
-          <Box style={{
-            display: 'flex',
-            justifyContent: isChatVisible ? 'flex-end' : 'center',
-            width: '100%',
-            height: '100%',
-            alignItems: 'flex-start',
-            position: 'relative',
-            backgroundColor: 'rgb(32,33,36)',
+      {roomNotFound && <Navigate to="/rooms/404" />}
+      {room ? (
+        <Box
+          style={{
+            display: "flex",
+            justifyContent: isChatVisible ? "flex-end" : "center",
+            width: "100%",
+            height: "100%",
+            alignItems: "flex-start",
+            position: "relative",
+            backgroundColor: "rgb(32,33,36)",
             direction: { direction },
           }}
-          >
-            <Box style={{ marginTop: '10px' }}>
-              {participantsCount > 0 && renderParticipantCollection()}
+        >
+          <Box style={{ marginTop: "10px" }}>
+            {participantsCount > 0 && renderParticipantCollection()}
 
-              {isSharingScreen
-                && (
-                  <Box
-                    style={{
-                      display: 'flex',
-                      maxHeight: '100%',
-                      width: `${screenShareWidth}px`,
-                      position: 'relative',
-                    }}
-                  >
-                    <ShareScreen width={`${screenShareWidth}px`}>
-                      {remoteStreams.find((p) => p.isSharingScreen)}
-                    </ShareScreen>
-                  </Box>
-                )}
-
-              <div style={localStreamStyle}>
-                <Video
-                  stream={localStream}
-                  isStreamLocal
-                />
-              </div>
-              <RoomControls
-                permissionRole={userRole}
-                updateScreenShare={updateScreenShare}
-                isSharingScreen={isSharingScreen}
-                localTracks={localTracks}
-                updateLocalTracksMuted={updateLocalTracksMuted}
-                leaveRoom={leaveRoom}
-                disabled={!room}
-              />
-              <Button
-                variant="contained"
-                size="large"
-                onClick={toggleChatVisibility}
-                sx={{
-                  position: 'absolute',
-                  bottom: 0,
-                  left: '66%',
-                  transform: 'translateX(-50%)',
+            {isSharingScreen && (
+              <Box
+                style={{
+                  display: "flex",
+                  maxHeight: "100%",
+                  width: `${screenShareWidth}px`,
+                  position: "relative",
                 }}
               >
-                {isChatVisible ? 'Hide Chat' : 'Show Chat'}
-              </Button>
-            </Box>
-            <Box sx={{ position: 'relative', overflow: 'hidden' }}>
-              <Slide direction="left" in={isChatVisible} mountOnEnter unmountOnExit>
-                <Box>
-                  <Chat />
-                </Box>
-              </Slide>
-            </Box>
-          </Box>
+                <ShareScreen width={`${screenShareWidth}px`}>
+                  {remoteStreams.find((p) => p.isSharingScreen)}
+                </ShareScreen>
+              </Box>
+            )}
 
-        ) : (
-          <div style={{
-            display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%',
+            <div style={localStreamStyle}>
+              <Video stream={localStream} isStreamLocal />
+            </div>
+            <RoomControls
+              permissionRole={userRole}
+              updateScreenShare={updateScreenShare}
+              isSharingScreen={isSharingScreen}
+              localTracks={localTracks}
+              updateLocalTracksMuted={updateLocalTracksMuted}
+              leaveRoom={leaveRoom}
+              disabled={!room}
+            />
+            <Button
+              variant="contained"
+              size="large"
+              onClick={toggleChatVisibility}
+              sx={{
+                position: "absolute",
+                bottom: 0,
+                left: "66%",
+                transform: "translateX(-50%)",
+              }}
+            >
+              {isChatVisible ? "Hide Chat" : "Show Chat"}
+            </Button>
+          </Box>
+          <Box sx={{ position: "relative", overflow: "hidden" }}>
+            <Slide
+              direction="left"
+              in={isChatVisible}
+              mountOnEnter
+              unmountOnExit
+            >
+              <Box>
+                <Chat />
+              </Box>
+            </Slide>
+          </Box>
+        </Box>
+      ) : (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
           }}
-          >
-            {!errorJoiningRoom && <CircularProgress />}
-          </div>
-        )
-      }
+        >
+          {!errorJoiningRoom && <CircularProgress />}
+        </div>
+      )}
     </>
   );
 }
