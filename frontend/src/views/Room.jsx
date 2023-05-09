@@ -1,8 +1,8 @@
 // Room
 import { React, useState, useEffect, useRef } from "react";
-import { useLoaderData, Navigate } from "react-router-dom";
+import { useLoaderData, Navigate, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { Button, Box, CircularProgress } from "@mui/material";
+import { Button, Box, CircularProgress, Slide } from "@mui/material";
 
 import useWindowDimensions from "../hooks/useWindowDimesion";
 import useUserPermission from "../hooks/useUserPermission";
@@ -32,7 +32,9 @@ export async function roomLoader({ params }) {
 
 function Room() {
   const [room, setRoom] = useState();
+  const [localParticipant, setLocalParticipant] = useState();
   const userRole = useUserPermission();
+  const [isChatVisible, setIsChatVisible] = useState(true);
   // const [userParticipant, setUserParticipant] = useState();
   const [localStream, setLocalStream] = useState();
   // this helps keep track of muting/unmuting with RoomControls
@@ -55,6 +57,7 @@ function Room() {
   let gap = 10;
   const paddingY = height < 600 ? 10 : 40;
   const paddingX = width < 800 ? 40 : 60;
+  const navigate = useNavigate();
 
   // To add a new criteria to the comparator you need to
   // Decide if it's higher or lower pririoty compared to the already established
@@ -65,9 +68,16 @@ function Room() {
     setRemoteStreams(remoteStreamsSorted);
   };
 
+  const toggleChatVisibility = () => {
+    setIsChatVisible((prev) => !prev);
+  };
+
   const participantsCount = remoteStreams.length;
 
-  let collectionWidth = width - paddingX * 2;
+  let collectionWidth = isChatVisible
+    ? width - paddingX * 2 - 330
+    : width - paddingX * 2;
+
   if (isSharingScreen) {
     if (participantsCount < 6) {
       collectionWidth = width * 0.25 - paddingX;
@@ -136,9 +146,11 @@ function Room() {
     <ParticipantsCollection
       gap={gap}
       width={collectionWidth - 330}
-      height={collectionHeight - 20}
+      height={collectionHeight}
       participantsPerPage={participantsPerPage}
       participantsCount={participantsCount}
+      localParticipant={localParticipant}
+      permissionRole={userRole}
     >
       {remoteStreams.filter((p) => !p.isSharingScreen)}
     </ParticipantsCollection>
@@ -215,8 +227,8 @@ function Room() {
     setRemoteStreamsRef(remoteStreamsRef.current);
 
     // add event handler for Muted/Unmuted events
-    track.on("Muted", handleTrackMuted);
-    track.on("Unmuted", handleTrackUnmuted);
+    track.on("Muted", () => handleTrackMuted(remoteParticipant, track));
+    track.on("Unmuted", () => handleTrackUnmuted(remoteParticipant, track));
   };
 
   const handleParticipantLeft = (p) => {
@@ -253,6 +265,7 @@ function Room() {
     try {
       const newRoom = new WebRoom(JWT);
       const newParticipant = await newRoom.join();
+      setLocalParticipant(newParticipant);
       if (newParticipant) {
         dispatch(
           initRoom({
@@ -260,6 +273,13 @@ function Room() {
             participants: [{ name: currentUser.email, role: ROLES.GUEST }],
           })
         );
+
+        newRoom.on("RemoveRemoteParticipant", (resp) => {
+          if (resp.participantId === newParticipant.displayName) {
+            leaveRoom();
+            navigate("/rooms");
+          }
+        });
 
         // add event handler for TrackStarted event
         newRoom.on("ParticipantTrackSubscribed", handleTrackStarted);
@@ -343,14 +363,14 @@ function Room() {
     }
   };
 
-  // eslint-disable-next-line arrow-body-style
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       if (isSharingScreen) {
         updateScreenShare();
       }
-    };
-  }, [isSharingScreen]);
+    },
+    [isSharingScreen]
+  );
 
   const updateLocalTracksMuted = (kind, muted) => {
     localTracks[kind].muted = muted;
@@ -359,8 +379,8 @@ function Room() {
 
   const localStreamStyle = {
     position: "absolute",
-    bottom: 55,
-    right: 350,
+    bottom: isChatVisible ? 55 : 30,
+    right: isChatVisible ? 350 : 50,
   };
 
   const addManyParticipants = (numberOfParticipants) => {
@@ -373,6 +393,7 @@ function Room() {
       }
     }
   };
+
   return (
     <>
       {isUserAdmin && TESTING_MODE && (
@@ -390,7 +411,7 @@ function Room() {
         <Box
           style={{
             display: "flex",
-            justifyContent: "flex-end",
+            justifyContent: isChatVisible ? "flex-end" : "center",
             width: "100%",
             height: "100%",
             alignItems: "flex-start",
@@ -429,10 +450,31 @@ function Room() {
               leaveRoom={leaveRoom}
               disabled={!room}
             />
+            <Button
+              variant="contained"
+              size="large"
+              onClick={toggleChatVisibility}
+              sx={{
+                position: "absolute",
+                bottom: 0,
+                left: "66%",
+                transform: "translateX(-50%)",
+              }}
+            >
+              {isChatVisible ? "Hide Chat" : "Show Chat"}
+            </Button>
           </Box>
-
-          <Box>
-            <Chat />
+          <Box sx={{ position: "relative", overflow: "hidden" }}>
+            <Slide
+              direction="left"
+              in={isChatVisible}
+              mountOnEnter
+              unmountOnExit
+            >
+              <Box>
+                <Chat />
+              </Box>
+            </Slide>
           </Box>
         </Box>
       ) : (
