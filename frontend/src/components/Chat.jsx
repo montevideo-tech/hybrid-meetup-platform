@@ -1,25 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useLoaderData } from 'react-router-dom';
-import { subscribeToNewMessages, onSendMessage } from '../utils/chat';
-import { supabase } from '../lib/api';
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useLoaderData } from "react-router-dom";
+import { subscribeToNewMessages, onSendMessage } from "../utils/chat";
+import { supabase } from "../lib/api";
+import { epochToISO8601 } from "../utils/time";
+
 import {
-  ChatButton, ChatContainer, ChatContent, ChatForm, ChatInput
-} from '../themes/componentsStyles';
+  ChatButton,
+  ChatContainer,
+  ChatContent,
+  ChatForm,
+  ChatInput,
+} from "../themes/componentsStyles";
 
 function Chat() {
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState("");
   const { email } = useSelector((state) => state.user);
   const roomId = useLoaderData();
   const [messages, setMessages] = useState([]);
+  const [dateTimeJoined] = useState(epochToISO8601(Date.now()));
 
   async function fetchMessages() {
     const { data, error } = await supabase
-      .from('message-chat')
-      .select('*')
-      .order('created_at', { ascending: true });
+      .from("message-chat")
+      .select("*")
+      .gt("created_at", dateTimeJoined)
+      .order("created_at", { ascending: true });
     if (error) {
-      console.log('Error Fetching Messages:', error);
+      console.log("Error Fetching Messages:", error);
     } else {
       setMessages(data);
     }
@@ -35,23 +43,21 @@ function Chat() {
     if (!email || !content) return;
 
     onSendMessage({ email, content, providerId: roomId });
-    setContent('');
+    setContent("");
   };
   return (
     <ChatContainer>
       <ChatContent>
         {messages?.map((m) => (
           <p>
-            <strong>
-              {m.email}
-              :
-            </strong>
-            {' '}
-            {m.content}
+            <strong>{m.email}:</strong> {m.content}
           </p>
         ))}
       </ChatContent>
-      <ChatForm onSubmit={handleSubmit} style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <ChatForm
+        onSubmit={handleSubmit}
+        style={{ display: "flex", justifyContent: "space-between" }}
+      >
         <ChatInput
           type="text"
           placeholder="Message"
