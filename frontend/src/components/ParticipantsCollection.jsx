@@ -22,6 +22,7 @@ function ParticipantsCollection(props) {
     children,
     localParticipant,
     permissionRole,
+    isEnableToUnmute,
   } = props;
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -63,6 +64,10 @@ function ParticipantsCollection(props) {
 
   const onClickRemove = (r) => {
     localParticipant.removeRemoteParticipant(r);
+  };
+
+  const onClickMute = (r, isMuted) => {
+    localParticipant.blockMuteRemoteParticipant(r, isMuted);
   };
 
   // const handleParticipantSelection = (participant) => {
@@ -141,6 +146,7 @@ function ParticipantsCollection(props) {
               isSpeaking={speaking || false}
               name={name}
               onClick={() => onClickRemove(name)}
+              onClickMute={() => onClickMute(name, audioMuted)}
               // style={selectedParticipant === name
               //   ? selectedParticipantStyle : normalParticipantStyle}
               // onClick={() => handleParticipantSelection(name)}
@@ -187,6 +193,7 @@ ParticipantsCollection.propTypes = {
   participantsCount: PropTypes.number,
   localParticipant: LocalParticipant,
   permissionRole: PropTypes.string,
+  isEnableToUnmute: PropTypes.bool,
 };
 
 ParticipantsCollection.defaultProps = {
@@ -198,6 +205,7 @@ ParticipantsCollection.defaultProps = {
   participantsCount: 1,
   localParticipant: null,
   permissionRole: ROLES.GUEST,
+  isEnableToUnmute: true,
 };
 
 export default ParticipantsCollection;

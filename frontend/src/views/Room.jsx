@@ -58,6 +58,7 @@ function Room() {
   const paddingY = height < 600 ? 10 : 40;
   const paddingX = width < 800 ? 40 : 60;
   const navigate = useNavigate();
+  const [isEnableToUnmute, setIsEnableToUnmute] = useState(true);
 
   // To add a new criteria to the comparator you need to
   // Decide if it's higher or lower pririoty compared to the already established
@@ -151,6 +152,7 @@ function Room() {
       participantsCount={participantsCount}
       localParticipant={localParticipant}
       permissionRole={userRole}
+      isEnableToUnmute={isEnableToUnmute}
     >
       {remoteStreams.filter((p) => !p.isSharingScreen)}
     </ParticipantsCollection>
@@ -301,6 +303,13 @@ function Room() {
         setLocalTracks(newLocalTracks);
         subscribeToRemoteStreams(newRoom);
         subscribeToRoleChanges(roomId, handleRoleChange);
+
+        newRoom.on('BlockMuteRemoteParticipant', (resp) => {
+          if (resp.participantId === newParticipant.displayName && currentUser.role !== ROLES.ADMIN) {
+            setIsEnableToUnmute(resp.isMuted);
+            newLocalTracks.audio.mute();
+          }
+        });
       } else {
         setErrorJoiningRoom(true);
         throw new Error("A duplicate session has been detected.");
@@ -404,7 +413,8 @@ function Room() {
         >
           ADD USER
         </Button>
-      )}
+        )
+      }
 
       {roomNotFound && <Navigate to="/rooms/404" />}
       {room ? (
@@ -449,6 +459,7 @@ function Room() {
               updateLocalTracksMuted={updateLocalTracksMuted}
               leaveRoom={leaveRoom}
               disabled={!room}
+                isEnableToUnmute={isEnableToUnmute}
             />
             <Button
               variant="contained"
