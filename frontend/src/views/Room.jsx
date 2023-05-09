@@ -253,6 +253,20 @@ function Room() {
     });
   };
 
+  const handleRemoveParticipant = (resp, participant) => { 
+    if (resp.participantId === participant.displayName) {
+      leaveRoom();
+      navigate("/rooms");
+    }
+  }
+
+  const handleBlockMuteRemote = (resp, participant, localTracks) => { 
+    if (resp.participantId === participant.displayName && currentUser.role !== ROLES.ADMIN) {
+      setIsEnableToUnmute(resp.isMuted);
+      localTracks.audio.mute();
+    }
+  }
+
   const joinRoom = async () => {
     const JWT = await roomJWTprovider(
       roomId,
@@ -276,14 +290,8 @@ function Room() {
           })
         );
 
-        newRoom.on("RemoveRemoteParticipant", (resp) => {
-          if (resp.participantId === newParticipant.displayName) {
-            leaveRoom();
-            navigate("/rooms");
-          }
-        });
-
         // add event handler for TrackStarted event
+        newRoom.on("RemoveRemoteParticipant",(resp) => handleRemoveParticipant(resp, newParticipant));
         newRoom.on("ParticipantTrackSubscribed", handleTrackStarted);
         newRoom.on("ParticipantJoined", handleParticipantJoined);
         newRoom.on("ParticipantLeft", handleParticipantLeft);
@@ -304,12 +312,7 @@ function Room() {
         subscribeToRemoteStreams(newRoom);
         subscribeToRoleChanges(roomId, handleRoleChange);
 
-        newRoom.on('BlockMuteRemoteParticipant', (resp) => {
-          if (resp.participantId === newParticipant.displayName && currentUser.role !== ROLES.ADMIN) {
-            setIsEnableToUnmute(resp.isMuted);
-            newLocalTracks.audio.mute();
-          }
-        });
+        newRoom.on('BlockMuteRemoteParticipant', (resp) => handleBlockMuteRemote(resp, newParticipant, newLocalTracks));
       } else {
         setErrorJoiningRoom(true);
         throw new Error("A duplicate session has been detected.");
