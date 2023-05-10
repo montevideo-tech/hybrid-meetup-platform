@@ -22,7 +22,6 @@
     "react-hook-form": "^7.43.9",
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.8.1",
-    "react-scripts": "5.0.1",
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.4.2",
     "styled-components": "^5.3.10",
@@ -30,10 +29,9 @@
     "yup": "^0.32.11"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "start": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
     "lint": "eslint . --ext .js,.ts,.jsx",
     "lint:fix": "npm run lint -- --fix",
     "prettier:check": "prettier --check .",
@@ -60,6 +58,7 @@
     ]
   },
   "devDependencies": {
+    "@vitejs/plugin-react": "^4.0.0",
     "eslint": "^8.39.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-import": "^2.27.5",
@@ -67,6 +66,8 @@
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "prettier": "^2.8.8"
+    "prettier": "^2.8.8",
+    "vite": "^4.3.5",
+    "vite-plugin-eslint": "^1.8.1"
   }
 }
