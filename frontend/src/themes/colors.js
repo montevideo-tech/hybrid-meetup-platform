@@ -8,4 +8,5 @@ export const Colors = {
   gray: "#666666",
   darkGray: "#383838",
   lightGray: "#f2f2f2",
+  turquoise: "#37B4A7",
 };

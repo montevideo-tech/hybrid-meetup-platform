@@ -19,6 +19,7 @@ import { supabase } from '../lib/api';
 import { createRoom, addRoomToDb, giveUserRoleOnRoom } from '../actions';
 import { ROLES } from '../utils/roles';
 import RoomsList from '../components/RoomsList/RoomsList';
+import RoomsListSkeleton from '../components/RoomsList/RoomsListSkeleton';
 
 function Rooms() {
   const [roomsList, setRoomsList] = useState([]);
@@ -221,29 +222,7 @@ function Rooms() {
 
       {
         loadingRooms ? (
-          <>
-            <Skeleton
-              width="60%"
-              variant="text"
-              animation="wave"
-              height={50}
-              sx={{ ml: 1 }}
-            />
-            <Skeleton
-              width="40%"
-              variant="text"
-              animation="wave"
-              height={50}
-              sx={{ ml: 1 }}
-            />
-            <Skeleton
-              width="30%"
-              variant="text"
-              animation="wave"
-              height={50}
-              sx={{ ml: 1 }}
-            />
-          </>
+          <RoomsListSkeleton />
         ) : (
           <RoomsList list={roomsList} />
         )
