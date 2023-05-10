@@ -1,8 +1,13 @@
 // Room
-import { React, useState, useEffect, useRef } from "react";
-import { useLoaderData, Navigate, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { Button, Box, CircularProgress, Slide } from "@mui/material";
+import {
+  React, useState, useEffect, useRef, forwardRef
+} from 'react';
+import { useLoaderData, Navigate, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import {
+  Button, Box, CircularProgress, Snackbar, Slide
+} from '@mui/material';
+import MuiAlert from '@mui/material/Alert';
 
 import useWindowDimensions from "../hooks/useWindowDimesion";
 import useUserPermission from "../hooks/useUserPermission";
@@ -45,6 +50,7 @@ function Room() {
   const [roomNotFound, setRoomNotFound] = useState(false);
   const [errorJoiningRoom, setErrorJoiningRoom] = useState(false);
   const roomId = useLoaderData();
+  const [open, setOpen] = useState(false);
   // create reference to access room state var in useEffect cleanup func
   const roomRef = useRef();
   const remoteStreamsRef = useRef(new Map());
@@ -58,6 +64,7 @@ function Room() {
   const paddingY = height < 600 ? 10 : 40;
   const paddingX = width < 800 ? 40 : 60;
   const navigate = useNavigate();
+  const [isEnableToUnmute, setIsEnableToUnmute] = useState(true);
 
   // To add a new criteria to the comparator you need to
   // Decide if it's higher or lower pririoty compared to the already established
@@ -151,6 +158,7 @@ function Room() {
       participantsCount={participantsCount}
       localParticipant={localParticipant}
       permissionRole={userRole}
+      isEnableToUnmute={isEnableToUnmute}
     >
       {remoteStreams.filter((p) => !p.isSharingScreen)}
     </ParticipantsCollection>
@@ -251,6 +259,38 @@ function Room() {
     });
   };
 
+  const openSnackbar = () => {
+    setOpen(true);
+  };
+
+  const closeSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  // eslint-disable-next-line react/no-unstable-nested-components
+  const Alert = forwardRef((
+    props,
+    ref,
+  // eslint-disable-next-line react/jsx-props-no-spreading
+  ) => <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />);
+  const handleRemoveParticipant = (resp, participant) => { 
+    if (resp.participantId === participant.displayName) {
+      leaveRoom();
+      navigate("/rooms");
+    }
+  }
+
+  const handleBlockMuteRemote = (resp, participant, localTracks) => { 
+    if (resp.participantId === participant.displayName && currentUser.role !== ROLES.ADMIN) {
+      setIsEnableToUnmute(resp.isMuted);
+      localTracks.audio.mute();
+    }
+  }
+
   const joinRoom = async () => {
     const JWT = await roomJWTprovider(
       roomId,
@@ -274,14 +314,8 @@ function Room() {
           })
         );
 
-        newRoom.on("RemoveRemoteParticipant", (resp) => {
-          if (resp.participantId === newParticipant.displayName) {
-            leaveRoom();
-            navigate("/rooms");
-          }
-        });
-
         // add event handler for TrackStarted event
+        newRoom.on("RemoveRemoteParticipant",(resp) => handleRemoveParticipant(resp, newParticipant));
         newRoom.on("ParticipantTrackSubscribed", handleTrackStarted);
         newRoom.on("ParticipantJoined", handleParticipantJoined);
         newRoom.on("ParticipantLeft", handleParticipantLeft);
@@ -301,9 +335,11 @@ function Room() {
         setLocalTracks(newLocalTracks);
         subscribeToRemoteStreams(newRoom);
         subscribeToRoleChanges(roomId, handleRoleChange);
+
+        newRoom.on('BlockMuteRemoteParticipant', (resp) => handleBlockMuteRemote(resp, newParticipant, newLocalTracks));
       } else {
         setErrorJoiningRoom(true);
-        throw new Error("A duplicate session has been detected.");
+        openSnackbar();
       }
     } catch (error) {
       console.error(error);
@@ -404,7 +440,8 @@ function Room() {
         >
           ADD USER
         </Button>
-      )}
+        )
+      }
 
       {roomNotFound && <Navigate to="/rooms/404" />}
       {room ? (
@@ -449,6 +486,7 @@ function Room() {
               updateLocalTracksMuted={updateLocalTracksMuted}
               leaveRoom={leaveRoom}
               disabled={!room}
+                isEnableToUnmute={isEnableToUnmute}
             />
             <Button
               variant="contained"
@@ -485,10 +523,16 @@ function Room() {
             alignItems: "center",
             height: "100%",
           }}
-        >
-          {!errorJoiningRoom && <CircularProgress />}
-        </div>
-      )}
+          >
+            {!errorJoiningRoom && <CircularProgress />}
+            <Snackbar open={open} onClose={closeSnackbar}>
+              <Alert onClose={closeSnackbar} severity="error" sx={{ width: '100%' }}>
+                A duplicate session has been detected
+              </Alert>
+            </Snackbar>
+          </div>
+        )
+      }
     </>
   );
 }

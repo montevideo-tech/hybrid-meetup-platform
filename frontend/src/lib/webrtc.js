@@ -120,6 +120,23 @@ export class LocalParticipant extends Participant {
     }
   }
 
+  async blockMuteRemoteParticipant(participantId, isMuted) {
+    const eventType = 'BlockMuteRemoteParticipant';
+    const eventData = {
+      participantId,
+      isMuted,
+    };
+    const payload = JSON.stringify({
+      type: eventType,
+      data: eventData,
+    });
+    try {
+      await this.provider.publishCustomEvent(payload);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   /**
    * Unpublish a list of local wrapped Tracks from the room.
    * The function also stops the tracks.
@@ -206,6 +223,9 @@ export class Room extends EventEmitter {
         const resp = JSON.parse(event.payload);
         if (resp.type === 'RemoveRemoteParticipant') {
           this.emit('RemoveRemoteParticipant', resp.data);
+        }
+        if (resp.type === 'BlockMuteRemoteParticipant') {
+          this.emit('BlockMuteRemoteParticipant', resp.data);
         }
       },
     );
