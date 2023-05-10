@@ -6,10 +6,12 @@ import {
   IconButton,
 } from '@mui/material';
 import {
+  KeyboardVoiceRounded as KeyboardVoiceRoundedIcon,
   MicOffOutlined as MicOffOutlinedIcon,
   PushPinOutlined as PushPinOutlinedIcon,
   PushPinRounded as PushPinRoundedIcon,
   DeleteRounded as DeleteOutlineIcon,
+  TroubleshootRounded,
 } from '@mui/icons-material';
 import ParticipantInfo from './ParticipantInfo';
 import logo from '../assets/MVDTSC.png';
@@ -28,6 +30,7 @@ function Video(props) {
     width,
     height,
     onClick,
+    onClickMute,
     style,
     permissionRole,
   } = props;
@@ -90,19 +93,21 @@ function Video(props) {
       {name && (
       <ParticipantInfo name={name} parentHeight={height} />
       )}
-      {isAudioMuted && (
+      {(isAudioMuted || permissionRole === ROLES.HOST) && (
         <IconButton
+          disabled={!(permissionRole === ROLES.HOST)}
+          onClick={() => onClickMute(name, isAudioMuted)}
           disableRipple
           sx={{
             position: 'absolute',
             top: 10,
             right: 10,
-            color: 'white',
+            color: 'white !important',
             bgcolor: 'rgba(0, 0, 0, 0.2)',
             border: '2px solid',
           }}
         >
-          <MicOffOutlinedIcon sx={{ ml: '2px' }} />
+          { isAudioMuted ? <MicOffOutlinedIcon sx={{ ml: '2px' }} /> : <KeyboardVoiceRoundedIcon sx={{ ml: '2px' }} /> }
         </IconButton>
       )}
       {permissionRole === ROLES.HOST && (
@@ -152,6 +157,7 @@ Video.propTypes = {
   height: PropTypes.number,
   name: PropTypes.string,
   onClick: PropTypes.func,
+  onClickMute: PropTypes.func,
   style: PropTypes.shape({}),
   permissionRole: PropTypes.string,
 };
@@ -167,6 +173,7 @@ Video.defaultProps = {
   width: 160,
   height: 90,
   onClick: () => {},
+  onClickMute: () => {},
   style: {},
   permissionRole: ROLES.GUEST,
 };
