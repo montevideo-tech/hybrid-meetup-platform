@@ -1,8 +1,13 @@
 // Room
-import { React, useState, useEffect, useRef } from "react";
-import { useLoaderData, Navigate, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { Button, Box, CircularProgress, Slide } from "@mui/material";
+import {
+  React, useState, useEffect, useRef, forwardRef
+} from 'react';
+import { useLoaderData, Navigate, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import {
+  Button, Box, CircularProgress, Snackbar, Slide
+} from '@mui/material';
+import MuiAlert from '@mui/material/Alert';
 
 import useWindowDimensions from "../hooks/useWindowDimesion";
 import useUserPermission from "../hooks/useUserPermission";
@@ -45,6 +50,7 @@ function Room() {
   const [roomNotFound, setRoomNotFound] = useState(false);
   const [errorJoiningRoom, setErrorJoiningRoom] = useState(false);
   const roomId = useLoaderData();
+  const [open, setOpen] = useState(false);
   // create reference to access room state var in useEffect cleanup func
   const roomRef = useRef();
   const remoteStreamsRef = useRef(new Map());
@@ -253,6 +259,24 @@ function Room() {
     });
   };
 
+  const openSnackbar = () => {
+    setOpen(true);
+  };
+
+  const closeSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  // eslint-disable-next-line react/no-unstable-nested-components
+  const Alert = forwardRef((
+    props,
+    ref,
+  // eslint-disable-next-line react/jsx-props-no-spreading
+  ) => <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />);
   const handleRemoveParticipant = (resp, participant) => { 
     if (resp.participantId === participant.displayName) {
       leaveRoom();
@@ -315,7 +339,7 @@ function Room() {
         newRoom.on('BlockMuteRemoteParticipant', (resp) => handleBlockMuteRemote(resp, newParticipant, newLocalTracks));
       } else {
         setErrorJoiningRoom(true);
-        throw new Error("A duplicate session has been detected.");
+        openSnackbar();
       }
     } catch (error) {
       console.error(error);
@@ -499,10 +523,16 @@ function Room() {
             alignItems: "center",
             height: "100%",
           }}
-        >
-          {!errorJoiningRoom && <CircularProgress />}
-        </div>
-      )}
+          >
+            {!errorJoiningRoom && <CircularProgress />}
+            <Snackbar open={open} onClose={closeSnackbar}>
+              <Alert onClose={closeSnackbar} severity="error" sx={{ width: '100%' }}>
+                A duplicate session has been detected
+              </Alert>
+            </Snackbar>
+          </div>
+        )
+      }
     </>
   );
 }
