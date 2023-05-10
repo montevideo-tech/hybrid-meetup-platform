@@ -94,8 +94,8 @@ export function RoomsLayout() {
 }
 
 const RootContainer = styled.div`
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
 `;
@@ -105,7 +105,6 @@ const AppbarContainer = styled.div`
 `;
 
 const OutletContainer = styled.div`
-  margin-top: 4rem;
   height: 100%;
 `;
 

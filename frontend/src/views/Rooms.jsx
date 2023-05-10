@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { supabase } from '../lib/api';
 import { createRoom, addRoomToDb, giveUserRoleOnRoom } from '../actions';
 import { ROLES } from '../utils/roles';
-import RoomsList from '../components/RoomsList';
+import RoomsList from '../components/RoomsList/RoomsList';
 
 function Rooms() {
   const [roomsList, setRoomsList] = useState([]);
@@ -212,7 +212,7 @@ function Rooms() {
   );
 
   return (
-    <Paper sx={{ m: 2, p: 2 }}>
+    <Paper sx={{ p: 2 }}>
       <Typography variant="h4" component="h1">
         Rooms
       </Typography>

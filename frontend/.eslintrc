@@ -1,5 +1,5 @@
 {
-  "extends": ["plugin:react/recommended", "prettier"],
+  "extends": ["eslint:recommended", "plugin:react/recommended", "prettier"],
   "plugins": ["react", "prettier"],
   "ignorePatterns": ["**/*.json"],
   "env": {
@@ -12,7 +12,8 @@
         "tabWidth": 2,
         "semi": true,
         "singleQuote": false,
-        "endOfLine": "auto"
+        "endOfLine": "auto",
+        "trailingComma": "all"
       }
     ],
     "no-console": [
@@ -48,7 +49,7 @@
     "import/extensions": "off",
     "no-return-await": "warn",
     "no-unused-vars": [
-      "error",
+      "warn",
       {
         "argsIgnorePattern": "next"
       }
@@ -57,7 +58,7 @@
     "one-var": ["error", "never"],
     "prefer-const": "warn",
     "quotes": ["warn", "double"],
-    "comma-dangle": 0,
+    "comma-dangle": ["warn", "always-multiline"],
     "consistent-return": 0,
     "function-paren-newline": [0, "never"],
     "implicit-arrow-linebreak": ["off"],
