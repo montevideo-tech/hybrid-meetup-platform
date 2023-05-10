@@ -4,6 +4,7 @@ import { useLoaderData } from "react-router-dom";
 import { subscribeToNewMessages, onSendMessage } from "../utils/chat";
 import { supabase } from "../lib/api";
 import { epochToISO8601 } from "../utils/time";
+import Filter from "bad-words";
 
 import {
   ChatButton,
@@ -19,6 +20,7 @@ function Chat() {
   const roomId = useLoaderData();
   const [messages, setMessages] = useState([]);
   const [dateTimeJoined] = useState(epochToISO8601(Date.now()));
+  const filter = new Filter();
 
   async function fetchMessages() {
     const { data, error } = await supabase
@@ -27,7 +29,7 @@ function Chat() {
       .gt("created_at", dateTimeJoined)
       .order("created_at", { ascending: true });
     if (error) {
-      console.log("Error Fetching Messages:", error);
+      console.error("Error Fetching Messages:", error);
     } else {
       setMessages(data);
     }
@@ -38,17 +40,32 @@ function Chat() {
     subscribeToNewMessages();
   }, [messages]);
 
+  // si el contenido tiene malas palabras, devuelve un mensaje para el usuario de que su mensaje
+  // fue eliminado por contenido inapropiado, sino devuelve el contenido del mensaje original
+  const filterContent = (hasBadWords) => {
+    const filteredContent = hasBadWords
+      ? "This message was deleted due to inappropiate language"
+      : content;
+
+    return filteredContent;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!email || !content) return;
 
-    onSendMessage({ email, content, providerId: roomId });
+    onSendMessage({
+      email,
+      content: filterContent(filter.isProfane(content)),
+      providerId: roomId,
+    });
     setContent("");
   };
   return (
     <ChatContainer>
       <ChatContent>
         {messages?.map((m) => (
+          // eslint-disable-next-line react/jsx-key
           <p>
             <strong>{m.email}:</strong> {m.content}
           </p>
