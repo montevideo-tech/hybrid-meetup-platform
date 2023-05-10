@@ -1,4 +1,3 @@
-/* eslint-disable react/forbid-prop-types */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
@@ -25,16 +24,19 @@ function RoomControls(props) {
     updateLocalTracksMuted,
     leaveRoom,
     disabled,
-    permissionRole
+    permissionRole,
+    isEnableToUnmute,
   } = props;
 
   const toggleMuteTrack = (t) => {
-    if (t.muted) {
-      t.unmute();
-      updateLocalTracksMuted(t.kind, false);
-    } else {
-      t.mute();
-      updateLocalTracksMuted(t.kind, true);
+    if(isEnableToUnmute) {
+      if (t.muted) {
+        t.unmute();
+        updateLocalTracksMuted(t.kind, false);
+      } else {
+        t.mute();
+        updateLocalTracksMuted(t.kind, true);
+      }
     }
   };
 
@@ -76,11 +78,11 @@ function RoomControls(props) {
         <div style={{ padding: '2px' }}>
           <Button
             size="large"
-            disabled={!localTracks.audio}
+            disabled={!localTracks.audio || !isEnableToUnmute}
             onClick={() => toggleMuteTrack(localTracks.audio)}
           >
             {!localTracks.audio || localTracks.audio.muted ? (
-              <MicOffOutlinedIcon />
+              <MicOffOutlinedIcon color={isEnableToUnmute ? '' : 'error'}/>
             ) : (
               <MicIcon />
             )}
@@ -131,6 +133,7 @@ RoomControls.propTypes = {
   disabled: PropTypes.bool,
   isSharingScreen: PropTypes.bool,
   permissionRole: PropTypes.string,
+  isEnableToUnmute: PropTypes.bool,
 };
 
 RoomControls.defaultProps = {
@@ -138,6 +141,7 @@ RoomControls.defaultProps = {
   disabled: true,
   isSharingScreen: false,
   permissionRole: 'GUEST',
+  isEnableToUnmute: true,
 };
 
 export default RoomControls;

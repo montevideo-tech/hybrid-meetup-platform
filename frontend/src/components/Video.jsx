@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
@@ -7,17 +6,20 @@ import {
   IconButton,
 } from '@mui/material';
 import {
+  KeyboardVoiceRounded as KeyboardVoiceRoundedIcon,
   MicOffOutlined as MicOffOutlinedIcon,
   PushPinOutlined as PushPinOutlinedIcon,
   PushPinRounded as PushPinRoundedIcon,
+  DeleteRounded as DeleteOutlineIcon,
+  TroubleshootRounded,
 } from '@mui/icons-material';
 import ParticipantInfo from './ParticipantInfo';
 import logo from '../assets/MVDTSC.png';
+import { ROLES } from '../utils/roles';
 
 function Video(props) {
   const videoRef = useRef();
   const {
-    // eslint-disable-next-line no-unused-vars
     stream,
     isStreamLocal,
     isAudioMuted,
@@ -28,7 +30,9 @@ function Video(props) {
     width,
     height,
     onClick,
+    onClickMute,
     style,
+    permissionRole,
   } = props;
   // const [isPinned, setIsPinned] = useState(false);
 
@@ -53,7 +57,6 @@ function Video(props) {
 
   return (
     <Box
-      onClick={onClick}
       sx={{
         position: 'relative',
         width: `${width - outlineWidth * 2}px`,
@@ -90,19 +93,37 @@ function Video(props) {
       {name && (
       <ParticipantInfo name={name} parentHeight={height} />
       )}
-      {isAudioMuted && (
+      {(isAudioMuted || permissionRole === ROLES.HOST) && (
         <IconButton
+          disabled={!(permissionRole === ROLES.HOST)}
+          onClick={() => onClickMute(name, isAudioMuted)}
           disableRipple
           sx={{
             position: 'absolute',
             top: 10,
             right: 10,
+            color: 'white !important',
+            bgcolor: 'rgba(0, 0, 0, 0.2)',
+            border: '2px solid',
+          }}
+        >
+          { isAudioMuted ? <MicOffOutlinedIcon sx={{ ml: '2px' }} /> : <KeyboardVoiceRoundedIcon sx={{ ml: '2px' }} /> }
+        </IconButton>
+      )}
+      {permissionRole === ROLES.HOST && (
+        <IconButton
+          onClick={() => onClick(name)}
+          disableRipple
+          sx={{
+            position: 'absolute',
+            top: 10,
+            right: 70,
             color: 'white',
             bgcolor: 'rgba(0, 0, 0, 0.2)',
             border: '2px solid',
           }}
         >
-          <MicOffOutlinedIcon sx={{ ml: '2px' }} />
+          <DeleteOutlineIcon sx={{ ml: '2px' }} />
         </IconButton>
       )}
 
@@ -126,7 +147,6 @@ function Video(props) {
 }
 
 Video.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
   stream: PropTypes.object,
   isStreamLocal: PropTypes.bool,
   isAudioMuted: PropTypes.bool,
@@ -137,7 +157,9 @@ Video.propTypes = {
   height: PropTypes.number,
   name: PropTypes.string,
   onClick: PropTypes.func,
+  onClickMute: PropTypes.func,
   style: PropTypes.shape({}),
+  permissionRole: PropTypes.string,
 };
 
 Video.defaultProps = {
@@ -151,7 +173,9 @@ Video.defaultProps = {
   width: 160,
   height: 90,
   onClick: () => {},
+  onClickMute: () => {},
   style: {},
+  permissionRole: ROLES.GUEST,
 };
 
 export default Video;

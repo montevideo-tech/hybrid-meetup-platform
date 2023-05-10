@@ -107,7 +107,6 @@ function EditRoom() {
             </Typography>
             <List>
               {
-                /* eslint-disable arrow-body-style */
                 roles.hosts.map((e) => {
                   return (
                     <ListItem
@@ -133,7 +132,6 @@ function EditRoom() {
             </Typography>
             <List>
               {
-                /* eslint-disable arrow-body-style */
                 roles.presenters.map((e) => {
                   return (
                     <ListItem

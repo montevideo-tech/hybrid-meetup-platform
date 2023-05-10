@@ -25,7 +25,6 @@ function calcOptimalBoxes(
 
   // try each possible number of columns
   // to find the one with the highest area (optimum use of space)
-  // eslint-disable-next-line no-plusplus
   for (let cols = 1; cols <= boxCount; cols++) {
     const rows = Math.ceil(boxCount / cols);
     // pack the frames together by removing the spacing between them
