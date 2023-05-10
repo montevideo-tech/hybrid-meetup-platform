@@ -44,7 +44,7 @@ function Chat() {
   // fue eliminado por contenido inapropiado, sino devuelve el contenido del mensaje original
   const filterContent = (hasBadWords) => {
     const filteredContent = hasBadWords
-      ? "This message was deleted due to inappropiate language"
+      ? "This message was deleted due to inappropriate language"
       : content;
 
     return filteredContent;
