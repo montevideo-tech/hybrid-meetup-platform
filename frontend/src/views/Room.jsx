@@ -25,6 +25,7 @@ import ShareScreen from "../components/ShareScreen";
 import { TESTING_MODE } from "../lib/constants";
 import Chat from "../components/Chat";
 import { comparator, updateParticipantRoles } from "../utils/helpers";
+import { getGuestMuted } from '../utils/room';
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -59,6 +60,7 @@ function Room() {
   const paddingX = width < 800 ? 40 : 60;
   const navigate = useNavigate();
   const [isEnableToUnmute, setIsEnableToUnmute] = useState(true);
+  const [isBlockedRemotedGuest , setIsBlockedRemotedGuest] = useState(false);
 
   // To add a new criteria to the comparator you need to
   // Decide if it's higher or lower pririoty compared to the already established
@@ -267,6 +269,18 @@ function Room() {
     }
   }
 
+  const handleBlockMuteAllGuests = (resp, localTracks) => {
+    if (currentUser.role !== ROLES.ADMIN) {
+      // setIsEnableToUnmute(resp.blockMuted);
+      setIsEnableToUnmute(!resp.blockMuted);
+      if(resp.blockMuted) {
+        localTracks.audio.mute();
+      }
+    } else {
+      setIsBlockedRemotedGuest(resp.blockMuted)
+    }
+  }
+
   const joinRoom = async () => {
     const JWT = await roomJWTprovider(
       roomId,
@@ -277,7 +291,8 @@ function Room() {
         setRoomNotFound(true);
       }
     );
-
+    const guestMuted = await getGuestMuted();
+    setIsBlockedRemotedGuest(guestMuted);
     try {
       const newRoom = new WebRoom(JWT);
       const newParticipant = await newRoom.join();
@@ -313,6 +328,7 @@ function Room() {
         subscribeToRoleChanges(roomId, handleRoleChange);
 
         newRoom.on('BlockMuteRemoteParticipant', (resp) => handleBlockMuteRemote(resp, newParticipant, newLocalTracks));
+        newRoom.on('BlockMuteAllRemoteParticipants', (resp) => handleBlockMuteAllGuests(resp, newLocalTracks));
       } else {
         setErrorJoiningRoom(true);
         throw new Error("A duplicate session has been detected.");
@@ -462,7 +478,10 @@ function Room() {
               updateLocalTracksMuted={updateLocalTracksMuted}
               leaveRoom={leaveRoom}
               disabled={!room}
-                isEnableToUnmute={isEnableToUnmute}
+              isEnableToUnmute={isEnableToUnmute}
+              localParticipant={localParticipant}
+              isBlockedRemotedGuest={isBlockedRemotedGuest}
+              setIsBlockedRemotedGuest={setIsBlockedRemotedGuest}
             />
             <Button
               variant="contained"
