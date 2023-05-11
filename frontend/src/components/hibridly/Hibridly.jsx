@@ -46,6 +46,7 @@ const HibridlyTypography = styled(Typography)`
 const QualabsTypography = styled(Typography)`
   position: relative;
   left: 3rem;
+  top: 1px;
   height: 0;
   text-decoration: none;
   color: ${Colors.turquoise};
