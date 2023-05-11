@@ -1,19 +1,5 @@
 import { supabase } from '../lib/api';
 
-// export async function getGuestMuted() {
-//   supabase
-//     .from('rooms')
-//     .select('guestMuted')
-//     .eq('id', 54)
-//     .then(result => {
-//       console.log(result.data[0].guestMuted);
-//       return result.data[0].guestMuted;
-//     })
-//     .catch(error => {
-//       console.error(error)
-//     });
-// };
-
 export async function getGuestMuted() {
   const urlParams = window.location.pathname;;
   const parts = urlParams.split("/");
