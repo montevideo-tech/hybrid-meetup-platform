@@ -1,4 +1,4 @@
-import React from 'react';
+import { React, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 
@@ -47,6 +47,15 @@ function RoomControls(props) {
     }
   };
 
+  useEffect(() => {
+    if (!isEnableToUnmute && localTracks.audio) {
+      setTimeout(function() {
+        localTracks.audio.mute();
+        updateLocalTracksMuted(localTracks.audio.kind, true);
+      }, 500);
+    }
+  }, [localTracks.audio]);
+
   const endCall = () => {
     leaveRoom();
     navigate('/rooms');
@@ -94,7 +103,7 @@ function RoomControls(props) {
             disabled={!localTracks.audio || !isEnableToUnmute}
             onClick={() => toggleMuteTrack(localTracks.audio)}
           >
-            {!localTracks.audio || localTracks.audio.muted ? (
+            {!localTracks.audio || localTracks.audio.muted || !isEnableToUnmute ? (
               <MicOffOutlinedIcon color={isEnableToUnmute ? '' : 'error'}/>
             ) : (
               <MicIcon />

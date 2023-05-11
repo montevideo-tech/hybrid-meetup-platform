@@ -271,7 +271,6 @@ function Room() {
 
   const handleBlockMuteAllGuests = (resp, localTracks) => {
     if (currentUser.role !== ROLES.ADMIN) {
-      // setIsEnableToUnmute(resp.blockMuted);
       setIsEnableToUnmute(!resp.blockMuted);
       if(resp.blockMuted) {
         localTracks.audio.mute();
@@ -293,6 +292,9 @@ function Room() {
     );
     const guestMuted = await getGuestMuted();
     setIsBlockedRemotedGuest(guestMuted);
+    if (currentUser.role !== ROLES.ADMIN) {
+      setIsEnableToUnmute(!guestMuted);
+    }
     try {
       const newRoom = new WebRoom(JWT);
       const newParticipant = await newRoom.join();
