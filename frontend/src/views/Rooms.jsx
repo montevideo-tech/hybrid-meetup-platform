@@ -18,7 +18,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { supabase } from '../lib/api';
 import { createRoom, addRoomToDb, giveUserRoleOnRoom } from '../actions';
 import { ROLES } from '../utils/roles';
-import RoomsList from '../components/RoomsList';
+import RoomsList from '../components/RoomsList/RoomsList';
+import RoomsListSkeleton from '../components/RoomsList/RoomsListSkeleton';
 
 function Rooms() {
   const [roomsList, setRoomsList] = useState([]);
@@ -212,7 +213,7 @@ function Rooms() {
   );
 
   return (
-    <Paper sx={{ m: 2, p: 2 }}>
+    <Paper sx={{ p: 2 }}>
       <Typography variant="h4" component="h1">
         Rooms
       </Typography>
@@ -221,29 +222,7 @@ function Rooms() {
 
       {
         loadingRooms ? (
-          <>
-            <Skeleton
-              width="60%"
-              variant="text"
-              animation="wave"
-              height={50}
-              sx={{ ml: 1 }}
-            />
-            <Skeleton
-              width="40%"
-              variant="text"
-              animation="wave"
-              height={50}
-              sx={{ ml: 1 }}
-            />
-            <Skeleton
-              width="30%"
-              variant="text"
-              animation="wave"
-              height={50}
-              sx={{ ml: 1 }}
-            />
-          </>
+          <RoomsListSkeleton />
         ) : (
           <RoomsList list={roomsList} />
         )

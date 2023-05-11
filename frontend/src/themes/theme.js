@@ -1,15 +1,18 @@
 import { createTheme } from '@mui/material/styles';
+import { Colors } from './colors';
 
 const theme = createTheme({
   palette: {
+    mode: 'light',
     primary: {
-      main: '#652ead'
+      main: Colors.purple,
+      dark: Colors.darkPurple,
     },
     secondary: {
-      main: '#007bff'
+      main: Colors.blue
     },
     background: {
-      main: '#f2f2f2'
+      main: Colors.lightGray
     }
   },
   typography: {

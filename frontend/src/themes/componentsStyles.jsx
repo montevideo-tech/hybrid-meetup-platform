@@ -4,6 +4,7 @@ import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
 import { TextField } from '@mui/material';
+import { Colors } from './colors';
 
 export const StyledButton = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
@@ -43,9 +44,9 @@ export const formVariants = {
 export const ChatContainer = styled.div`
   display: flex;
   flex-direction: column;
-  background-color: #fff;
+  background-color: ${Colors.white};
   height: 88vh;
-  border: 1px solid #fff;
+  border: 1px solid ${Colors.white};
   border-radius: 8px;
   padding: 8px;
   margin-right: 8px;

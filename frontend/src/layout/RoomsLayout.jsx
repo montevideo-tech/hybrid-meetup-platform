@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import AppBar from '@mui/material/AppBar';
@@ -9,6 +9,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import { logout } from '../reducers/userSlice';
+import { Hibridly } from '../components/hibridly/Hibridly';
 
 export function RoomsLayout() {
   const [auth, setAuth] = useState(null);
@@ -42,16 +43,7 @@ export function RoomsLayout() {
       <AppbarContainer>
         <AppBar position="relative" sx={{ height: '100%', justifyContent: 'center' }}>
           <Toolbar sx={{ justifyContent: 'space-between' }}>
-            <MenuItem
-              sx={{
-                textDecoration: 'none',
-                letterSpacing: 1,
-              }}
-              component={RouterLink}
-              to="/"
-            >
-              Hybridly
-            </MenuItem>
+            <Hibridly />
             {auth?.email && auth?.token && (
             <div>
               <IconButton
@@ -94,8 +86,8 @@ export function RoomsLayout() {
 }
 
 const RootContainer = styled.div`
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
 `;
@@ -105,7 +97,6 @@ const AppbarContainer = styled.div`
 `;
 
 const OutletContainer = styled.div`
-  margin-top: 4rem;
   height: 100%;
 `;
 

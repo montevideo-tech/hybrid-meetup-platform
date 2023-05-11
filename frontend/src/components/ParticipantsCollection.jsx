@@ -1,16 +1,15 @@
-import React, {
-  useCallback, useMemo, useState, ReactNode,
-} from 'react';
-import { LocalParticipant } from '@mux/spaces-web';
-import PropTypes from 'prop-types';
-import { Box, IconButton } from '@mui/material';
-import ChevronLeftIcon from './icons/ChevronLeftIcon';
-import ChevronRightIcon from './icons/ChevronRightIcon';
-import { MAX_PARTICIPANTS_PER_PAGE } from '../lib/constants';
-import Audio from './Audio';
-import Video from './Video';
-import ParticipantLayout from './ParticipantLayout';
-import { ROLES } from '../utils/roles';
+import React, { useCallback, useMemo, useState, ReactNode } from "react";
+import { LocalParticipant } from "@mux/spaces-web";
+import PropTypes from "prop-types";
+import { Box, IconButton } from "@mui/material";
+import ChevronLeftIcon from "./icons/ChevronLeftIcon";
+import ChevronRightIcon from "./icons/ChevronRightIcon";
+import { MAX_PARTICIPANTS_PER_PAGE } from "../lib/constants";
+import Audio from "./Audio";
+import Video from "./Video";
+import ParticipantLayout from "./ParticipantLayout";
+import { ROLES } from "../utils/roles";
+import { Colors } from "../themes/colors";
 
 function ParticipantsCollection(props) {
   const {
@@ -52,7 +51,13 @@ function ParticipantsCollection(props) {
       goToPreviousPage();
     }
     return pageParticipants;
-  }, [currentPage, participantsPerPage, participantsCount, children, goToPreviousPage]);
+  }, [
+    currentPage,
+    participantsPerPage,
+    participantsCount,
+    children,
+    goToPreviousPage,
+  ]);
 
   const goToNextPage = () => {
     if (currentPage < numberPages) {
@@ -85,96 +90,98 @@ function ParticipantsCollection(props) {
   // };
 
   return (
-    <Box style={{
-      display: 'flex',
-      backgroundColor: 'rgb(32,33,36)',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      height: '100%',
-    }}
-    >
-      <Box style={{
-        width: '40px',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginLeft: '12px',
+    <Box
+      style={{
+        display: "flex",
+        backgroundColor: "rgb(32,33,36)",
+        alignItems: "center",
+        justifyContent: "space-between",
+        height: "100%",
       }}
+    >
+      <Box
+        style={{
+          width: "40px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          marginLeft: "12px",
+        }}
       >
         <IconButton
           disableRipple
           onClick={goToPreviousPage}
           opacity={numberPages === 1 ? 0 : 1}
           sx={
-            currentPage === 1 ? { display: 'none' } : {
-              color: 'white',
-              border: '2px solid',
-              borderColor: '#666666',
-              bgcolor: '383838',
-              variant: 'outline',
-              zIndex: '2',
-            }
+            currentPage === 1
+              ? { display: "none" }
+              : {
+                  color: Colors.white,
+                  border: "2px solid",
+                  borderColor: Colors.gray,
+                  bgcolor: Colors.darkGray,
+                  variant: "outline",
+                  zIndex: "2",
+                }
           }
         >
           <ChevronLeftIcon />
         </IconButton>
       </Box>
 
-      <Box style={{ width: { width }, zIndex: '100' }}>
-        {children.map(({
-          audioStream, name,
-        }) => (
-          <Audio
-            key={name}
-            stream={audioStream}
-          />
+      <Box style={{ width: { width }, zIndex: "100" }}>
+        {children.map(({ audioStream, name }) => (
+          <Audio key={name} stream={audioStream} />
         ))}
         <ParticipantLayout
           width={widthBetweenPagination}
           height={height}
           gap={gap}
         >
-          {currentParticipants.map(({
-            videoStream, name, audioMuted, videoMuted, speaking
-          }) => (
-            <Video
-              permissionRole={permissionRole}
-              key={name}
-              stream={videoStream}
-              isAudioMuted={audioMuted || false}
-              isVideoMuted={videoMuted || false}
-              isSpeaking={speaking || false}
-              name={name}
-              onClick={() => onClickRemove(name)}
-              onClickMute={() => onClickMute(name, audioMuted)}
-              // style={selectedParticipant === name
-              //   ? selectedParticipantStyle : normalParticipantStyle}
-              // onClick={() => handleParticipantSelection(name)}
-            />
-          ))}
+          {currentParticipants.map(
+            ({ videoStream, name, audioMuted, videoMuted, speaking }) => (
+              <Video
+                permissionRole={permissionRole}
+                key={name}
+                stream={videoStream}
+                isAudioMuted={audioMuted || false}
+                isVideoMuted={videoMuted || false}
+                isSpeaking={speaking || false}
+                name={name}
+                onClick={() => onClickRemove(name)}
+                onClickMute={() => onClickMute(name, audioMuted)}
+                // style={selectedParticipant === name
+                //   ? selectedParticipantStyle : normalParticipantStyle}
+                // onClick={() => handleParticipantSelection(name)}
+              />
+            ),
+          )}
         </ParticipantLayout>
       </Box>
-      <Box style={{
-        width: '40px',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: '12px',
-      }}
+      <Box
+        style={{
+          width: "40px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          marginRight: "12px",
+        }}
       >
         <IconButton
           disableRipple
           onClick={goToNextPage}
           opacity={numberPages === 1 ? 0 : 1}
           sx={
-            currentPage === numberPages ? { display: 'none' } : {
-              color: 'white',
-              border: '2px solid',
-              borderColor: '#666666',
-              bgcolor: '383838',
-              variant: 'outline',
-              zIndex: '2',
-            }
+            currentPage === numberPages
+              ? { display: "none" }
+              : {
+                  color: Colors.white,
+                  border: "2px solid",
+                  borderColor: Colors.gray,
+                  bgcolor: Colors.darkGray,
+                  variant: "outline",
+                  zIndex: "2",
+                }
           }
         >
           <ChevronRightIcon />
