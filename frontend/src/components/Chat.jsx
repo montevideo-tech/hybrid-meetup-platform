@@ -40,8 +40,6 @@ function Chat() {
     subscribeToNewMessages();
   }, [messages]);
 
-  // si el contenido tiene malas palabras, devuelve un mensaje para el usuario de que su mensaje
-  // fue eliminado por contenido inapropiado, sino devuelve el contenido del mensaje original
   const filterContent = (hasBadWords) => {
     const filteredContent = hasBadWords
       ? "This message was deleted due to inappropriate language"
