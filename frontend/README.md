@@ -1,4 +1,4 @@
-# Welcome to Hibridly frontend
+# Welcome to Hybridly frontend
 
 ## Get started
 
