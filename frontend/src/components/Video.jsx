@@ -8,7 +8,6 @@ import {
   PushPinOutlined as PushPinOutlinedIcon,
   PushPinRounded as PushPinRoundedIcon,
   DeleteRounded as DeleteOutlineIcon,
-  TroubleshootRounded,
 } from "@mui/icons-material";
 import ParticipantInfo from "./ParticipantInfo";
 import logo from "../assets/MVDTSC.png";

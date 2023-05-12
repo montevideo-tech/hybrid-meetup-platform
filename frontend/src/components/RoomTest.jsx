@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
-import { Button, Grid } from '@mui/material';
+import { Button, Grid } from "@mui/material";
 
-import { Room } from '../lib/webrtc';
-import { VITE_MUX_SPACE_JWT } from '../lib/constants';
+import { Room } from "../lib/webrtc";
+import { VITE_MUX_SPACE_JWT } from "../lib/constants";
 
-import Video from './Video';
-import RoomControls from './RoomControls';
+import Video from "./Video";
+import RoomControls from "./RoomControls";
 
 function RoomTest() {
   const [room, setRoom] = useState();
@@ -25,10 +25,12 @@ function RoomTest() {
     const subscribeToRemoteStreams = async () => {
       const { remoteParticipants } = room;
       const rps = Array.from(remoteParticipants.values());
-      await Promise.all(rps.map(async (rp) => {
-        await rp.subscribe();
-      }));
-      console.log('subscribed to remote participant(s)');
+      await Promise.all(
+        rps.map(async (rp) => {
+          await rp.subscribe();
+        }),
+      );
+      console.log("subscribed to remote participant(s)");
     };
 
     subscribeToRemoteStreams();
@@ -40,19 +42,23 @@ function RoomTest() {
       const newRoom = new Room(VITE_MUX_SPACE_JWT);
       const newParticipant = await newRoom.join();
 
-      newRoom.on('ParticipantTrackSubscribed', (remoteParticipant, track) => {
+      newRoom.on("ParticipantTrackSubscribed", (remoteParticipant, track) => {
         // console.log(remoteParticipant, track);
         const stream = new MediaStream();
         stream.addTrack(track.mediaStreamTrack);
         console.log(stream);
         setRemoteStreams([...remoteStreams, stream]);
 
-        track.on('Muted', () => console.log('Track was muted', remoteParticipant));
-        track.on('Unmuted', () => console.log('Track was unmuted', remoteParticipant));
+        track.on("Muted", () =>
+          console.log("Track was muted", remoteParticipant),
+        );
+        track.on("Unmuted", () =>
+          console.log("Track was unmuted", remoteParticipant),
+        );
       });
 
-      newRoom.on('ParticipantJoined', (p) => console.log('someone joined', p));
-      newRoom.on('ParticipantLeft', (p) => console.log('someone left', p));
+      newRoom.on("ParticipantJoined", (p) => console.log("someone joined", p));
+      newRoom.on("ParticipantLeft", (p) => console.log("someone left", p));
 
       setRoom(newRoom);
       setParticipant(newParticipant);
@@ -81,7 +87,7 @@ function RoomTest() {
       setRoom(null);
       setSharingMedia(false);
 
-      console.log('you left the room');
+      console.log("you left the room");
     } catch (err) {
       console.error(err);
     } finally {
@@ -97,7 +103,9 @@ function RoomTest() {
     setLoading(true);
     try {
       // NOTE: this is a workaround the limitations imposed by Mux on creating new Tracks
-      const tracks = await participant.publishTracks({ constraints: { video: true, audio: true } });
+      const tracks = await participant.publishTracks({
+        constraints: { video: true, audio: true },
+      });
       const stream = new MediaStream();
 
       const newLocalTracks = { ...localTracks };
