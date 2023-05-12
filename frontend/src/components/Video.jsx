@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from "react";
 import PropTypes from "prop-types";
-
+import { Colors } from "../themes/colors";
 import { Box, IconButton } from "@mui/material";
 import {
   KeyboardVoiceRounded as KeyboardVoiceRoundedIcon,
@@ -94,7 +94,7 @@ function Video(props) {
             position: "absolute",
             top: 10,
             right: 10,
-            color: "white !important",
+            color: `${Colors.white} !important`,
             bgcolor: "rgba(0, 0, 0, 0.2)",
             border: "2px solid",
           }}
@@ -114,7 +114,7 @@ function Video(props) {
             position: "absolute",
             top: 10,
             right: 70,
-            color: "white",
+            color: Colors.white,
             bgcolor: "rgba(0, 0, 0, 0.2)",
             border: "2px solid",
           }}
@@ -129,7 +129,7 @@ function Video(props) {
           position: 'absolute',
           bottom: 10,
           left: 10,
-          color: 'white',
+          color: {Colors.white},
           bgcolor: 'rgba(0, 0, 0, 0.2)',
           border: '2px solid',
           fontSize: `${size * 2}%`,

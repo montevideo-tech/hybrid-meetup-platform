@@ -3,6 +3,7 @@
   "plugins": ["react", "prettier"],
   "ignorePatterns": ["**/*.json"],
   "env": {
+    "es6": true,
     "browser": true
   },
   "rules": {

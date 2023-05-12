@@ -21,7 +21,6 @@ function ParticipantsCollection(props) {
     children,
     localParticipant,
     permissionRole,
-    isEnableToUnmute,
   } = props;
 
   const [currentPage, setCurrentPage] = useState(1);
