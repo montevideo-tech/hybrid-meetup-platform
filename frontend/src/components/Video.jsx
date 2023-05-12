@@ -1,10 +1,7 @@
-import React, { useRef, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import React, { useRef, useEffect } from "react";
+import PropTypes from "prop-types";
 
-import {
-  Box,
-  IconButton,
-} from '@mui/material';
+import { Box, IconButton } from "@mui/material";
 import {
   KeyboardVoiceRounded as KeyboardVoiceRoundedIcon,
   MicOffOutlined as MicOffOutlinedIcon,
@@ -12,10 +9,10 @@ import {
   PushPinRounded as PushPinRoundedIcon,
   DeleteRounded as DeleteOutlineIcon,
   TroubleshootRounded,
-} from '@mui/icons-material';
-import ParticipantInfo from './ParticipantInfo';
-import logo from '../assets/MVDTSC.png';
-import { ROLES } from '../utils/roles';
+} from "@mui/icons-material";
+import ParticipantInfo from "./ParticipantInfo";
+import logo from "../assets/MVDTSC.png";
+import { ROLES } from "../utils/roles";
 
 function Video(props) {
   const videoRef = useRef();
@@ -45,10 +42,7 @@ function Video(props) {
       return;
     }
 
-    if (
-      videoRef.current
-      && videoRef.current.srcObject !== stream
-    ) {
+    if (videoRef.current && videoRef.current.srcObject !== stream) {
       videoRef.current.srcObject = stream;
     }
   }, [stream]);
@@ -58,15 +52,15 @@ function Video(props) {
   return (
     <Box
       sx={{
-        position: 'relative',
+        position: "relative",
         width: `${width - outlineWidth * 2}px`,
         height: `${height - outlineWidth * 2}px`,
-        minWidth: '160px',
-        minHeight: '90px',
-        background: 'rgb(60,64,67)',
-        borderRadius: '5px',
-        overflow: 'hidden',
-        border: `${isSpeaking ? '5px solid red' : {}}`,
+        minWidth: "160px",
+        minHeight: "90px",
+        background: "rgb(60,64,67)",
+        borderRadius: "5px",
+        overflow: "hidden",
+        border: `${isSpeaking ? "5px solid red" : {}}`,
         ...style,
       }}
     >
@@ -76,7 +70,7 @@ function Video(props) {
           alt="Montevideo Tech Summer Camp logo"
           style={{
             width: `${size}%`,
-            position: 'absolute',
+            position: "absolute",
             top: 0,
             left: 0,
           }}
@@ -90,24 +84,26 @@ function Video(props) {
       >
         <track kind="captions" />
       </video>
-      {name && (
-      <ParticipantInfo name={name} parentHeight={height} />
-      )}
+      {name && <ParticipantInfo name={name} parentHeight={height} />}
       {(isAudioMuted || permissionRole === ROLES.HOST) && (
         <IconButton
           disabled={!(permissionRole === ROLES.HOST)}
           onClick={() => onClickMute(name, isAudioMuted)}
           disableRipple
           sx={{
-            position: 'absolute',
+            position: "absolute",
             top: 10,
             right: 10,
-            color: 'white !important',
-            bgcolor: 'rgba(0, 0, 0, 0.2)',
-            border: '2px solid',
+            color: "white !important",
+            bgcolor: "rgba(0, 0, 0, 0.2)",
+            border: "2px solid",
           }}
         >
-          { isAudioMuted ? <MicOffOutlinedIcon sx={{ ml: '2px' }} /> : <KeyboardVoiceRoundedIcon sx={{ ml: '2px' }} /> }
+          {isAudioMuted ? (
+            <MicOffOutlinedIcon sx={{ ml: "2px" }} />
+          ) : (
+            <KeyboardVoiceRoundedIcon sx={{ ml: "2px" }} />
+          )}
         </IconButton>
       )}
       {permissionRole === ROLES.HOST && (
@@ -115,15 +111,15 @@ function Video(props) {
           onClick={() => onClick(name)}
           disableRipple
           sx={{
-            position: 'absolute',
+            position: "absolute",
             top: 10,
             right: 70,
-            color: 'white',
-            bgcolor: 'rgba(0, 0, 0, 0.2)',
-            border: '2px solid',
+            color: "white",
+            bgcolor: "rgba(0, 0, 0, 0.2)",
+            border: "2px solid",
           }}
         >
-          <DeleteOutlineIcon sx={{ ml: '2px' }} />
+          <DeleteOutlineIcon sx={{ ml: "2px" }} />
         </IconButton>
       )}
 
@@ -169,7 +165,7 @@ Video.defaultProps = {
   isVideoMuted: false,
   isSpeaking: false,
   size: 100,
-  name: '',
+  name: "",
   width: 160,
   height: 90,
   onClick: () => {},

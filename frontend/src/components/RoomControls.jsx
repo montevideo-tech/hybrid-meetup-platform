@@ -1,8 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 
-import { ButtonGroup, Button, Tooltip } from '@mui/material';
+import { ButtonGroup, Button, Tooltip } from "@mui/material";
 import {
   Videocam as VideocamIcon,
   VideocamOffOutlined as VideocamOffOutlinedIcon,
@@ -11,8 +11,8 @@ import {
   Cancel as CancelIcon,
   ScreenShare as ScreenShareIcon,
   StopScreenShare as StopScreenShareIcon,
-} from '@mui/icons-material';
-import { ROLES } from '../utils/roles';
+} from "@mui/icons-material";
+import { ROLES } from "../utils/roles";
 
 function RoomControls(props) {
   const navigate = useNavigate();
@@ -29,7 +29,7 @@ function RoomControls(props) {
   } = props;
 
   const toggleMuteTrack = (t) => {
-    if(isEnableToUnmute) {
+    if (isEnableToUnmute) {
       if (t.muted) {
         t.unmute();
         updateLocalTracksMuted(t.kind, false);
@@ -42,7 +42,7 @@ function RoomControls(props) {
 
   const endCall = () => {
     leaveRoom();
-    navigate('/rooms');
+    navigate("/rooms");
   };
 
   const shareScreen = async () => {
@@ -55,11 +55,19 @@ function RoomControls(props) {
       size="large"
       disabled={disabled}
       sx={{
-        position: 'fixed', bottom: 0, left: 'calc(50% - 103px)',
+        position: "fixed",
+        bottom: 0,
+        left: "calc(50% - 103px)",
       }}
     >
-      <Tooltip title={!localTracks.video || localTracks.video.muted ? 'Turn On Camera' : 'Turn Off Camera'}>
-        <div style={{ padding: '2px' }}>
+      <Tooltip
+        title={
+          !localTracks.video || localTracks.video.muted
+            ? "Turn On Camera"
+            : "Turn Off Camera"
+        }
+      >
+        <div style={{ padding: "2px" }}>
           <Button
             size="large"
             disabled={!localTracks.video}
@@ -74,53 +82,49 @@ function RoomControls(props) {
         </div>
       </Tooltip>
 
-      <Tooltip title={!localTracks.audio || localTracks.audio.muted ? 'Unmute' : 'Mute'}>
-        <div style={{ padding: '2px' }}>
+      <Tooltip
+        title={
+          !localTracks.audio || localTracks.audio.muted ? "Unmute" : "Mute"
+        }
+      >
+        <div style={{ padding: "2px" }}>
           <Button
             size="large"
             disabled={!localTracks.audio || !isEnableToUnmute}
             onClick={() => toggleMuteTrack(localTracks.audio)}
           >
             {!localTracks.audio || localTracks.audio.muted ? (
-              <MicOffOutlinedIcon color={isEnableToUnmute ? '' : 'error'}/>
+              <MicOffOutlinedIcon color={isEnableToUnmute ? "" : "error"} />
             ) : (
               <MicIcon />
             )}
           </Button>
         </div>
       </Tooltip>
-      {
-        (permissionRole === ROLES.PRESENTER || permissionRole === ROLES.HOST) && (
-          <Tooltip title={!isSharingScreen ? 'Share screen' : 'Stop sharing screen'}>
-            <div style={{ padding: '2px' }}>
-              <Button
-                size="large"
-                hover="onHoverTest"
-                onClick={() => shareScreen()}
-              >
-                {!isSharingScreen ? (
-                  <ScreenShareIcon />
-                ) : (
-                  <StopScreenShareIcon />
-                )}
-              </Button>
-            </div>
-          </Tooltip>
-        )
-      }
+      {(permissionRole === ROLES.PRESENTER ||
+        permissionRole === ROLES.HOST) && (
+        <Tooltip
+          title={!isSharingScreen ? "Share screen" : "Stop sharing screen"}
+        >
+          <div style={{ padding: "2px" }}>
+            <Button
+              size="large"
+              hover="onHoverTest"
+              onClick={() => shareScreen()}
+            >
+              {!isSharingScreen ? <ScreenShareIcon /> : <StopScreenShareIcon />}
+            </Button>
+          </div>
+        </Tooltip>
+      )}
 
       <Tooltip title="Leave room">
-        <div style={{ padding: '2px' }}>
-          <Button
-            size="large"
-            color="error"
-            onClick={endCall}
-          >
+        <div style={{ padding: "2px" }}>
+          <Button size="large" color="error" onClick={endCall}>
             <CancelIcon />
           </Button>
         </div>
       </Tooltip>
-
     </ButtonGroup>
   );
 }
@@ -140,7 +144,7 @@ RoomControls.defaultProps = {
   localTracks: { audio: null, video: null },
   disabled: true,
   isSharingScreen: false,
-  permissionRole: 'GUEST',
+  permissionRole: "GUEST",
   isEnableToUnmute: true,
 };
 
