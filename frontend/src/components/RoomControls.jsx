@@ -1,4 +1,4 @@
-import React from 'react';
+import { React, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,9 +11,12 @@ import {
   Cancel as CancelIcon,
   ScreenShare as ScreenShareIcon,
   StopScreenShare as StopScreenShareIcon,
+  HeadsetMic as HeadsetMicIcon,
+  HeadsetOff as HeadsetOffIcon,
 } from '@mui/icons-material';
+import { LocalParticipant } from '@mux/spaces-web';
 import { ROLES } from '../utils/roles';
-
+import { setGuestMuted } from '../utils/room';
 function RoomControls(props) {
   const navigate = useNavigate();
 
@@ -26,6 +29,10 @@ function RoomControls(props) {
     disabled,
     permissionRole,
     isEnableToUnmute,
+    localParticipant,
+    isBlockedRemotedGuest,
+    setIsBlockedRemotedGuest,
+
   } = props;
 
   const toggleMuteTrack = (t) => {
@@ -40,6 +47,15 @@ function RoomControls(props) {
     }
   };
 
+  useEffect(() => {
+    if (!isEnableToUnmute && localTracks.audio) {
+      setTimeout(function() {
+        localTracks.audio.mute();
+        updateLocalTracksMuted(localTracks.audio.kind, true);
+      }, 500);
+    }
+  }, [localTracks.audio]);
+
   const endCall = () => {
     leaveRoom();
     navigate('/rooms');
@@ -48,6 +64,12 @@ function RoomControls(props) {
   const shareScreen = async () => {
     updateScreenShare();
   };
+
+  const blockMuteAllParticipants = () => {
+    localParticipant.blockMuteAllRemoteParticipants(!isBlockedRemotedGuest);
+    setIsBlockedRemotedGuest(!isBlockedRemotedGuest);
+    setGuestMuted(!isBlockedRemotedGuest);
+  }
 
   return (
     <ButtonGroup
@@ -81,7 +103,7 @@ function RoomControls(props) {
             disabled={!localTracks.audio || !isEnableToUnmute}
             onClick={() => toggleMuteTrack(localTracks.audio)}
           >
-            {!localTracks.audio || localTracks.audio.muted ? (
+            {!localTracks.audio || localTracks.audio.muted || !isEnableToUnmute ? (
               <MicOffOutlinedIcon color={isEnableToUnmute ? '' : 'error'}/>
             ) : (
               <MicIcon />
@@ -102,6 +124,25 @@ function RoomControls(props) {
                   <ScreenShareIcon />
                 ) : (
                   <StopScreenShareIcon />
+                )}
+              </Button>
+            </div>
+          </Tooltip>
+        )
+      }
+      {
+        (permissionRole === ROLES.HOST) && (
+          <Tooltip title={!isBlockedRemotedGuest ? 'Mute all Guests' : 'Unmute all Guests'}>
+            <div style={{ padding: '2px' }}>
+              <Button
+                size="large"
+                hover="onHoverTest"
+                onClick={() => blockMuteAllParticipants()}
+              >
+                {!isBlockedRemotedGuest ? (
+                  <HeadsetOffIcon />
+                ) : (
+                  <HeadsetMicIcon />
                 )}
               </Button>
             </div>
@@ -134,6 +175,9 @@ RoomControls.propTypes = {
   isSharingScreen: PropTypes.bool,
   permissionRole: PropTypes.string,
   isEnableToUnmute: PropTypes.bool,
+  localParticipant: LocalParticipant,
+  setIsBlockedRemotedGuest: PropTypes.func.isRequired,
+  isBlockedRemotedGuest: PropTypes.bool,
 };
 
 RoomControls.defaultProps = {
@@ -142,6 +186,8 @@ RoomControls.defaultProps = {
   isSharingScreen: false,
   permissionRole: 'GUEST',
   isEnableToUnmute: true,
+  localParticipant: null,
+  isBlockedRemotedGuest: false,
 };
 
 export default RoomControls;
