@@ -31,6 +31,8 @@ import { TESTING_MODE } from "../lib/constants";
 import Chat from "../components/Chat";
 import { comparator, updateParticipantRoles } from "../utils/helpers";
 import { getGuestMuted } from '../utils/room';
+import { epochToISO8601 } from "../utils/time";
+import { subscribeToNewMessages } from "../utils/chat";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -67,6 +69,7 @@ function Room() {
   const navigate = useNavigate();
   const [isEnableToUnmute, setIsEnableToUnmute] = useState(true);
   const [isBlockedRemotedGuest , setIsBlockedRemotedGuest] = useState(false);
+  const [dateTimeJoined] = useState(epochToISO8601(Date.now()));
 
   // To add a new criteria to the comparator you need to
   // Decide if it's higher or lower pririoty compared to the already established
@@ -122,6 +125,10 @@ function Room() {
       await roomRef.current.leave();
     }
   };
+
+  useEffect(() => {
+    subscribeToNewMessages();
+  }, []);
 
   const handleRoleChange = (payload) => {
     if (payload.eventType === "INSERT") {
@@ -531,7 +538,9 @@ function Room() {
               unmountOnExit
             >
               <Box>
-                <Chat />
+                <Chat 
+                  dateTimeJoined={dateTimeJoined}
+                />
               </Box>
             </Slide>
           </Box>

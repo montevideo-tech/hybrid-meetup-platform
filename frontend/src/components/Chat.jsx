@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useLoaderData } from "react-router-dom";
-import { subscribeToNewMessages, onSendMessage } from "../utils/chat";
-import { supabase } from "../lib/api";
-import { epochToISO8601 } from "../utils/time";
+import { fetchMessages, onSendMessage } from "../utils/chat";
 import Filter from "bad-words";
 
 import {
@@ -14,30 +12,20 @@ import {
   ChatInput,
 } from "../themes/componentsStyles";
 
-function Chat() {
+function Chat(props) {
   const [content, setContent] = useState("");
   const { email } = useSelector((state) => state.user);
   const roomId = useLoaderData();
   const [messages, setMessages] = useState([]);
-  const [dateTimeJoined] = useState(epochToISO8601(Date.now()));
   const filter = new Filter();
 
-  async function fetchMessages() {
-    const { data, error } = await supabase
-      .from("message-chat")
-      .select("*")
-      .gt("created_at", dateTimeJoined)
-      .order("created_at", { ascending: true });
-    if (error) {
-      console.error("Error Fetching Messages:", error);
-    } else {
-      setMessages(data);
-    }
-  }
+  const {
+    dateTimeJoined,
+  } = props; 
+
 
   useEffect(() => {
-    fetchMessages();
-    subscribeToNewMessages();
+    fetchMessages(dateTimeJoined, setMessages);
   }, [messages]);
 
   const filterContent = (hasBadWords) => {
