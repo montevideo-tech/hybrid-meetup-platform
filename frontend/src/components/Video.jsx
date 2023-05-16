@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from "react";
 import PropTypes from "prop-types";
+import styled from "styled-components";
 import { Colors } from "../themes/colors";
 import { Box, IconButton } from "@mui/material";
 import {
@@ -64,25 +65,15 @@ function Video(props) {
       }}
     >
       {isVideoMuted && (
-        <img
+        <StyledImg
+          size={size}
           src={logo}
           alt="Montevideo Tech Summer Camp logo"
-          style={{
-            width: `${size}%`,
-            position: "absolute",
-            top: 0,
-            left: 0,
-          }}
         />
       )}
-      <video
-        autoPlay
-        ref={videoRef}
-        style={{ width: `${size}%` }}
-        muted={isStreamLocal}
-      >
+      <StyledVideo autoPlay ref={videoRef} size={size} muted={isStreamLocal}>
         <track kind="captions" />
-      </video>
+      </StyledVideo>
       {name && <ParticipantInfo name={name} parentHeight={height} />}
       {(isAudioMuted || permissionRole === ROLES.HOST) && (
         <IconButton
@@ -174,3 +165,14 @@ Video.defaultProps = {
 };
 
 export default Video;
+
+const StyledImg = styled.img`
+  width: ${({ size }) => `${size}%`};
+  position: absolute;
+  top: 0;
+  left: 0;
+`;
+
+const StyledVideo = styled.video`
+  width: ${({ size }) => `${size}%`};
+`;

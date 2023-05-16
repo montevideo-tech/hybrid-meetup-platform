@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { useLoaderData } from "react-router-dom";
 import { onSendMessage } from "../utils/chat";
 import Filter from "bad-words";
+import styled from "styled-components";
 
 import {
   ChatButton,
@@ -48,10 +49,7 @@ function Chat(props) {
           </p>
         ))}
       </ChatContent>
-      <ChatForm
-        onSubmit={handleSubmit}
-        style={{ display: "flex", justifyContent: "space-between" }}
-      >
+      <StyledChatForm onSubmit={handleSubmit}>
         <ChatInput
           type="text"
           placeholder="Message"
@@ -65,9 +63,14 @@ function Chat(props) {
         <ChatButton variant="contained" type="submit">
           Send
         </ChatButton>
-      </ChatForm>
+      </StyledChatForm>
     </ChatContainer>
   );
 }
 
 export default Chat;
+
+const StyledChatForm = styled(ChatForm)`
+  display: "flex";
+  justify-content: "space-between";
+`;

@@ -4,7 +4,7 @@ import { useLoaderData, Navigate, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { Button, Box, CircularProgress, Snackbar, Slide } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
-
+import styled from "styled-components";
 import useWindowDimensions from "../hooks/useWindowDimesion";
 import useUserPermission from "../hooks/useUserPermission";
 import RoomControls from "../components/RoomControls";
@@ -475,34 +475,16 @@ function Room() {
 
       {roomNotFound && <Navigate to="/rooms/404" />}
       {room ? (
-        <Box
-          style={{
-            display: "flex",
-            justifyContent: isChatVisible ? "flex-end" : "center",
-            width: "100%",
-            height: "100%",
-            alignItems: "flex-start",
-            position: "relative",
-            backgroundColor: "rgb(32,33,36)",
-            direction: { direction },
-          }}
-        >
-          <Box style={{ marginTop: "10px" }}>
+        <StyledBox box1 isChatVisible={isChatVisible} direction={direction}>
+          <StyledBox box2>
             {participantsCount > 0 && renderParticipantCollection()}
 
             {isSharingScreen && (
-              <Box
-                style={{
-                  display: "flex",
-                  maxHeight: "100%",
-                  width: `${screenShareWidth}px`,
-                  position: "relative",
-                }}
-              >
+              <StyledBox>
                 <ShareScreen width={`${screenShareWidth}px`}>
                   {remoteStreams.find((p) => p.isSharingScreen)}
                 </ShareScreen>
-              </Box>
+              </StyledBox>
             )}
 
             <div style={localStreamStyle}>
@@ -534,7 +516,7 @@ function Room() {
             >
               {isChatVisible ? "Hide Chat" : "Show Chat"}
             </Button>
-          </Box>
+          </StyledBox>
           <Box sx={{ position: "relative", overflow: "hidden" }}>
             <Slide
               direction="left"
@@ -547,16 +529,9 @@ function Room() {
               </Box>
             </Slide>
           </Box>
-        </Box>
+        </StyledBox>
       ) : (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100%",
-          }}
-        >
+        <StyledContainer>
           {!errorJoiningRoom && <CircularProgress />}
           <Snackbar open={open} onClose={closeSnackbar}>
             <Alert
@@ -567,10 +542,41 @@ function Room() {
               A duplicate session has been detected
             </Alert>
           </Snackbar>
-        </div>
+        </StyledContainer>
       )}
     </>
   );
 }
 
 export default Room;
+
+const StyledBox = styled(Box)`
+  ${({ box1, box2, isChatVisible, direction, screenShareWidth }) =>
+    box1
+      ? `
+      display: flex;
+      justify-content: ${isChatVisible ? "flex-end" : "center"};
+      width: 100%;
+      height: 100%;
+      align-items: flex-start;
+      position: relative;
+      background-color: rgb(32,33,36);
+      direction: ${direction};`
+      : box2
+      ? `
+      margin-top: 10px;
+      `
+      : `
+      display: flex;
+      max-height: 100%;
+      width: ${screenShareWidth + "px"};
+      position: relative;
+    `}
+`;
+
+const StyledContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+`;
