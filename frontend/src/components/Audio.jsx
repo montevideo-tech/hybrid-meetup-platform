@@ -1,22 +1,17 @@
-import React, { useRef, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import React, { useRef, useEffect } from "react";
+import PropTypes from "prop-types";
 
 function Audio(props) {
   const audioref = useRef();
 
-  const {
-    stream,
-  } = props;
+  const { stream } = props;
 
   useEffect(() => {
     if (!stream) {
       return;
     }
 
-    if (
-      audioref.current
-      && audioref.current.srcObject !== stream
-    ) {
+    if (audioref.current && audioref.current.srcObject !== stream) {
       audioref.current.srcObject = stream;
     }
   }, [stream]);

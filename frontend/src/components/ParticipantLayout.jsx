@@ -4,14 +4,12 @@ import React, {
   isValidElement,
   ReactNode,
   useMemo,
-} from 'react';
-import PropTypes from 'prop-types';
-import calcOptimalBoxes from '../lib/participantsCollection';
+} from "react";
+import PropTypes from "prop-types";
+import calcOptimalBoxes from "../lib/participantsCollection";
 
 function ParticipantLayout(props) {
-  const {
-    children, width, height, gap,
-  } = props;
+  const { children, width, height, gap } = props;
 
   const bestFit = useMemo(() => {
     if (children) {
@@ -27,21 +25,22 @@ function ParticipantLayout(props) {
   }, [children, width, height, gap]);
 
   return (
-    <div style={{
-      display: 'flex',
-      flexWrap: 'wrap',
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: `${gap}px`,
-      justifyContent: 'center',
-    }}
+    <div
+      style={{
+        display: "flex",
+        flexWrap: "wrap",
+        flexDirection: "row",
+        alignItems: "center",
+        gap: `${gap}px`,
+        justifyContent: "center",
+      }}
     >
       {Children.map(children, (child) => {
         if (
-          isValidElement(child)
-        && bestFit
-        && bestFit.width
-        && bestFit.height
+          isValidElement(child) &&
+          bestFit &&
+          bestFit.width &&
+          bestFit.height
         ) {
           return cloneElement(child, {
             width: bestFit.width,

@@ -1,30 +1,30 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as Yup from 'yup';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
-import { useTheme } from '@mui/material/styles';
-import TextField from '@mui/material/TextField';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import InputAdornment from '@mui/material/InputAdornment';
-import IconButton from '@mui/material/IconButton';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import EmailIcon from '@mui/icons-material/Email';
-import Alert from '@mui/material/Alert';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import styled from "styled-components";
+import { useTheme } from "@mui/material/styles";
+import TextField from "@mui/material/TextField";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import EmailIcon from "@mui/icons-material/Email";
+import Alert from "@mui/material/Alert";
 import {
   StyledButton,
   StyledLink,
   StyledHeader,
   StyledAvatar,
-  formVariants
-} from '../themes/componentsStyles';
-import { signInWithEmail } from '../actions';
+  formVariants,
+} from "../themes/componentsStyles";
+import { signInWithEmail } from "../actions";
 
 const StyledContainer = styled(Box)`
   display: flex;
@@ -34,8 +34,8 @@ const StyledContainer = styled(Box)`
 `;
 
 const StyledForm = styled(Box)`
-background-color: ${({ theme }) => theme.palette.background.paper};  
-border-radius: 10px;
+  background-color: ${({ theme }) => theme.palette.background.paper};
+  border-radius: 10px;
   box-shadow: ${({ theme }) => theme.shadows[5]};
   padding: ${({ theme }) => theme.spacing(4)};
 `;
@@ -45,8 +45,8 @@ function SignIn() {
   const dispatch = useDispatch();
   const theme = useTheme();
   const validationSchema = Yup.object().shape({
-    email: Yup.string().required('Email is required').email('Email is invalid'),
-    password: Yup.string().required('Password is required'),
+    email: Yup.string().required("Email is required").email("Email is invalid"),
+    password: Yup.string().required("Password is required"),
   });
 
   const {
@@ -57,15 +57,18 @@ function SignIn() {
     resolver: yupResolver(validationSchema),
   });
 
-  const [alert, setAlert] = useState({ type: 'success', message: null });
+  const [alert, setAlert] = useState({ type: "success", message: null });
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (data) => {
     const onSuccess = () => {
-      navigate('/rooms');
+      navigate("/rooms");
     };
     const onError = (error) => {
-      setAlert({ type: 'error', message: `An error occurred while signing in: ${error}` });
+      setAlert({
+        type: "error",
+        message: `An error occurred while signing in: ${error}`,
+      });
     };
     dispatch(signInWithEmail(data, onSuccess, onError));
   };
@@ -78,13 +81,15 @@ function SignIn() {
         animate="animate"
         exit="exit"
       >
-        <StyledForm theme={theme} component="form" onSubmit={handleSubmit(onSubmit)}>
+        <StyledForm
+          theme={theme}
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <StyledAvatar theme={theme}>
             <LockOutlinedIcon />
           </StyledAvatar>
-          <StyledHeader variant="h5">
-            Sign In
-          </StyledHeader>
+          <StyledHeader variant="h5">Sign In</StyledHeader>
           <TextField
             margin="normal"
             fullWidth
@@ -92,13 +97,13 @@ function SignIn() {
             label="Email Address"
             name="email"
             autoFocus
-            {...register('email')}
+            {...register("email")}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
                   <EmailIcon />
                 </InputAdornment>
-              )
+              ),
             }}
             error={!!errors.email}
             helperText={errors.email?.message}
@@ -108,9 +113,9 @@ function SignIn() {
             fullWidth
             name="password"
             label="Password"
-            type={showPassword ? 'text' : 'password'}
+            type={showPassword ? "text" : "password"}
             id="password"
-            {...register('password')}
+            {...register("password")}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -145,8 +150,13 @@ function SignIn() {
           </StyledButton>
           <Grid container justifyContent="flex-end">
             <Grid item>
-              <StyledLink theme={theme} component={RouterLink} to="/signUp" variant="body2">
-                Don't have an account? Sign Up
+              <StyledLink
+                theme={theme}
+                component={RouterLink}
+                to="/signUp"
+                variant="body2"
+              >
+                Don&apos;t have an account? Sign Up
               </StyledLink>
             </Grid>
           </Grid>

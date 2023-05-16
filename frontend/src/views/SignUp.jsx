@@ -1,29 +1,29 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as Yup from 'yup';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
-import { useTheme } from '@mui/material/styles';
-import TextField from '@mui/material/TextField';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import InputAdornment from '@mui/material/InputAdornment';
-import IconButton from '@mui/material/IconButton';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Alert from '@mui/material/Alert';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import styled from "styled-components";
+import { useTheme } from "@mui/material/styles";
+import TextField from "@mui/material/TextField";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import Alert from "@mui/material/Alert";
 import {
   StyledButton,
   StyledLink,
   StyledHeader,
   StyledAvatar,
-  formVariants
-} from '../themes/componentsStyles';
-import { signUp } from '../actions';
+  formVariants,
+} from "../themes/componentsStyles";
+import { signUp } from "../actions";
 
 const StyledContainer = styled(Box)`
   display: flex;
@@ -36,7 +36,7 @@ const StyledForm = styled(Box)`
   &.form {
     max-width: 400px;
   }
-  background-color: ${({ theme }) => theme.palette.background.paper}; 
+  background-color: ${({ theme }) => theme.palette.background.paper};
   border-radius: 10px;
   box-shadow: ${({ theme }) => theme.shadows[3]};
   padding: ${({ theme }) => theme.spacing(4)};
@@ -46,15 +46,15 @@ function SignUp() {
   const theme = useTheme();
   const navigate = useNavigate();
   const validationSchema = Yup.object().shape({
-    name: Yup.string().required('Name is required'),
-    email: Yup.string().required('Email is required').email('Email is invalid'),
+    name: Yup.string().required("Name is required"),
+    email: Yup.string().required("Email is required").email("Email is invalid"),
     password: Yup.string()
-      .required('Password is required')
-      .min(6, 'Password must be at least 6 characters')
-      .max(40, 'Password must not exceed 40 characters'),
+      .required("Password is required")
+      .min(6, "Password must be at least 6 characters")
+      .max(40, "Password must not exceed 40 characters"),
     confirmPassword: Yup.string()
-      .required('Confirm Password is required')
-      .oneOf([Yup.ref('password'), null], 'Confirm Password does not match'),
+      .required("Confirm Password is required")
+      .oneOf([Yup.ref("password"), null], "Confirm Password does not match"),
   });
 
   const {
@@ -65,20 +65,20 @@ function SignUp() {
     resolver: yupResolver(validationSchema),
   });
 
-  const [alert, setAlert] = useState({ type: 'success', message: null });
+  const [alert, setAlert] = useState({ type: "success", message: null });
   const [showPassword, setShowPassword] = useState(false);
 
   const dispatch = useDispatch();
 
   const onSubmit = (data) => {
     const onSuccess = () => {
-      setAlert({ type: 'success', message: 'Please verify your email' });
+      setAlert({ type: "success", message: "Please verify your email" });
       setTimeout(() => {
-        navigate('/signIn');
+        navigate("/signIn");
       }, 3000);
     };
     const onError = (error) => {
-      setAlert({ type: 'error', message: `An error occurred: ${error} ` });
+      setAlert({ type: "error", message: `An error occurred: ${error} ` });
     };
     dispatch(signUp(data, onSuccess, onError));
   };
@@ -91,13 +91,16 @@ function SignUp() {
         animate="animate"
         exit="exit"
       >
-        <StyledForm theme={theme} component="form" onSubmit={handleSubmit(onSubmit)} className="form">
+        <StyledForm
+          theme={theme}
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+          className="form"
+        >
           <StyledAvatar theme={theme}>
             <LockOutlinedIcon />
           </StyledAvatar>
-          <StyledHeader variant="h5">
-            Sign Up
-          </StyledHeader>
+          <StyledHeader variant="h5">Sign Up</StyledHeader>
           <TextField
             margin="normal"
             fullWidth
@@ -105,7 +108,7 @@ function SignUp() {
             label="Name"
             name="name"
             autoFocus
-            {...register('name')}
+            {...register("name")}
             error={!!errors.name}
             helperText={errors.name?.message}
           />
@@ -116,7 +119,7 @@ function SignUp() {
             label="Email Address"
             name="email"
             autoFocus
-            {...register('email')}
+            {...register("email")}
             error={!!errors.email}
             helperText={errors.email?.message}
           />
@@ -125,9 +128,9 @@ function SignUp() {
             fullWidth
             name="password"
             label="Password"
-            type={showPassword ? 'text' : 'password'}
+            type={showPassword ? "text" : "password"}
             id="password"
-            {...register('password')}
+            {...register("password")}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -155,9 +158,9 @@ function SignUp() {
             fullWidth
             name="confirmPassword"
             label="Confirm password"
-            type={showPassword ? 'text' : 'password'}
+            type={showPassword ? "text" : "password"}
             id="confirmPassword"
-            {...register('confirmPassword')}
+            {...register("confirmPassword")}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -193,7 +196,12 @@ function SignUp() {
           </StyledButton>
           <Grid container justifyContent="flex-end">
             <Grid item>
-              <StyledLink theme={theme} component={RouterLink} to="/signIn" variant="body2">
+              <StyledLink
+                theme={theme}
+                component={RouterLink}
+                to="/signIn"
+                variant="body2"
+              >
                 Already have an account? Sign In
               </StyledLink>
             </Grid>

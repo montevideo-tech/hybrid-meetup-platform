@@ -1,13 +1,9 @@
 // Room
-import {
-  React, useState, useEffect, useRef, forwardRef
-} from 'react';
-import { useLoaderData, Navigate, useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import {
-  Button, Box, CircularProgress, Snackbar, Slide
-} from '@mui/material';
-import MuiAlert from '@mui/material/Alert';
+import { React, useState, useEffect, useRef, forwardRef } from "react";
+import { useLoaderData, Navigate, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { Button, Box, CircularProgress, Snackbar, Slide } from "@mui/material";
+import MuiAlert from "@mui/material/Alert";
 
 import useWindowDimensions from "../hooks/useWindowDimesion";
 import useUserPermission from "../hooks/useUserPermission";
@@ -30,7 +26,9 @@ import ShareScreen from "../components/ShareScreen";
 import { TESTING_MODE } from "../lib/constants";
 import Chat from "../components/Chat";
 import { comparator, updateParticipantRoles } from "../utils/helpers";
-import { getGuestMuted } from '../utils/room';
+import { getGuestMuted } from "../utils/room";
+import { epochToISO8601 } from "../utils/time";
+import { subscribeToNewMessages, fetchMessages } from "../utils/chat";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -66,7 +64,9 @@ function Room() {
   const paddingX = width < 800 ? 40 : 60;
   const navigate = useNavigate();
   const [isEnableToUnmute, setIsEnableToUnmute] = useState(true);
-  const [isBlockedRemotedGuest , setIsBlockedRemotedGuest] = useState(false);
+  const [isBlockedRemotedGuest, setIsBlockedRemotedGuest] = useState(false);
+  const [dateTimeJoined] = useState(epochToISO8601(Date.now()));
+  const [messages, setMessages] = useState([]);
 
   // To add a new criteria to the comparator you need to
   // Decide if it's higher or lower pririoty compared to the already established
@@ -123,6 +123,10 @@ function Room() {
     }
   };
 
+  useEffect(() => {
+    subscribeToNewMessages(() => fetchMessages(dateTimeJoined, setMessages));
+  }, []);
+
   const handleRoleChange = (payload) => {
     if (payload.eventType === "INSERT") {
       const { id, userEmail } = payload;
@@ -132,7 +136,7 @@ function Room() {
           name: userEmail,
           role: permission,
           id,
-        })
+        }),
       );
     }
     // Supabase realtime only sends the ID that was deleted from the rooms-data table
@@ -266,43 +270,46 @@ function Room() {
   };
 
   const closeSnackbar = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
 
     setOpen(false);
   };
 
-  // eslint-disable-next-line react/no-unstable-nested-components
-  const Alert = forwardRef((
-    props,
-    ref,
-  // eslint-disable-next-line react/jsx-props-no-spreading
-  ) => <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />);
-  const handleRemoveParticipant = (resp, participant) => { 
+  const Alert = forwardRef((props, ref) => (
+    <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+  ));
+
+  Alert.displayName = "errorAlert";
+
+  const handleRemoveParticipant = (resp, participant) => {
     if (resp.participantId === participant.displayName) {
       leaveRoom();
       navigate("/rooms");
     }
-  }
+  };
 
-  const handleBlockMuteRemote = (resp, participant, localTracks) => { 
-    if (resp.participantId === participant.displayName && currentUser.role !== ROLES.ADMIN) {
+  const handleBlockMuteRemote = (resp, participant, localTracks) => {
+    if (
+      resp.participantId === participant.displayName &&
+      currentUser.role !== ROLES.ADMIN
+    ) {
       setIsEnableToUnmute(resp.isMuted);
       localTracks.audio.mute();
     }
-  }
+  };
 
   const handleBlockMuteAllGuests = (resp, localTracks) => {
     if (currentUser.role !== ROLES.ADMIN) {
       setIsEnableToUnmute(!resp.blockMuted);
-      if(resp.blockMuted) {
+      if (resp.blockMuted) {
         localTracks.audio.mute();
       }
     } else {
-      setIsBlockedRemotedGuest(resp.blockMuted)
+      setIsBlockedRemotedGuest(resp.blockMuted);
     }
-  }
+  };
 
   const joinRoom = async () => {
     const JWT = await roomJWTprovider(
@@ -312,7 +319,7 @@ function Room() {
       null,
       () => {
         setRoomNotFound(true);
-      }
+      },
     );
     const guestMuted = await getGuestMuted();
     setIsBlockedRemotedGuest(guestMuted);
@@ -328,11 +335,13 @@ function Room() {
           initRoom({
             id: roomId,
             participants: [{ name: currentUser.email, role: ROLES.GUEST }],
-          })
+          }),
         );
 
         // add event handler for TrackStarted event
-        newRoom.on("RemoveRemoteParticipant",(resp) => handleRemoveParticipant(resp, newParticipant));
+        newRoom.on("RemoveRemoteParticipant", (resp) =>
+          handleRemoveParticipant(resp, newParticipant),
+        );
         newRoom.on("ParticipantTrackSubscribed", handleTrackStarted);
         newRoom.on("ParticipantJoined", handleParticipantJoined);
         newRoom.on("ParticipantLeft", handleParticipantLeft);
@@ -353,8 +362,12 @@ function Room() {
         subscribeToRemoteStreams(newRoom);
         subscribeToRoleChanges(roomId, handleRoleChange);
 
-        newRoom.on('BlockMuteRemoteParticipant', (resp) => handleBlockMuteRemote(resp, newParticipant, newLocalTracks));
-        newRoom.on('BlockMuteAllRemoteParticipants', (resp) => handleBlockMuteAllGuests(resp, newLocalTracks));
+        newRoom.on("BlockMuteRemoteParticipant", (resp) =>
+          handleBlockMuteRemote(resp, newParticipant, newLocalTracks),
+        );
+        newRoom.on("BlockMuteAllRemoteParticipants", (resp) =>
+          handleBlockMuteAllGuests(resp, newLocalTracks),
+        );
       } else {
         setErrorJoiningRoom(true);
         openSnackbar();
@@ -382,7 +395,7 @@ function Room() {
         null,
         () => {
           setRoomNotFound(true);
-        }
+        },
       );
       const newScreenRoom = new WebRoom(JWT);
       const newlocalParticipant = await newScreenRoom.join();
@@ -423,7 +436,7 @@ function Room() {
         updateScreenShare();
       }
     },
-    [isSharingScreen]
+    [isSharingScreen],
   );
 
   const updateLocalTracksMuted = (kind, muted) => {
@@ -458,8 +471,7 @@ function Room() {
         >
           ADD USER
         </Button>
-        )
-      }
+      )}
 
       {roomNotFound && <Navigate to="/rooms/404" />}
       {room ? (
@@ -531,7 +543,7 @@ function Room() {
               unmountOnExit
             >
               <Box>
-                <Chat />
+                <Chat messages={messages} />
               </Box>
             </Slide>
           </Box>
@@ -544,16 +556,19 @@ function Room() {
             alignItems: "center",
             height: "100%",
           }}
-          >
-            {!errorJoiningRoom && <CircularProgress />}
-            <Snackbar open={open} onClose={closeSnackbar}>
-              <Alert onClose={closeSnackbar} severity="error" sx={{ width: '100%' }}>
-                A duplicate session has been detected
-              </Alert>
-            </Snackbar>
-          </div>
-        )
-      }
+        >
+          {!errorJoiningRoom && <CircularProgress />}
+          <Snackbar open={open} onClose={closeSnackbar}>
+            <Alert
+              onClose={closeSnackbar}
+              severity="error"
+              sx={{ width: "100%" }}
+            >
+              A duplicate session has been detected
+            </Alert>
+          </Snackbar>
+        </div>
+      )}
     </>
   );
 }
