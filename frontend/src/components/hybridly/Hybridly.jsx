@@ -6,20 +6,20 @@ import { Typography } from "@mui/material";
 import theme from "../../themes/theme";
 import { Colors } from "../../themes/colors";
 
-export const Hibridly = () => {
+export const Hybridly = () => {
   return (
-    <HibridlyContainer component={RouterLink} to="/">
-      <HibridlyTypography variant="button" className="typography-hibridly">
+    <HybridlyContainer component={RouterLink} to="/">
+      <HybridlyTypography variant="button" className="typography-hybridly">
         Hybridly
-      </HibridlyTypography>
+      </HybridlyTypography>
       <QualabsTypography variant="caption" className="typography-qualabs">
         by Qualabs
       </QualabsTypography>
-    </HibridlyContainer>
+    </HybridlyContainer>
   );
 };
 
-const HibridlyContainer = styled(RouterLink)`
+const HybridlyContainer = styled(RouterLink)`
   display: flex;
   flex-direction: column;
   text-decoration: none;
@@ -29,7 +29,7 @@ const HibridlyContainer = styled(RouterLink)`
   transition: background-color 1s ease-out 100ms;
   :hover {
     background-color: ${Colors.white};
-    .typography-hibridly {
+    .typography-hybridly {
       color: ${theme.palette.primary.dark};
     }
     .typography-qualabs {
@@ -38,7 +38,7 @@ const HibridlyContainer = styled(RouterLink)`
   }
 `;
 
-const HibridlyTypography = styled(Typography)`
+const HybridlyTypography = styled(Typography)`
   text-decoration: none;
   color: ${Colors.white};
 `;
@@ -54,4 +54,4 @@ const QualabsTypography = styled(Typography)`
   transition: opacity 1s ease-out 100ms;
 `;
 
-export default Hibridly;
+export default Hybridly;

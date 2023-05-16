@@ -277,14 +277,12 @@ function Room() {
     setOpen(false);
   };
 
-  // eslint-disable-next-line react/no-unstable-nested-components
-  const Alert = forwardRef(
-    (
-      props,
-      ref,
-      // eslint-disable-next-line react/jsx-props-no-spreading
-    ) => <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />,
-  );
+  const Alert = forwardRef((props, ref) => (
+    <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+  ));
+
+  Alert.displayName = "errorAlert";
+
   const handleRemoveParticipant = (resp, participant) => {
     if (resp.participantId === participant.displayName) {
       leaveRoom();
