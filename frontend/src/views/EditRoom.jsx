@@ -1,14 +1,21 @@
-import { React, useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useLoaderData, useNavigate } from 'react-router-dom';
+import { React, useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useLoaderData, useNavigate } from "react-router-dom";
 import {
-  List, ListItem, IconButton, Typography, TextField, MenuItem, Button, Card,
-} from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import styled from 'styled-components';
-import { giveUserRoleOnRoom } from '../actions';
-import { ROLES } from '../utils/roles';
-import { updateParticipantRoles } from '../utils/helpers';
+  List,
+  ListItem,
+  IconButton,
+  Typography,
+  TextField,
+  MenuItem,
+  Button,
+  Card,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import styled from "styled-components";
+import { giveUserRoleOnRoom } from "../actions";
+import { ROLES } from "../utils/roles";
+import { updateParticipantRoles } from "../utils/helpers";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -19,8 +26,8 @@ function EditRoom() {
   const dispatch = useDispatch();
   const roomId = useLoaderData();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [roleToAdd, setRoleToAdd] = useState('presenter');
+  const [email, setEmail] = useState("");
+  const [roleToAdd, setRoleToAdd] = useState("presenter");
   // TODO:
   // get actual hosts/presenters from db
   const [roles, setRoles] = useState({ hosts: [], presenters: [] });
@@ -28,13 +35,13 @@ function EditRoom() {
     const currentHosts = roles.hosts;
     const currentPresenters = roles.presenters;
     await giveUserRoleOnRoom(email, roomId, roleToAdd);
-    if (roleToAdd === 'host') {
+    if (roleToAdd === "host") {
       setRoles({
         hosts: [...currentHosts, email],
         presenters: [...currentPresenters],
       });
     }
-    if (roleToAdd === 'presenter') {
+    if (roleToAdd === "presenter") {
       setRoles({
         hosts: [...currentHosts],
         presenters: [...currentPresenters, email],
@@ -84,84 +91,87 @@ function EditRoom() {
   }, [roles]);
 
   return (
-    <div style={{
-      marginTop: '15px',
-      display: 'flex',
-      alignItems: 'center',
-      flexDirection: 'column',
-    }}
-    >
-      <StyledContainer>
-        <Button variant="contained" onClick={() => navigate(`/rooms/${roomId}`)}>
+    <Container cont1>
+      <Container cont2>
+        <Button
+          variant="contained"
+          onClick={() => navigate(`/rooms/${roomId}`)}
+        >
           Go to Room
         </Button>
-        <Typography component="h1" variant="h4" sx={{ textAlign: 'center' }}>
+        <Typography component="h1" variant="h4" sx={{ textAlign: "center" }}>
           {`Edit Room ${roomId}`}
         </Typography>
-      </StyledContainer>
-      <div style={{ display: 'flex' }}>
+      </Container>
+      <Container cont3>
         <Card variant="outlined">
-          <div style={{ padding: '1vh 0.5vw' }}>
-            <Typography component="h2" variant="h5" sx={{ textAlign: 'center' }}>
+          <Container cont4>
+            <Typography
+              component="h2"
+              variant="h5"
+              sx={{ textAlign: "center" }}
+            >
               Hosts
             </Typography>
             <List>
-              {
-                roles.hosts.map((e) => {
-                  return (
-                    <ListItem
-                      key={e}
-                      secondaryAction={(
-                        <IconButton edge="end">
-                          <DeleteIcon onClick={() => { handleDeleteRole(e, 'hosts'); }} />
-                        </IconButton>
-                      )}
-                    >
-                      <Typography>{e}</Typography>
-                    </ListItem>
-                  );
-                })
-              }
+              {roles.hosts.map((e) => {
+                return (
+                  <ListItem
+                    key={e}
+                    secondaryAction={
+                      <IconButton edge="end">
+                        <DeleteIcon
+                          onClick={() => {
+                            handleDeleteRole(e, "hosts");
+                          }}
+                        />
+                      </IconButton>
+                    }
+                  >
+                    <Typography>{e}</Typography>
+                  </ListItem>
+                );
+              })}
             </List>
-          </div>
+          </Container>
         </Card>
-        <Card sx={{ marginLeft: '2vw' }} variant="outlined">
-          <div style={{ padding: '1vh 0.5vw' }}>
-            <Typography component="h2" variant="h5" sx={{ textAlign: 'center' }}>
+        <Card sx={{ marginLeft: "2vw" }} variant="outlined">
+          <Container cont4>
+            <Typography
+              component="h2"
+              variant="h5"
+              sx={{ textAlign: "center" }}
+            >
               Presenters
             </Typography>
             <List>
-              {
-                roles.presenters.map((e) => {
-                  return (
-                    <ListItem
-                      key={e}
-                      secondaryAction={(
-                        <IconButton edge="end">
-                          <DeleteIcon onClick={() => { handleDeleteRole(e, 'presenters'); }} />
-                        </IconButton>
-                      )}
-                    >
-                      <Typography>{e}</Typography>
-                    </ListItem>
-                  );
-                })
-              }
+              {roles.presenters.map((e) => {
+                return (
+                  <ListItem
+                    key={e}
+                    secondaryAction={
+                      <IconButton edge="end">
+                        <DeleteIcon
+                          onClick={() => {
+                            handleDeleteRole(e, "presenters");
+                          }}
+                        />
+                      </IconButton>
+                    }
+                  >
+                    <Typography>{e}</Typography>
+                  </ListItem>
+                );
+              })}
             </List>
-          </div>
+          </Container>
         </Card>
-        <Card sx={{ marginLeft: '2vw' }} variant="outlined">
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyItems: 'center',
-            padding: '1vh 0.5vw',
-          }}
-          >
+        <Card sx={{ marginLeft: "2vw" }} variant="outlined">
+          <Container>
             <TextField
               variant="outlined"
               label="Email"
-              sx={{ width: 1, marginBottom: '1vh' }}
+              sx={{ width: 1, marginBottom: "1vh" }}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -169,29 +179,50 @@ function EditRoom() {
               variant="outlined"
               select
               label="Role"
-              sx={{ width: 1, marginBottom: '1vh' }}
+              sx={{ width: 1, marginBottom: "1vh" }}
               defaultValue="presenter"
               value={roleToAdd}
               onChange={(e) => setRoleToAdd(e.target.value)}
             >
-              <MenuItem value="presenter">
-                Presenter
-              </MenuItem>
+              <MenuItem value="presenter">Presenter</MenuItem>
             </TextField>
             <Button variant="contained" onClick={handleAddRole}>
               Add
             </Button>
-          </div>
+          </Container>
         </Card>
-      </div>
-    </div>
+      </Container>
+    </Container>
   );
 }
 
 export default EditRoom;
 
-const StyledContainer = styled.div`
-  display: grid;
-  grid-template-columns: 0.15fr 1fr;
-  gap: 15px;
+const Container = styled.div`
+  ${({ cont1, cont2, cont3, cont4 }) =>
+    cont1
+      ? `
+      margin-top: 15px;
+      display: flex;
+      align-items: center;
+      flex-direction: column;`
+      : cont2
+      ? `
+        display: grid;
+        grid-template-columns: 0.15fr 1fr;
+        gap: 15px;`
+      : cont3
+      ? `
+        display: flex
+        `
+      : cont4
+      ? `
+        padding: 1vh 0.5vw;
+      `
+      : `
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 1vh 0.5vw;
+      `}
 `;

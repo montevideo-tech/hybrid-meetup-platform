@@ -5,6 +5,7 @@ import { subscribeToNewMessages, onSendMessage } from "../utils/chat";
 import { supabase } from "../lib/api";
 import { epochToISO8601 } from "../utils/time";
 import Filter from "bad-words";
+import styled from "styled-components";
 
 import {
   ChatButton,
@@ -69,10 +70,7 @@ function Chat() {
           </p>
         ))}
       </ChatContent>
-      <ChatForm
-        onSubmit={handleSubmit}
-        style={{ display: "flex", justifyContent: "space-between" }}
-      >
+      <StyledChatForm onSubmit={handleSubmit}>
         <ChatInput
           type="text"
           placeholder="Message"
@@ -86,9 +84,14 @@ function Chat() {
         <ChatButton variant="contained" type="submit">
           Send
         </ChatButton>
-      </ChatForm>
+      </StyledChatForm>
     </ChatContainer>
   );
 }
 
 export default Chat;
+
+const StyledChatForm = styled(ChatForm)`
+  display: "flex";
+  justify-content: "space-between";
+`;
