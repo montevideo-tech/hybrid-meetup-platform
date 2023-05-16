@@ -1,46 +1,48 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Button,
   CircularProgress,
   Grid,
   IconButton,
   Paper,
-  Skeleton,
   TextField,
   Typography,
-} from '@mui/material';
-import {
-  Check as CheckIcon,
-  Close as CloseIcon,
-} from '@mui/icons-material';
+} from "@mui/material";
+import { Check as CheckIcon, Close as CloseIcon } from "@mui/icons-material";
 
-import { useDispatch, useSelector } from 'react-redux';
-import { supabase } from '../lib/api';
-import { createRoom, addRoomToDb, giveUserRoleOnRoom } from '../actions';
-import { ROLES } from '../utils/roles';
-import RoomsList from '../components/RoomsList/RoomsList';
-import RoomsListSkeleton from '../components/RoomsList/RoomsListSkeleton';
+import { useDispatch, useSelector } from "react-redux";
+import { supabase } from "../lib/api";
+import { createRoom, addRoomToDb, giveUserRoleOnRoom } from "../actions";
+import { ROLES } from "../utils/roles";
+import RoomsList from "../components/RoomsList/RoomsList";
+import RoomsListSkeleton from "../components/RoomsList/RoomsListSkeleton";
 
 function Rooms() {
   const [roomsList, setRoomsList] = useState([]);
   const [loadingRooms, setLoadingRooms] = useState(false);
   const [creatingRoom, setCreatingRoom] = useState(false);
   const [showNameInput, setShowNameInput] = useState(false);
-  const [newRoomName, setNewRoomName] = useState('');
+  const [newRoomName, setNewRoomName] = useState("");
   const [user, setUser] = useState(null);
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.user);
 
   const onRoomCreated = async (data) => {
     const onSuccess = () => {
-      console.log('Room added to DB');
+      console.log("Room added to DB");
       setCreatingRoom(false);
-      setNewRoomName('');
+      setNewRoomName("");
     };
     const onError = (res) => {
       setCreatingRoom(false);
-      const { response: { data: { error } } } = res;
-      console.error(`An error occurred while adding the room to DB: ${error.message}`);
+      const {
+        response: {
+          data: { error },
+        },
+      } = res;
+      console.error(
+        `An error occurred while adding the room to DB: ${error.message}`,
+      );
     };
     dispatch(addRoomToDb(data, onSuccess, onError));
   };
@@ -54,24 +56,28 @@ function Rooms() {
     setCreatingRoom(true);
     const onSuccess = (res) => {
       // console.log('Room created', res);
-      const { data: { data } } = res;
+      const {
+        data: { data },
+      } = res;
       if (!data?.id) {
-        console.error(new Error('Bad response from provider: no room ID'));
+        console.error(new Error("Bad response from provider: no room ID"));
         return;
       }
 
-      onRoomCreated(
-        {
-          ...data,
-          name: newRoomName,
-          providerId: data.id,
-          creatorEmail: user.email,
-        },
-      );
+      onRoomCreated({
+        ...data,
+        name: newRoomName,
+        providerId: data.id,
+        creatorEmail: user.email,
+      });
     };
     const onError = (res) => {
       setCreatingRoom(false);
-      const { response: { data: { error } } } = res;
+      const {
+        response: {
+          data: { error },
+        },
+      } = res;
       console.error(`An error occurred while creating room: ${error.message}`);
     };
     dispatch(createRoom(onSuccess, onError));
@@ -80,19 +86,23 @@ function Rooms() {
   const handleTableEvent = (payload) => {
     const { new: newRoom } = payload;
     switch (payload.eventType) {
-      case 'INSERT':
+      case "INSERT":
         setRoomsList((list) => [...list, newRoom]); // functional update
         break;
-      case 'UPDATE':
-        setRoomsList((list) => list.map((room) => {
-          if (room.id === newRoom.id) {
-            return newRoom;
-          }
-          return room;
-        }));
+      case "UPDATE":
+        setRoomsList((list) =>
+          list.map((room) => {
+            if (room.id === newRoom.id) {
+              return newRoom;
+            }
+            return room;
+          }),
+        );
         break;
-      case 'DELETE':
-        setRoomsList((list) => list.filter((room) => room.id !== payload.old.id));
+      case "DELETE":
+        setRoomsList((list) =>
+          list.filter((room) => room.id !== payload.old.id),
+        );
         break;
       default:
     }
@@ -121,32 +131,40 @@ function Rooms() {
       setLoadingRooms(true);
 
       try {
-        const roomsQuery = await supabase.from('rooms').select();
+        const roomsQuery = await supabase.from("rooms").select();
         if (roomsQuery.error) {
           throw roomsQuery.error;
         }
 
-        const usersQuery = await supabase.from('users-data').select();
+        const usersQuery = await supabase.from("users-data").select();
         if (usersQuery.error) {
           throw usersQuery.error;
         }
 
-        setRoomsList(roomsQuery.data.map((room) => {
-          const { id, providerId, name } = room;
-          const createdBy = usersQuery.data.find((u) => u.user_id === room.creatorId);
+        setRoomsList(
+          roomsQuery.data.map((room) => {
+            const { id, providerId, name } = room;
+            const createdBy = usersQuery.data.find(
+              (u) => u.user_id === room.creatorId,
+            );
 
-          return {
-            id,
-            providerId,
-            name,
-            createdBy,
-          };
-        }));
+            return {
+              id,
+              providerId,
+              name,
+              createdBy,
+            };
+          }),
+        );
 
         // Listen to table events
         supabase
-          .channel('any')
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'rooms' }, handleTableEvent)
+          .channel("any")
+          .on(
+            "postgres_changes",
+            { event: "*", schema: "public", table: "rooms" },
+            handleTableEvent,
+          )
           .subscribe();
       } catch (err) {
         console.error(`Error getting rooms list: ${err.message}`);
@@ -157,7 +175,7 @@ function Rooms() {
     getRoomsList();
   }, []);
 
-  const renderCreateRoomButton = () => (
+  const renderCreateRoomButton = () =>
     showNameInput ? (
       <Grid container spacing={1} sx={{ ml: 1, mt: 1, pr: 1 }}>
         <Grid item xs={10}>
@@ -186,7 +204,7 @@ function Rooms() {
             size="large"
             onClick={() => {
               setShowNameInput(false);
-              setNewRoomName('');
+              setNewRoomName("");
             }}
             disabled={loadingRooms || creatingRoom}
           >
@@ -200,17 +218,15 @@ function Rooms() {
         onClick={() => setShowNameInput(true)}
         disabled={loadingRooms || creatingRoom}
         sx={{
-          my: 2, ml: 1, width: 150, height: 40,
+          my: 2,
+          ml: 1,
+          width: 150,
+          height: 40,
         }}
       >
-        {creatingRoom ? (
-          <CircularProgress size={20} />
-        ) : (
-          'Create Room'
-        )}
+        {creatingRoom ? <CircularProgress size={20} /> : "Create Room"}
       </Button>
-    )
-  );
+    );
 
   return (
     <Paper sx={{ p: 2 }}>
@@ -218,15 +234,9 @@ function Rooms() {
         Rooms
       </Typography>
 
-      {user?.role === 'admin' && renderCreateRoomButton()}
+      {user?.role === "admin" && renderCreateRoomButton()}
 
-      {
-        loadingRooms ? (
-          <RoomsListSkeleton />
-        ) : (
-          <RoomsList list={roomsList} />
-        )
-      }
+      {loadingRooms ? <RoomsListSkeleton /> : <RoomsList list={roomsList} />}
     </Paper>
   );
 }

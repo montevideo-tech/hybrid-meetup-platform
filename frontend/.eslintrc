@@ -3,6 +3,7 @@
   "plugins": ["react", "prettier"],
   "ignorePatterns": ["**/*.json"],
   "env": {
+    "es6": true,
     "browser": true
   },
   "rules": {
@@ -16,12 +17,7 @@
         "trailingComma": "all"
       }
     ],
-    "no-console": [
-      "warn",
-      {
-        "allow": ["warn", "error"]
-      }
-    ],
+    "no-console": "off",
     "no-duplicate-imports": "warn",
     "react/react-in-jsx-scope": "off",
     "react/prop-types": 0,
