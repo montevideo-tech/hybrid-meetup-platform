@@ -28,7 +28,7 @@ import Chat from "../components/Chat";
 import { comparator, updateParticipantRoles } from "../utils/helpers";
 import { getGuestMuted } from "../utils/room";
 import { epochToISO8601 } from "../utils/time";
-import { subscribeToNewMessages, fetchMessages } from "../utils/chat";
+import { subscribeToNewMessages, subscribeToDeleteMessages, fetchMessages } from "../utils/chat";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -125,6 +125,7 @@ function Room() {
 
   useEffect(() => {
     subscribeToNewMessages(() => fetchMessages(dateTimeJoined, setMessages));
+    subscribeToDeleteMessages(() => fetchMessages(dateTimeJoined, setMessages));
   }, []);
 
   const handleRoleChange = (payload) => {
@@ -543,7 +544,7 @@ function Room() {
               unmountOnExit
             >
               <Box>
-                <Chat messages={messages} />
+                <Chat messages={messages} isUserAdmin={isUserAdmin} />
               </Box>
             </Slide>
           </Box>

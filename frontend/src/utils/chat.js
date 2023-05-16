@@ -7,6 +7,16 @@ export async function onSendMessage(message) {
   }
 }
 
+export async function onDeleteMessage(id) {
+  const { error } = await supabase
+    .from('message-chat')
+    .delete()
+    .eq('id', id)
+  if (error) {
+    console.error('Error Sending Messages: ', error);
+  }
+}
+
 export function subscribeToNewMessages(fetchMessages) {
   supabase
     .channel("custom-insert-channel")
@@ -14,6 +24,21 @@ export function subscribeToNewMessages(fetchMessages) {
       "postgres_changes",
       {
         event: "INSERT",
+        schema: "public",
+        table: "message-chat",
+      },
+      fetchMessages,
+    )
+    .subscribe();
+}
+
+export function subscribeToDeleteMessages(fetchMessages) {
+  supabase
+    .channel("custom-delete-channel")
+    .on(
+      "postgres_changes",
+      {
+        event: "DELETE",
         schema: "public",
         table: "message-chat",
       },
