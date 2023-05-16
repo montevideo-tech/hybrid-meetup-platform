@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Typography } from "@mui/material";
 import styled from "styled-components";
+import { Colors } from "../themes/colors";
 
 function ParticipantInfo(props) {
   const { name, parentHeight } = props;
@@ -26,7 +27,7 @@ function ParticipantInfo(props) {
         variant="h6"
         fontWeight="700"
         fontSize={fontSize}
-        color="white"
+        color={Colors.white}
       >
         {name}
       </Typography>

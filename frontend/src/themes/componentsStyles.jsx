@@ -1,24 +1,24 @@
-import styled from 'styled-components';
-import Button from '@mui/material/Button';
-import Link from '@mui/material/Link';
-import Typography from '@mui/material/Typography';
-import Avatar from '@mui/material/Avatar';
-import { TextField } from '@mui/material';
-import { Colors } from './colors';
+import styled from "styled-components";
+import Button from "@mui/material/Button";
+import Link from "@mui/material/Link";
+import Typography from "@mui/material/Typography";
+import Avatar from "@mui/material/Avatar";
+import { TextField } from "@mui/material";
+import { Colors } from "./colors";
 
 export const StyledButton = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
   color: theme.palette.common.white,
-  '&:hover': {
+  "&:hover": {
     backgroundColor: theme.palette.primary.dark,
   },
-  '&:disabled': {
+  "&:disabled": {
     backgroundColor: theme.palette.grey[400],
   },
-  textDecoration: 'none',
-  ' &:hover': {
-    textDecoration: 'underline',
-  }
+  textDecoration: "none",
+  " &:hover": {
+    textDecoration: "underline",
+  },
 }));
 
 export const StyledLink = styled(Link)`
@@ -37,7 +37,7 @@ export const StyledAvatar = styled(Avatar)`
 export const formVariants = {
   initial: { opacity: 0, y: 100 },
   animate: { opacity: 1, y: 0, transition: { duration: 0.7 } },
-  exit: { opacity: 0, y: -100, transition: { duration: 0.7 } }
+  exit: { opacity: 0, y: -100, transition: { duration: 0.7 } },
 };
 
 // Chat Styles
@@ -71,6 +71,6 @@ export const ChatButton = styled(Button)`
 `;
 
 export const ChatContent = styled.div`
-flex-grow: 1;
-overflow-y: auto;
+  flex-grow: 1;
+  overflow-y: auto;
 `;
