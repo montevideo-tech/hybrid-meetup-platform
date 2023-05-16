@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { useLoaderData } from "react-router-dom";
-import { fetchMessages, onSendMessage } from "../utils/chat";
+import { onSendMessage } from "../utils/chat";
 import Filter from "bad-words";
 
 import {
@@ -16,17 +16,8 @@ function Chat(props) {
   const [content, setContent] = useState("");
   const { email } = useSelector((state) => state.user);
   const roomId = useLoaderData();
-  const [messages, setMessages] = useState([]);
   const filter = new Filter();
-
-  const {
-    dateTimeJoined,
-  } = props; 
-
-
-  useEffect(() => {
-    fetchMessages(dateTimeJoined, setMessages);
-  }, [messages]);
+  const { messages } = props;
 
   const filterContent = (hasBadWords) => {
     const filteredContent = hasBadWords
