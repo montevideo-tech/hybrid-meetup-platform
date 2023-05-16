@@ -1,7 +1,13 @@
-import EventEmitter from 'events';
+import EventEmitter from "events";
 import {
-  Space, SubscriptionMode, getUserMedia, getDisplayMedia, SpaceEvent, ParticipantEvent, TrackEvent,
-} from '@mux/spaces-web';
+  Space,
+  SubscriptionMode,
+  getUserMedia,
+  getDisplayMedia,
+  SpaceEvent,
+  ParticipantEvent,
+  TrackEvent,
+} from "@mux/spaces-web";
 
 // TODO we should have a config somewhere which tells us what to use
 // wrap MUX SDK according to table in https://github.com/montevideo-tech/hybrid-meetup-platform/issues/14
@@ -16,26 +22,20 @@ export class Track extends EventEmitter {
     this.kind = this.provider.track.kind;
 
     // listen to MUX events and emit owr own, passing our wrapped classes
-    this.provider.on(
-      TrackEvent.Muted,
-      () => this.emit('Muted'),
-    );
-    this.provider.on(
-      TrackEvent.Unmuted,
-      () => this.emit('Unmuted'),
-    );
+    this.provider.on(TrackEvent.Muted, () => this.emit("Muted"));
+    this.provider.on(TrackEvent.Unmuted, () => this.emit("Unmuted"));
   }
 
   mute() {
     this.mediaStreamTrack.enabled = false;
     this.muted = true;
-    this.provider.emit('Muted', this.provider);
+    this.provider.emit("Muted", this.provider);
   }
 
   unmute() {
     this.mediaStreamTrack.enabled = true;
     this.muted = false;
-    this.provider.emit('Unmuted', this.provider);
+    this.provider.emit("Unmuted", this.provider);
   }
 }
 
@@ -49,13 +49,11 @@ class Participant extends EventEmitter {
     // this.tracks = []; //provider audioTracks + videoTracks
 
     // listen to MUX events and emit owr own, passing our wrapped classes
-    this.provider.on(
-      ParticipantEvent.StartedSpeaking,
-      () => this.emit('StartedSpeaking'),
+    this.provider.on(ParticipantEvent.StartedSpeaking, () =>
+      this.emit("StartedSpeaking"),
     );
-    this.provider.on(
-      ParticipantEvent.StoppedSpeaking,
-      () => this.emit('StoppedSpeaking'),
+    this.provider.on(ParticipantEvent.StoppedSpeaking, () =>
+      this.emit("StoppedSpeaking"),
     );
   }
 
@@ -85,7 +83,7 @@ export class LocalParticipant extends Participant {
       // TODO handle screen share
       tracksToPublish = await getUserMedia(params.constraints);
     } else {
-      throw new Error('Unexpected parameters passes to publishTracks');
+      throw new Error("Unexpected parameters passes to publishTracks");
     }
 
     const publishedTracks = await this.provider.publishTracks(tracksToPublish); // returns Mux Track
@@ -95,7 +93,7 @@ export class LocalParticipant extends Participant {
   async startScreenShare() {
     const displayMediaOptions = {
       video: {
-        cursor: 'always',
+        cursor: "always",
       },
       audio: false,
     };
@@ -105,7 +103,7 @@ export class LocalParticipant extends Participant {
   }
 
   async removeRemoteParticipant(participantName) {
-    const eventType = 'RemoveRemoteParticipant';
+    const eventType = "RemoveRemoteParticipant";
     const eventData = {
       participantId: participantName,
     };
@@ -121,7 +119,7 @@ export class LocalParticipant extends Participant {
   }
 
   async blockMuteRemoteParticipant(participantId, isMuted) {
-    const eventType = 'BlockMuteRemoteParticipant';
+    const eventType = "BlockMuteRemoteParticipant";
     const eventData = {
       participantId,
       isMuted,
@@ -138,7 +136,7 @@ export class LocalParticipant extends Participant {
   }
 
   async blockMuteAllRemoteParticipants(blockMuted) {
-    const eventType = 'BlockMuteAllRemoteParticipants';
+    const eventType = "BlockMuteAllRemoteParticipants";
     const eventData = {
       blockMuted,
     };
@@ -218,36 +216,34 @@ export class Room extends EventEmitter {
     this.remoteParticipants = this.provider.participants;
 
     // listen to MUX events and emit owr own, passing our wrapped classes
-    this.provider.on(
-      SpaceEvent.ParticipantJoined,
-      (p) => this.emit('ParticipantJoined', new RemoteParticipant(p)),
+    this.provider.on(SpaceEvent.ParticipantJoined, (p) =>
+      this.emit("ParticipantJoined", new RemoteParticipant(p)),
     );
-    this.provider.on(
-      SpaceEvent.ParticipantLeft,
-      (p) => this.emit('ParticipantLeft', new RemoteParticipant(p)),
+    this.provider.on(SpaceEvent.ParticipantLeft, (p) =>
+      this.emit("ParticipantLeft", new RemoteParticipant(p)),
     );
     // When you have subscribed to a remote participant's track.
     // This means that you have begun receiving media from the associated participant track
     // TODO perhaps we might want to change the name of  ParticipantTrackSubscribed
-    this.provider.on(
-      SpaceEvent.ParticipantTrackSubscribed,
-      (p, t) => this.emit('ParticipantTrackSubscribed', new RemoteParticipant(p), new Track(t)),
+    this.provider.on(SpaceEvent.ParticipantTrackSubscribed, (p, t) =>
+      this.emit(
+        "ParticipantTrackSubscribed",
+        new RemoteParticipant(p),
+        new Track(t),
+      ),
     );
-    this.provider.on(
-      SpaceEvent.ParticipantCustomEventPublished,
-      (p, event) => {
-        const resp = JSON.parse(event.payload);
-        if (resp.type === 'RemoveRemoteParticipant') {
-          this.emit('RemoveRemoteParticipant', resp.data);
-        }
-        if (resp.type === 'BlockMuteRemoteParticipant') {
-          this.emit('BlockMuteRemoteParticipant', resp.data);
-        }
-        if (resp.type === 'BlockMuteAllRemoteParticipants') {
-          this.emit('BlockMuteAllRemoteParticipants', resp.data);
-        }
-      },
-    );
+    this.provider.on(SpaceEvent.ParticipantCustomEventPublished, (p, event) => {
+      const resp = JSON.parse(event.payload);
+      if (resp.type === "RemoveRemoteParticipant") {
+        this.emit("RemoveRemoteParticipant", resp.data);
+      }
+      if (resp.type === "BlockMuteRemoteParticipant") {
+        this.emit("BlockMuteRemoteParticipant", resp.data);
+      }
+      if (resp.type === "BlockMuteAllRemoteParticipants") {
+        this.emit("BlockMuteAllRemoteParticipants", resp.data);
+      }
+    });
   }
 
   /**

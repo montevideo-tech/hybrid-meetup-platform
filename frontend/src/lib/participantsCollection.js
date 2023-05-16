@@ -44,7 +44,11 @@ function calcOptimalBoxes(
     const area = width * height;
     if (area > bestLayout.area) {
       bestLayout = {
-        area, width, height, rows, cols,
+        area,
+        width,
+        height,
+        rows,
+        cols,
       };
     }
   }

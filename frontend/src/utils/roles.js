@@ -1,51 +1,54 @@
-import { supabase } from '../lib/api';
+import { supabase } from "../lib/api";
 
 export const ROLES = {
   // app roles
-  ADMIN: 'admin',
-  USER: 'user',
+  ADMIN: "admin",
+  USER: "user",
   // room permissions
-  HOST: 'HOST',
-  PRESENTER: 'PRESENTER',
-  GUEST: 'GUEST',
+  HOST: "HOST",
+  PRESENTER: "PRESENTER",
+  GUEST: "GUEST",
 };
 
 const subscribeToRoleChanges = (roomId, handleRoleChange) => {
   supabase
-    .channel('any')
+    .channel("any")
     .on(
-      'postgres_changes',
+      "postgres_changes",
       {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'rooms-data',
+        event: "INSERT",
+        schema: "public",
+        table: "rooms-data",
         filter: `providerId=eq.${roomId}`,
       },
       async (payload) => {
         const data = await supabase
-          .from('rooms-data')
-          .select(`
+          .from("rooms-data")
+          .select(
+            `
             id,
             providerId,
             rooms-permission(name),
             userEmail)
-          `)
-          .eq('id', payload.new.id);
+          `,
+          )
+          .eq("id", payload.new.id);
         const newPermission = data.data[0];
-        newPermission.eventType = 'INSERT';
+        newPermission.eventType = "INSERT";
         handleRoleChange(newPermission);
       },
     )
     .on(
-      'postgres_changes',
+      "postgres_changes",
       {
-        event: 'DELETE',
-        schema: 'public',
-        table: 'rooms-data',
+        event: "DELETE",
+        schema: "public",
+        table: "rooms-data",
         filter: `providerId=eq.${roomId}`,
       },
       (payload) => handleRoleChange(payload),
-    ).subscribe();
+    )
+    .subscribe();
 };
 
 export default subscribeToRoleChanges;
