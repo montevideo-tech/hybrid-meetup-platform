@@ -1,14 +1,14 @@
 // addFakeParticipant1
-import { LocalTrack, TrackSource, TrackKind } from '@mux/spaces-web';
-import { Room as WebRoom } from '../lib/webrtc';
-import { roomJWTprovider } from '../actions';
-import videoURL0 from './videos/video0.mp4';
+import { LocalTrack, TrackSource, TrackKind } from "@mux/spaces-web";
+import { Room as WebRoom } from "../lib/webrtc";
+import { roomJWTprovider } from "../actions";
+import videoURL0 from "./videos/video0.mp4";
 
 const videos = [videoURL0];
 
 const getVideoTrackFromMP4 = async (videoNumber) => {
   // Create a video element and set its source to the imported video URL
-  const videoElement = document.createElement('video');
+  const videoElement = document.createElement("video");
   videoElement.src = videos[videoNumber];
   videoElement.muted = true;
   videoElement.playsInline = true;
@@ -16,7 +16,7 @@ const getVideoTrackFromMP4 = async (videoNumber) => {
 
   // Wait for the video element's "loadedmetadata" event
   await new Promise((resolve) => {
-    videoElement.addEventListener('loadedmetadata', resolve);
+    videoElement.addEventListener("loadedmetadata", resolve);
   });
 
   // Capture the media stream from the video element
@@ -24,7 +24,7 @@ const getVideoTrackFromMP4 = async (videoNumber) => {
 
   // Extract the video track from the media stream
   const videoTrack = mediaStream.getVideoTracks()[0];
-  console.log('Video track:', videoTrack);
+  console.log("Video track:", videoTrack);
 
   return videoTrack;
 };
@@ -35,7 +35,9 @@ const addFakeParticipant = async (roomId, participantEmail, numberOfVideo) => {
     participantEmail,
     null,
     null,
-    () => { console.log('Room not found'); },
+    () => {
+      console.log("Room not found");
+    },
   );
   const room = new WebRoom(JWT);
   const newParticipant = await room.join();
@@ -48,7 +50,7 @@ const addFakeParticipant = async (roomId, participantEmail, numberOfVideo) => {
 
   localTrack.kind = TrackKind.Video;
   localTrack.track = video;
-  localTrack.name = 'fakevideo';
+  localTrack.name = "fakevideo";
   localTrack.tid = video.id;
 
   const params = {};

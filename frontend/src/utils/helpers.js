@@ -1,14 +1,18 @@
-import { getRoomPermissions } from '../actions';
-import { addUpdateParticipant } from '../reducers/roomSlice';
+import { getRoomPermissions } from "../actions";
+import { addUpdateParticipant } from "../reducers/roomSlice";
 
 export const updateParticipantRoles = async (roomId, dispatch) => {
   const initialParticipantRoles = await getRoomPermissions(roomId);
 
-  initialParticipantRoles.map((part) => dispatch(addUpdateParticipant({
-    name: part.userEmail,
-    role: part['rooms-permission'].name,
-    id: part.id,
-  })));
+  initialParticipantRoles.map((part) =>
+    dispatch(
+      addUpdateParticipant({
+        name: part.userEmail,
+        role: part["rooms-permission"].name,
+        id: part.id,
+      }),
+    ),
+  );
 };
 
 export const comparator = (participant1, participant2) => {
