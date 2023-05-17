@@ -62,10 +62,7 @@ function Chat(props) {
           </MessageChat>
         ))}
       </ChatContent>
-      <ChatForm
-        onSubmit={handleSubmit}
-        style={{ display: "flex", justifyContent: "space-between" }}
-      >
+      <StyledChatForm onSubmit={handleSubmit}>
         <ChatInput
           type="text"
           placeholder="Message"
@@ -79,7 +76,7 @@ function Chat(props) {
         <ChatButton variant="contained" type="submit">
           Send
         </ChatButton>
-      </ChatForm>
+      </StyledChatForm>
     </ChatContainer>
   );
 }
@@ -101,3 +98,8 @@ const TextChat = styled.p`
 `
 
 export default Chat;
+
+const StyledChatForm = styled(ChatForm)`
+  display: "flex";
+  justify-content: "space-between";
+`;

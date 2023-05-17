@@ -1,11 +1,12 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { ROLES } from '../utils/roles';
+import { createSlice } from "@reduxjs/toolkit";
+import { ROLES } from "../utils/roles";
 
 export const roomSlice = createSlice({
-  name: 'currentRoom',
+  name: "currentRoom",
   initialState: {
     id: null,
     participants: [],
+    snackbarAlert: null,
   },
   reducers: {
     initRoom: (state, action) => {
@@ -17,8 +18,9 @@ export const roomSlice = createSlice({
     },
     // Updates participant if it's already created
     addUpdateParticipant: (state, action) => {
-      const participantIndex = state.participants
-        .findIndex((part) => part.name === action.payload.name);
+      const participantIndex = state.participants.findIndex(
+        (part) => part.name === action.payload.name,
+      );
       if (participantIndex > -1) {
         const newState = [...state.participants];
         newState[participantIndex].name = action.payload.name;
@@ -26,17 +28,20 @@ export const roomSlice = createSlice({
         newState[participantIndex].id = action.payload.id;
         state.participants = newState;
       } else {
-        state.participants = [...state.participants,
+        state.participants = [
+          ...state.participants,
           {
             name: action.payload.name,
             role: action.payload.role,
             id: action.payload.id,
-          }];
+          },
+        ];
       }
     },
     removeRole: (state, action) => {
-      const participantIndex = state.participants
-        .findIndex((part) => part.id === action.payload.id);
+      const participantIndex = state.participants.findIndex(
+        (part) => part.id === action.payload.id,
+      );
       if (participantIndex > -1) {
         const newState = [...state.participants];
         newState[participantIndex].role = ROLES.GUEST;
@@ -45,19 +50,29 @@ export const roomSlice = createSlice({
       }
     },
     removeParticipant: (state, action) => {
-      state.participants = state.participants
-        .filter((pt) => pt.name !== action.payload.name);
+      state.participants = state.participants.filter(
+        (pt) => pt.name !== action.payload.name,
+      );
     },
     cleanRoom: (state) => {
       state.id = null;
       state.participants = [];
     },
+    SnackbarAlert: (state, action) => {
+      state.snackbarAlert = action.payload.error;
+    }
   },
 });
 
 // Action creators are generated for each case reducer function
 export const {
-  initRoom, updateParticipants, addUpdateParticipant, removeParticipant, removeRole, cleanRoom,
+  initRoom,
+  updateParticipants,
+  addUpdateParticipant,
+  removeParticipant,
+  removeRole,
+  cleanRoom,
+  SnackbarAlert,
 } = roomSlice.actions;
 
 export default roomSlice.reducer;
