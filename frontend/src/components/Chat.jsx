@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { useLoaderData } from "react-router-dom";
-import { onSendMessage } from "../utils/chat";
+import { onSendMessage, onDeleteMessage } from "../utils/chat";
 import Filter from "bad-words";
 import styled from "styled-components";
+import { DeleteOutline as DeleteOutlineIcon } from "@mui/icons-material";
+import { Colors } from "../themes/colors";
+
 
 import {
   ChatButton,
@@ -18,7 +21,10 @@ function Chat(props) {
   const { email } = useSelector((state) => state.user);
   const roomId = useLoaderData();
   const filter = new Filter();
-  const { messages } = props;
+  const { 
+    messages,
+    isUserAdmin,
+  } = props;
 
   const filterContent = (hasBadWords) => {
     const filteredContent = hasBadWords
@@ -44,9 +50,16 @@ function Chat(props) {
       <ChatContent>
         {messages?.map((m) => (
           // eslint-disable-next-line react/jsx-key
-          <p>
-            <strong>{m.email}:</strong> {m.content}
-          </p>
+          <MessageChat>
+            <TextChat>
+              <strong>{m.email}:</strong> {m.content}
+            </TextChat>
+            {isUserAdmin && <DeleteButton
+              onClick={() => {onDeleteMessage(m.id)}}
+            >
+              <DeleteOutlineIcon sx={{ ml: "2px", color: Colors.red }} />
+            </DeleteButton>}
+          </MessageChat>
         ))}
       </ChatContent>
       <StyledChatForm onSubmit={handleSubmit}>
@@ -67,6 +80,22 @@ function Chat(props) {
     </ChatContainer>
   );
 }
+
+const MessageChat = styled.div`
+  display: flex;
+  justify-content: space-between;
+`
+
+const DeleteButton = styled.button`
+  border: none;
+  cursor: pointer;
+  background-color: transparent;
+`
+
+const TextChat = styled.p`
+  max-width: 80%;
+  word-wrap: break-word;
+`
 
 export default Chat;
 
