@@ -12,7 +12,7 @@ export const ROLES = {
 
 const subscribeToRoleChanges = (roomId, handleRoleChange) => {
   supabase
-    .channel("any")
+    .channel("changeRole")
     .on(
       "postgres_changes",
       {

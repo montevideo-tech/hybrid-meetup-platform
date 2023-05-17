@@ -2,7 +2,7 @@
 import { React, useState, useEffect, useRef, forwardRef } from "react";
 import { useLoaderData, Navigate, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { Button, Box, CircularProgress, Snackbar, Slide } from "@mui/material";
+import { Button, Box, CircularProgress, Snackbar } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import styled from "styled-components";
 import useWindowDimensions from "../hooks/useWindowDimesion";
@@ -52,6 +52,7 @@ function Room() {
   const [open, setOpen] = useState(false);
   // create reference to access room state var in useEffect cleanup func
   const roomRef = useRef();
+  // eslint-disable-next-line no-undef
   const remoteStreamsRef = useRef(new Map());
   const currentUser = useSelector((state) => state.user);
   const isUserAdmin = currentUser?.role === ROLES.ADMIN;
@@ -75,10 +76,6 @@ function Room() {
     remoteStreamsRef.current = data;
     const remoteStreamsSorted = Array.from(data.values()).sort(comparator);
     setRemoteStreams(remoteStreamsSorted);
-  };
-
-  const toggleChatVisibility = () => {
-    setIsChatVisible((prev) => !prev);
   };
 
   const participantsCount = remoteStreams.length;
@@ -446,10 +443,9 @@ function Room() {
 
   const localStreamStyle = {
     position: "absolute",
-    bottom: isChatVisible ? 55 : 30,
-    right: isChatVisible ? 350 : 50,
+    bottom: isChatVisible ? 15 : 30,
+    right: isChatVisible ? 450 : 50,
   };
-
   const addManyParticipants = (numberOfParticipants) => {
     let videoNumber = 1;
     for (let i = 0; i < numberOfParticipants; i++) {
@@ -503,31 +499,11 @@ function Room() {
               isBlockedRemotedGuest={isBlockedRemotedGuest}
               setIsBlockedRemotedGuest={setIsBlockedRemotedGuest}
             />
-            <Button
-              variant="contained"
-              size="large"
-              onClick={toggleChatVisibility}
-              sx={{
-                position: "absolute",
-                bottom: 0,
-                left: "66%",
-                transform: "translateX(-50%)",
-              }}
-            >
-              {isChatVisible ? "Hide Chat" : "Show Chat"}
-            </Button>
           </StyledBox>
           <Box sx={{ position: "relative", overflow: "hidden" }}>
-            <Slide
-              direction="left"
-              in={isChatVisible}
-              mountOnEnter
-              unmountOnExit
-            >
-              <Box>
-                <Chat messages={messages} />
-              </Box>
-            </Slide>
+            <Box>
+              <Chat messages={messages} />
+            </Box>
           </Box>
         </StyledBox>
       ) : (
@@ -555,7 +531,7 @@ const StyledBox = styled(Box)`
     box1
       ? `
       display: flex;
-      justify-content: ${isChatVisible ? "flex-end" : "center"};
+      justify-content: ${isChatVisible ? "center" : "flex-end"};
       width: 100%;
       height: 100%;
       align-items: flex-start;
