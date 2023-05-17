@@ -67,6 +67,8 @@ function Room() {
   const [isBlockedRemotedGuest, setIsBlockedRemotedGuest] = useState(false);
   const [dateTimeJoined] = useState(epochToISO8601(Date.now()));
   const [messages, setMessages] = useState([]);
+  const [participantSharingScreen, setParticipantSharingScreen] =
+    useState(null);
 
   // To add a new criteria to the comparator you need to
   // Decide if it's higher or lower pririoty compared to the already established
@@ -227,6 +229,12 @@ function Room() {
       if (track.provider.source === "screenshare") {
         isSharingScreen = true;
         setIsSharingScreen(isSharingScreen);
+        setParticipantSharingScreen(
+          remoteParticipant.displayName.substring(
+            0,
+            remoteParticipant.displayName.indexOf("-screen-share"),
+          ),
+        );
       }
       remoteStreamsRef.current.set(remoteParticipant.id, {
         audioStream,
@@ -249,6 +257,7 @@ function Room() {
     // Check if the participant who left the room was sharing screen
     if (remoteStreamsRef.current.get(p.id)?.isSharingScreen) {
       setIsSharingScreen(false);
+      setParticipantSharingScreen(null);
     }
     remoteStreamsRef.current.delete(p.id);
     setRemoteStreamsRef(remoteStreamsRef.current);
@@ -512,6 +521,7 @@ function Room() {
               permissionRole={userRole}
               updateScreenShare={updateScreenShare}
               isSharingScreen={isSharingScreen}
+              participantSharingScreen={participantSharingScreen}
               localTracks={localTracks}
               updateLocalTracksMuted={updateLocalTracksMuted}
               leaveRoom={leaveRoom}
