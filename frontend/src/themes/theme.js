@@ -23,7 +23,7 @@ const theme = createTheme({
     globalStyles: {
       styleOverrides: {
         root: {
-          border: "1px solid #ccc",
+          border: `1px solid ${Colors.lightGray}`,
           padding: "1rem",
         },
       },

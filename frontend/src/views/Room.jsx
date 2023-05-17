@@ -30,6 +30,7 @@ import { comparator, updateParticipantRoles } from "../utils/helpers";
 import { getGuestMuted } from "../utils/room";
 import { epochToISO8601 } from "../utils/time";
 import { subscribeToNewMessages, subscribeToDeleteMessages, fetchMessages } from "../utils/chat";
+import { Colors } from "../themes/colors";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -542,7 +543,7 @@ const StyledBox = styled(Box)`
       height: 100%;
       align-items: flex-start;
       position: relative;
-      background-color: rgb(32,33,36);
+      background-color: ${Colors.darkLateGrey};
       direction: ${direction};`
       : box2
       ? `

@@ -198,7 +198,7 @@ const StyledBox = styled(Box)`
     box1
       ? `
         display: flex;
-        background-color: rgb(32,33,36);
+        background-color: ${Colors.darkLateGrey};
         align-items: center;
         justify-content: space-between;
         height: 100%;`

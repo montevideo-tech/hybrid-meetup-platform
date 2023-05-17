@@ -105,14 +105,14 @@ const StyledButton = styled(Button)`
     background-color: ${theme.palette.primary.dark};
   }
   &&.custom-button:disabled {
-    background-color: #cccccc;
+    background-color: ${Colors.lightgrey};
   }
 `;
 
 const StyledCard = styled(Card)`
   &&.custom-card {
     border: 1px solid ${Colors.lightPurple};
-    box-shadow: 0px 3px 2px rgba(77, 71, 71, 0.349);
+    box-shadow: 0px 3px 2px ${Colors.dimGray};
     display: flex;
     flex-direction: column;
     justify-content: center;
