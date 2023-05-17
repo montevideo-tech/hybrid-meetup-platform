@@ -6,6 +6,7 @@ export const roomSlice = createSlice({
   initialState: {
     id: null,
     participants: [],
+    snackbarAlert: null,
   },
   reducers: {
     initRoom: (state, action) => {
@@ -57,6 +58,9 @@ export const roomSlice = createSlice({
       state.id = null;
       state.participants = [];
     },
+    SnackbarAlert: (state, action) => {
+      state.snackbarAlert = action.payload.error;
+    }
   },
 });
 
@@ -68,6 +72,7 @@ export const {
   removeParticipant,
   removeRole,
   cleanRoom,
+  SnackbarAlert,
 } = roomSlice.actions;
 
 export default roomSlice.reducer;
