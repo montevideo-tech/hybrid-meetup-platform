@@ -92,6 +92,7 @@ const MessageChat = styled.div`
 const DeleteButton = styled.button`
   border: none;
   cursor: pointer;
+  background-color: transparent;
 `
 
 const TextChat = styled.p`
