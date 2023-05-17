@@ -3,19 +3,12 @@ import { useSelector } from "react-redux";
 import { useLoaderData } from "react-router-dom";
 import { onSendMessage } from "../utils/chat";
 import Filter from "bad-words";
-import styled from "styled-components";
-import { Badge } from "@mui/material";
+import styled, { css } from "styled-components";
+import { Badge, Button, TextField } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
 import CloseIcon from "@mui/icons-material/Close";
-import {
-  ChatButton,
-  ChatContainer,
-  ChatContent,
-  ChatForm,
-  ChatInput,
-  ChatContentWrapper,
-} from "../themes/componentsStyles";
+import { Colors } from "../themes/colors";
 
 function Chat(props) {
   const [content, setContent] = useState("");
@@ -120,7 +113,76 @@ function Chat(props) {
 
 export default Chat;
 
-const StyledChatForm = styled(ChatForm)`
+const StyledChatForm = styled.form`
   display: flex;
   justify-content: space-between;
+`;
+
+const ChatContainer = styled.div`
+  position: fixed;
+  z-index: 100;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: width 0.3s ease;
+  border: 1px solid ${Colors.white};
+  background-color: ${Colors.white};
+  border-radius: 35px;
+  padding: 10px;
+  width: ${(props) => (props.chatOpen ? "350px" : "40px")};
+  height: ${(props) => (props.chatOpen ? "88vh" : props.chatHeight)};
+
+  & > .icons-wrapper {
+    position: absolute;
+    bottom: 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  & > .icons-wrapper > .icon {
+    width: 40px;
+    height: 40px;
+    background-color: ${Colors.white};
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    transition: left 0.3s ease;
+  }
+`;
+const ChatInput = styled(TextField)`
+  flex: 4;
+  overflow-y: auto;
+`;
+const ChatButton = styled(Button)`
+  flex: 1;
+  margin-left: 15px;
+`;
+const ChatContent = styled.div`
+  flex-grow: 1;
+  overflow-y: auto;
+  transition: opacity 0.3s ease;
+`;
+const ChatContentWrapper = styled.div`
+  flex-grow: 1;
+  overflow-y: auto;
+  transition: opacity 0.3s ease;
+
+  ${(props) =>
+    props.hidden &&
+    css`
+      opacity: 0;
+      height: 0;
+      visibility: hidden;
+    `};
+
+  ${(props) =>
+    !props.hidden &&
+    css`
+      text-align: left;
+    `};
 `;
