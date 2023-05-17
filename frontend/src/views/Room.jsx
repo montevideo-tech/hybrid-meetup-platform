@@ -18,6 +18,7 @@ import {
   removeParticipant,
   removeRole,
   cleanRoom,
+  SnackbarAlert,
 } from "../reducers/roomSlice";
 import subscribeToRoleChanges, { ROLES } from "../utils/roles";
 import ParticipantsCollection from "../components/ParticipantsCollection";
@@ -49,7 +50,6 @@ function Room() {
   const [roomNotFound, setRoomNotFound] = useState(false);
   const [errorJoiningRoom, setErrorJoiningRoom] = useState(false);
   const roomId = useLoaderData();
-  const [open, setOpen] = useState(false);
   // create reference to access room state var in useEffect cleanup func
   const roomRef = useRef();
   const remoteStreamsRef = useRef(new Map());
@@ -265,18 +265,6 @@ function Room() {
     });
   };
 
-  const openSnackbar = () => {
-    setOpen(true);
-  };
-
-  const closeSnackbar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpen(false);
-  };
-
   const Alert = forwardRef((props, ref) => (
     <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
   ));
@@ -369,8 +357,10 @@ function Room() {
           handleBlockMuteAllGuests(resp, newLocalTracks),
         );
       } else {
+        const error = "A duplicate session has been detected";
+        dispatch(SnackbarAlert({error}));
+        navigate('/rooms');
         setErrorJoiningRoom(true);
-        openSnackbar();
       }
     } catch (error) {
       console.error(error);
@@ -533,15 +523,6 @@ function Room() {
       ) : (
         <StyledContainer>
           {!errorJoiningRoom && <CircularProgress />}
-          <Snackbar open={open} onClose={closeSnackbar}>
-            <Alert
-              onClose={closeSnackbar}
-              severity="error"
-              sx={{ width: "100%" }}
-            >
-              A duplicate session has been detected
-            </Alert>
-          </Snackbar>
         </StyledContainer>
       )}
     </>
