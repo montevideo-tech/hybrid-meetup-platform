@@ -8,7 +8,7 @@ function ShareScreen(props) {
 
   return (
     <Container>
-      <StyledVideo stream={children.videoStream} width={width} />
+      <StyledVideo stream={children.videoStream} $width={width} />
     </Container>
   );
 }
@@ -36,5 +36,6 @@ const Container = styled.div`
 const StyledVideo = styled(Video)`
   height: 100%;
   max-width: 100%;
+  width: ${(props) => props.$width};
   margin: 0px auto;
 `;

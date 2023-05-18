@@ -26,7 +26,7 @@ function ParticipantLayout(props) {
   }, [children, width, height, gap]);
 
   return (
-    <Container gap={gap}>
+    <Container $gap={gap}>
       {Children.map(children, (child) => {
         if (
           isValidElement(child) &&
@@ -66,6 +66,6 @@ const Container = styled.div`
   flex-wrap: wrap;
   flex-direction: row;
   align-items: center;
-  gap: ${(props) => `${props.gap}px`};
+  gap: ${(props) => `${props.$gap}px`};
   justify-content: center;
 `;

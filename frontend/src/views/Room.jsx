@@ -466,12 +466,17 @@ function Room() {
 
       {roomNotFound && <Navigate to="/rooms/404" />}
       {room ? (
-        <StyledBox box1 isChatVisible={isChatVisible} direction={direction}>
-          <StyledBox box2>
+        <StyledBox
+          $box1
+          $isChatVisible={isChatVisible}
+          $direction={direction}
+          $width={`${screenShareWidth}px`}
+        >
+          <StyledBox $box2>
             {participantsCount > 0 && renderParticipantCollection()}
 
             {isSharingScreen && (
-              <StyledBox>
+              <StyledBox $box3 $width={`${screenShareWidth}px`}>
                 <ShareScreen width={`${screenShareWidth}px`}>
                   {remoteStreams.find((p) => p.isSharingScreen)}
                 </ShareScreen>
@@ -533,27 +538,30 @@ function Room() {
 export default Room;
 
 const StyledBox = styled(Box)`
-  ${({ box1, box2, isChatVisible, direction, screenShareWidth }) =>
-    box1
+  ${({ $box1, $box2, $box3, $isChatVisible, $direction, $width }) =>
+    $box1
       ? `
       display: flex;
-      justify-content: ${isChatVisible ? "flex-end" : "center"};
+      justify-content: ${$isChatVisible ? "flex-end" : "center"};
       width: 100%;
       height: 100%;
       align-items: flex-start;
       position: relative;
       background-color: rgb(32,33,36);
-      direction: ${direction};`
-      : box2
+      flex-direction: ${$direction};
+      `
+      : $box2
       ? `
       margin-top: 10px;
       `
-      : `
+      : $box3
+      ? `
       display: flex;
       max-height: 100%;
-      width: ${screenShareWidth + "px"};
+      width: ${$width};
       position: relative;
-    `}
+    `
+      : ""}
 `;
 
 const StyledContainer = styled.div`
