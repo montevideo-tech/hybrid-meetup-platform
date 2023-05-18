@@ -60,18 +60,23 @@ function Video(props) {
         background: "rgb(60,64,67)",
         borderRadius: "5px",
         overflow: "hidden",
-        border: `${isSpeaking ? "5px solid red" : {}}`,
+        border: `${isSpeaking ? "5px solid red" : ""}`,
         ...style,
       }}
     >
       {isVideoMuted && (
         <StyledImg
-          size={size}
+          $size={`${size}%`}
           src={logo}
           alt="Montevideo Tech Summer Camp logo"
         />
       )}
-      <StyledVideo autoPlay ref={videoRef} size={size} muted={isStreamLocal}>
+      <StyledVideo
+        autoPlay
+        ref={videoRef}
+        $size={`${size}%`}
+        muted={isStreamLocal}
+      >
         <track kind="captions" />
       </StyledVideo>
       {name && <ParticipantInfo name={name} parentHeight={height} />}
@@ -167,12 +172,12 @@ Video.defaultProps = {
 export default Video;
 
 const StyledImg = styled.img`
-  width: ${({ size }) => `${size}%`};
+  width: ${(props) => props.$size};
   position: absolute;
   top: 0;
   left: 0;
 `;
 
 const StyledVideo = styled.video`
-  width: ${({ size }) => `${size}%`};
+  width: ${(props) => props.$size};
 `;
