@@ -18,6 +18,7 @@ import Button from "@mui/material/Button";
 import { deleteRoom } from "../../actions";
 import { ROLES } from "../../utils/roles";
 import theme from "../../themes/theme";
+import { onDeleteRoomMessage } from "../../utils/chat";
 
 export const RoomItem = ({ currentUser, room }) => {
   const { id, name, providerId, createdBy } = room;
@@ -29,7 +30,8 @@ export const RoomItem = ({ currentUser, room }) => {
   }
 
   const handleDeleteRoom = () => {
-    dispatch(deleteRoom(room.providerId));
+    onDeleteRoomMessage(providerId);
+    dispatch(deleteRoom(providerId));
   };
 
   let createdByStr = "Created by ";
@@ -45,11 +47,11 @@ export const RoomItem = ({ currentUser, room }) => {
   }
 
   return (
-    <Grid item xs={12} sm={6} md={4} key={room.id}>
+    <Grid item xs={12} sm={6} md={4} key={id}>
       <StyledCard className="custom-card">
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
-            {room.name}
+            {name}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             {createdByStr}
@@ -60,7 +62,7 @@ export const RoomItem = ({ currentUser, room }) => {
             <StyledButton
               className="custom-button"
               component={RouterLink}
-              to={`/rooms/${room.providerId}`}
+              to={`/rooms/${providerId}`}
             >
               Join Room
             </StyledButton>
@@ -70,7 +72,7 @@ export const RoomItem = ({ currentUser, room }) => {
             <StyledButton
               className="custom-button"
               component={RouterLink}
-              to={`/rooms/${room.providerId}`}
+              to={`/rooms/${providerId}`}
             >
               Join Room
             </StyledButton>
@@ -85,7 +87,7 @@ export const RoomItem = ({ currentUser, room }) => {
               aria-label="edit"
               size="medium"
               component={RouterLink}
-              to={`/rooms/${room.providerId}/edit`}
+              to={`/rooms/${providerId}/edit`}
             >
               <EditIcon fontSize="inherit" />
             </IconButton>

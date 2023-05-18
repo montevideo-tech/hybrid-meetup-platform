@@ -17,6 +17,16 @@ export async function onDeleteMessage(id) {
   }
 }
 
+export async function onDeleteRoomMessage(id) {
+  const { error } = await supabase
+    .from('message-chat')
+    .delete()
+    .eq('providerId', id)
+  if (error) {
+    console.error('Error Sending Messages: ', error);
+  }
+}
+
 export function subscribeToNewMessages(fetchMessages) {
   supabase
     .channel("custom-insert-channel")
