@@ -84,8 +84,7 @@ function Chat(props) {
       <ChatContent>
         <ChatContentWrapper hidden={!chatOpen}>
           {messages?.map((m) => (
-            // eslint-disable-next-line react/jsx-key
-            <MessageChat>
+            <MessageChat key={m.id}>
               <TextChat>
                 <strong>{m.email}:</strong> {m.content}
               </TextChat>
