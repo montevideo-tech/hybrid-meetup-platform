@@ -2,7 +2,7 @@
 import { React, useState, useEffect, useRef, forwardRef } from "react";
 import { useLoaderData, Navigate, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { Button, Box, CircularProgress, Snackbar } from "@mui/material";
+import { Button, Box, CircularProgress } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import styled from "styled-components";
 import useWindowDimensions from "../hooks/useWindowDimesion";
@@ -18,6 +18,7 @@ import {
   removeParticipant,
   removeRole,
   cleanRoom,
+  SnackbarAlert,
 } from "../reducers/roomSlice";
 import subscribeToRoleChanges, { ROLES } from "../utils/roles";
 import ParticipantsCollection from "../components/ParticipantsCollection";
@@ -28,7 +29,11 @@ import Chat from "../components/Chat";
 import { comparator, updateParticipantRoles } from "../utils/helpers";
 import { getGuestMuted } from "../utils/room";
 import { epochToISO8601 } from "../utils/time";
-import { subscribeToNewMessages, fetchMessages } from "../utils/chat";
+import {
+  subscribeToNewMessages,
+  subscribeToDeleteMessages,
+  fetchMessages,
+} from "../utils/chat";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -49,7 +54,6 @@ function Room() {
   const [roomNotFound, setRoomNotFound] = useState(false);
   const [errorJoiningRoom, setErrorJoiningRoom] = useState(false);
   const roomId = useLoaderData();
-  const [open, setOpen] = useState(false);
   // create reference to access room state var in useEffect cleanup func
   const roomRef = useRef();
   const remoteStreamsRef = useRef(new Map());
@@ -121,6 +125,7 @@ function Room() {
 
   useEffect(() => {
     subscribeToNewMessages(() => fetchMessages(dateTimeJoined, setMessages));
+    subscribeToDeleteMessages(() => fetchMessages(dateTimeJoined, setMessages));
   }, []);
 
   const handleRoleChange = (payload) => {
@@ -261,18 +266,6 @@ function Room() {
     });
   };
 
-  const openSnackbar = () => {
-    setOpen(true);
-  };
-
-  const closeSnackbar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpen(false);
-  };
-
   const Alert = forwardRef((props, ref) => (
     <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
   ));
@@ -365,8 +358,10 @@ function Room() {
           handleBlockMuteAllGuests(resp, newLocalTracks),
         );
       } else {
+        const error = "A duplicate session has been detected";
+        dispatch(SnackbarAlert({ error }));
+        navigate("/rooms");
         setErrorJoiningRoom(true);
-        openSnackbar();
       }
     } catch (error) {
       console.error(error);
@@ -501,22 +496,13 @@ function Room() {
           </StyledBox>
           <Box sx={{ position: "relative", overflow: "hidden" }}>
             <Box>
-              <Chat messages={messages} />
+              <Chat messages={messages} isUserAdmin={isUserAdmin} />
             </Box>
           </Box>
         </StyledBox>
       ) : (
         <StyledContainer>
           {!errorJoiningRoom && <CircularProgress />}
-          <Snackbar open={open} onClose={closeSnackbar}>
-            <Alert
-              onClose={closeSnackbar}
-              severity="error"
-              sx={{ width: "100%" }}
-            >
-              A duplicate session has been detected
-            </Alert>
-          </Snackbar>
         </StyledContainer>
       )}
     </>

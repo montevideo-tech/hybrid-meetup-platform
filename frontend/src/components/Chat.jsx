@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLoaderData } from "react-router-dom";
-import { onSendMessage } from "../utils/chat";
+import { onSendMessage, onDeleteMessage } from "../utils/chat";
 import Filter from "bad-words";
 import styled from "styled-components";
 import { Badge, Button, TextField } from "@mui/material";
@@ -9,6 +9,7 @@ import IconButton from "@mui/material/IconButton";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
 import CloseIcon from "@mui/icons-material/Close";
 import { Colors } from "../themes/colors";
+import { DeleteOutline as DeleteOutlineIcon } from "@mui/icons-material";
 
 function Chat(props) {
   const [content, setContent] = useState("");
@@ -18,7 +19,8 @@ function Chat(props) {
   const [chatOpen, setChatOpen] = useState(true);
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [chatHeight, setChatHeight] = useState("30px");
-  const { messages } = props;
+  const { messages, isUserAdmin } = props;
+
   const filterContent = (hasBadWords) => {
     const filteredContent = hasBadWords
       ? "This message was deleted due to inappropriate language"
@@ -81,13 +83,23 @@ function Chat(props) {
       )}
       <ChatContent>
         <ChatContentWrapper hidden={!chatOpen}>
-          {messages &&
-            messages?.map((m) => (
-              // eslint-disable-next-line react/jsx-key
-              <p>
+          {messages?.map((m) => (
+            // eslint-disable-next-line react/jsx-key
+            <MessageChat>
+              <TextChat>
                 <strong>{m.email}:</strong> {m.content}
-              </p>
-            ))}
+              </TextChat>
+              {isUserAdmin && (
+                <DeleteButton
+                  onClick={() => {
+                    onDeleteMessage(m.id);
+                  }}
+                >
+                  <DeleteOutlineIcon sx={{ ml: "2px", color: Colors.red }} />
+                </DeleteButton>
+              )}
+            </MessageChat>
+          ))}
         </ChatContentWrapper>
       </ChatContent>
       {chatOpen && (
@@ -110,6 +122,22 @@ function Chat(props) {
     </ChatContainer>
   );
 }
+
+const MessageChat = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const DeleteButton = styled.button`
+  border: none;
+  cursor: pointer;
+  background-color: transparent;
+`;
+
+const TextChat = styled.p`
+  max-width: 80%;
+  word-wrap: break-word;
+`;
 
 export default Chat;
 
