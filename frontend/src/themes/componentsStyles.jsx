@@ -1,10 +1,8 @@
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
-import { TextField } from "@mui/material";
-import { Colors } from "./colors";
 
 export const StyledButton = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,

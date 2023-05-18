@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useLoaderData } from "react-router-dom";
 import { onSendMessage } from "../utils/chat";
 import Filter from "bad-words";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { Badge, Button, TextField } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
@@ -115,7 +115,6 @@ export default Chat;
 
 const StyledChatForm = styled.form`
   display: flex;
-  justify-content: space-between;
 `;
 
 const ChatContainer = styled.div`
@@ -126,7 +125,6 @@ const ChatContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: width 0.3s ease;
   border: 1px solid ${Colors.white};
   background-color: ${Colors.white};
   border-radius: 35px;
@@ -165,24 +163,7 @@ const ChatButton = styled(Button)`
 const ChatContent = styled.div`
   flex-grow: 1;
   overflow-y: auto;
-  transition: opacity 0.3s ease;
 `;
 const ChatContentWrapper = styled.div`
   flex-grow: 1;
-  overflow-y: auto;
-  transition: opacity 0.3s ease;
-
-  ${(props) =>
-    props.hidden &&
-    css`
-      opacity: 0;
-      height: 0;
-      visibility: hidden;
-    `};
-
-  ${(props) =>
-    !props.hidden &&
-    css`
-      text-align: left;
-    `};
 `;

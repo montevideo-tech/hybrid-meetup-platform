@@ -52,7 +52,6 @@ function Room() {
   const [open, setOpen] = useState(false);
   // create reference to access room state var in useEffect cleanup func
   const roomRef = useRef();
-  // eslint-disable-next-line no-undef
   const remoteStreamsRef = useRef(new Map());
   const currentUser = useSelector((state) => state.user);
   const isUserAdmin = currentUser?.role === ROLES.ADMIN;
