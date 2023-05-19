@@ -10,6 +10,7 @@ import Video from "./Video";
 import ParticipantLayout from "./ParticipantLayout";
 import { ROLES } from "../utils/roles";
 import { Colors } from "../themes/colors";
+import styled from "styled-components";
 
 function ParticipantsCollection(props) {
   const {
@@ -89,24 +90,8 @@ function ParticipantsCollection(props) {
   // };
 
   return (
-    <Box
-      style={{
-        display: "flex",
-        backgroundColor: "rgb(32,33,36)",
-        alignItems: "center",
-        justifyContent: "space-between",
-        height: "100%",
-      }}
-    >
-      <Box
-        style={{
-          width: "40px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          marginLeft: "12px",
-        }}
-      >
+    <StyledBox $box1>
+      <StyledBox $box2>
         <IconButton
           disableRipple
           onClick={goToPreviousPage}
@@ -126,9 +111,9 @@ function ParticipantsCollection(props) {
         >
           <ChevronLeftIcon />
         </IconButton>
-      </Box>
+      </StyledBox>
 
-      <Box style={{ width: { width }, zIndex: "100" }}>
+      <StyledBox $box3 $width={`${width}px`}>
         {children.map(({ audioStream, name }) => (
           <Audio key={name} stream={audioStream} />
         ))}
@@ -156,16 +141,8 @@ function ParticipantsCollection(props) {
             ),
           )}
         </ParticipantLayout>
-      </Box>
-      <Box
-        style={{
-          width: "40px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          marginRight: "12px",
-        }}
-      >
+      </StyledBox>
+      <StyledBox $box4>
         <IconButton
           disableRipple
           onClick={goToNextPage}
@@ -185,8 +162,8 @@ function ParticipantsCollection(props) {
         >
           <ChevronRightIcon />
         </IconButton>
-      </Box>
-    </Box>
+      </StyledBox>
+    </StyledBox>
   );
 }
 
@@ -215,3 +192,36 @@ ParticipantsCollection.defaultProps = {
 };
 
 export default ParticipantsCollection;
+
+const StyledBox = styled(Box)`
+  ${({ $box1, $box2, $box3, $box4, $width }) =>
+    $box1
+      ? `
+        display: flex;
+        background-color: rgb(32,33,36);
+        align-items: center;
+        justify-content: space-between;
+        height: 100%;`
+      : $box2
+      ? `
+          width: 40px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-left: 12px;
+        `
+      : $box3
+      ? `
+        width: ${$width};
+        z-index: 100;
+      `
+      : $box4
+      ? `
+        width: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-right: 12px;
+      `
+      : ""}
+`;

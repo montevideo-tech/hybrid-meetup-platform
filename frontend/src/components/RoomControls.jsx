@@ -1,7 +1,7 @@
 import { React, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
-
+import styled from "styled-components";
 import { ButtonGroup, Button, Tooltip } from "@mui/material";
 import {
   Videocam as VideocamIcon,
@@ -37,7 +37,7 @@ function RoomControls(props) {
   } = props;
 
   const toggleMuteTrack = (t) => {
-    if (isEnableToUnmute) {
+    if (isEnableToUnmute || t.kind === "video") {
       if (t.muted) {
         t.unmute();
         updateLocalTracksMuted(t.kind, false);
@@ -90,7 +90,7 @@ function RoomControls(props) {
             : "Turn Off Camera"
         }
       >
-        <div style={{ padding: "2px" }}>
+        <StyledDiv>
           <Button
             size="large"
             disabled={!localTracks.video}
@@ -102,7 +102,7 @@ function RoomControls(props) {
               <VideocamIcon />
             )}
           </Button>
-        </div>
+        </StyledDiv>
       </Tooltip>
 
       <Tooltip
@@ -110,7 +110,7 @@ function RoomControls(props) {
           !localTracks.audio || localTracks.audio.muted ? "Unmute" : "Mute"
         }
       >
-        <div style={{ padding: "2px" }}>
+        <StyledDiv>
           <Button
             size="large"
             disabled={!localTracks.audio || !isEnableToUnmute}
@@ -124,7 +124,7 @@ function RoomControls(props) {
               <MicIcon />
             )}
           </Button>
-        </div>
+        </StyledDiv>
       </Tooltip>
       {(permissionRole === ROLES.PRESENTER ||
         permissionRole === ROLES.HOST) && (
@@ -138,7 +138,7 @@ function RoomControls(props) {
               : "Stop sharing screen"
           }
         >
-          <div style={{ padding: "2px" }}>
+          <StyledDiv>
             <Button
               disabled={
                 participantSharingScreen &&
@@ -150,7 +150,7 @@ function RoomControls(props) {
             >
               {!isSharingScreen ? <ScreenShareIcon /> : <StopScreenShareIcon />}
             </Button>
-          </div>
+          </StyledDiv>
         </Tooltip>
       )}
       {permissionRole === ROLES.HOST && (
@@ -159,7 +159,7 @@ function RoomControls(props) {
             !isBlockedRemotedGuest ? "Mute all Guests" : "Unmute all Guests"
           }
         >
-          <div style={{ padding: "2px" }}>
+          <StyledDiv>
             <Button
               size="large"
               hover="onHoverTest"
@@ -167,16 +167,16 @@ function RoomControls(props) {
             >
               {!isBlockedRemotedGuest ? <HeadsetOffIcon /> : <HeadsetMicIcon />}
             </Button>
-          </div>
+          </StyledDiv>
         </Tooltip>
       )}
 
       <Tooltip title="Leave room">
-        <div style={{ padding: "2px" }}>
+        <StyledDiv>
           <Button size="large" color="error" onClick={endCall}>
             <CancelIcon />
           </Button>
-        </div>
+        </StyledDiv>
       </Tooltip>
     </ButtonGroup>
   );
@@ -207,3 +207,7 @@ RoomControls.defaultProps = {
 };
 
 export default RoomControls;
+
+const StyledDiv = styled.div`
+  padding: 2px;
+`;

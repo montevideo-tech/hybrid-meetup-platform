@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Typography } from "@mui/material";
+import styled from "styled-components";
 import { Colors } from "../themes/colors";
 
 function ParticipantInfo(props) {
@@ -21,21 +22,7 @@ function ParticipantInfo(props) {
   }
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        position: "absolute",
-        bottom: "0",
-        left: "0",
-        width: "100%",
-        height: { height },
-        color: "transparent",
-        backgroundColor: "transparent",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
+    <Container $height={height}>
       <Typography
         variant="h6"
         fontWeight="700"
@@ -44,7 +31,7 @@ function ParticipantInfo(props) {
       >
         {name}
       </Typography>
-    </div>
+    </Container>
   );
 }
 
@@ -59,3 +46,17 @@ ParticipantInfo.defaultProps = {
 };
 
 export default ParticipantInfo;
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: ${(props) => props.$height};
+  color: transparent;
+  background-color: transparent;
+  justify-content: center;
+  align-items: center;
+`;

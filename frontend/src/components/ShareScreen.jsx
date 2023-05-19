@@ -1,20 +1,13 @@
 import React, { ReactNode } from "react";
 import PropTypes from "prop-types";
 import Video from "./Video";
+import styled from "styled-components";
 
 function ShareScreen(props) {
   const { children, width } = props;
 
   return (
-    <div
-      style={{
-        display: "flex",
-        height: "100%",
-        width: "100%",
-        justifyContent: "center",
-        position: "relative",
-      }}
-    >
+    <Container>
       <Video
         style={{
           height: "100%",
@@ -25,7 +18,7 @@ function ShareScreen(props) {
         stream={children.videoStream}
         width={width}
       />
-    </div>
+    </Container>
   );
 }
 
@@ -40,3 +33,11 @@ ShareScreen.defaultProps = {
 };
 
 export default ShareScreen;
+
+const Container = styled.div`
+  display: flex;
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  position: relative;
+`;

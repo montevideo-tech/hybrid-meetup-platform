@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import PropTypes from "prop-types";
 import calcOptimalBoxes from "../lib/participantsCollection";
+import styled from "styled-components";
 
 function ParticipantLayout(props) {
   const { children, width, height, gap } = props;
@@ -25,16 +26,7 @@ function ParticipantLayout(props) {
   }, [children, width, height, gap]);
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexWrap: "wrap",
-        flexDirection: "row",
-        alignItems: "center",
-        gap: `${gap}px`,
-        justifyContent: "center",
-      }}
-    >
+    <Container $gap={gap}>
       {Children.map(children, (child) => {
         if (
           isValidElement(child) &&
@@ -49,7 +41,7 @@ function ParticipantLayout(props) {
         }
         return child;
       })}
-    </div>
+    </Container>
   );
 }
 
@@ -68,3 +60,12 @@ ParticipantLayout.defaultProps = {
 };
 
 export default ParticipantLayout;
+
+const Container = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-items: center;
+  gap: ${(props) => `${props.$gap}px`};
+  justify-content: center;
+`;

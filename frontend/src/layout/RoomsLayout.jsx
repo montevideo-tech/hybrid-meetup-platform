@@ -37,7 +37,6 @@ export function RoomsLayout() {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
   return (
     <RootContainer>
       <AppbarContainer>
@@ -48,7 +47,8 @@ export function RoomsLayout() {
           <Toolbar sx={{ justifyContent: "space-between" }}>
             <Hybridly />
             {auth?.email && auth?.token && (
-              <div>
+              <Container>
+                <p>{currentUser.email}</p>
                 <IconButton
                   size="large"
                   aria-label="account of current user"
@@ -76,7 +76,7 @@ export function RoomsLayout() {
                 >
                   <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
                 </Menu>
-              </div>
+              </Container>
             )}
           </Toolbar>
         </AppBar>
@@ -87,6 +87,8 @@ export function RoomsLayout() {
     </RootContainer>
   );
 }
+
+export default RoomsLayout;
 
 const RootContainer = styled.div`
   width: 100%;
@@ -103,4 +105,7 @@ const OutletContainer = styled.div`
   height: 100%;
 `;
 
-export default RoomsLayout;
+const Container = styled.div`
+  display: flex;
+  align-items: center;
+`;

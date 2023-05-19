@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef } from "react";
 import {
   Button,
   CircularProgress,
@@ -7,15 +7,19 @@ import {
   Paper,
   TextField,
   Typography,
+  Snackbar,
 } from "@mui/material";
+import MuiAlert from "@mui/material/Alert";
 import { Check as CheckIcon, Close as CloseIcon } from "@mui/icons-material";
 
 import { useDispatch, useSelector } from "react-redux";
 import { supabase } from "../lib/api";
 import { createRoom, addRoomToDb, giveUserRoleOnRoom } from "../actions";
+import { SnackbarAlert } from "../reducers/roomSlice";
 import { ROLES } from "../utils/roles";
 import RoomsList from "../components/RoomsList/RoomsList";
 import RoomsListSkeleton from "../components/RoomsList/RoomsListSkeleton";
+import { store } from "../store";
 
 function Rooms() {
   const [roomsList, setRoomsList] = useState([]);
@@ -26,6 +30,8 @@ function Rooms() {
   const [user, setUser] = useState(null);
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.user);
+  const [open, setOpen] = useState(true);
+  const errorState = store.getState().room?.snackbarAlert;
 
   const onRoomCreated = async (data) => {
     const onSuccess = () => {
@@ -159,7 +165,7 @@ function Rooms() {
 
         // Listen to table events
         supabase
-          .channel("any")
+          .channel("roomList")
           .on(
             "postgres_changes",
             { event: "*", schema: "public", table: "rooms" },
@@ -174,6 +180,18 @@ function Rooms() {
     };
     getRoomsList();
   }, []);
+
+  const Alert = forwardRef((props, ref) => (
+    <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
+  ));
+
+  const closeSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    dispatch(SnackbarAlert({error: undefined}));
+    setOpen(false);
+  };
 
   const renderCreateRoomButton = () =>
     showNameInput ? (
@@ -237,6 +255,15 @@ function Rooms() {
       {user?.role === "admin" && renderCreateRoomButton()}
 
       {loadingRooms ? <RoomsListSkeleton /> : <RoomsList list={roomsList} />}
+      {errorState && <Snackbar open={open} onClose={closeSnackbar}>
+        <Alert
+          onClose={closeSnackbar}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          {errorState}
+        </Alert>
+      </Snackbar>}
     </Paper>
   );
 }

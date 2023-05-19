@@ -91,15 +91,8 @@ function EditRoom() {
   }, [roles]);
 
   return (
-    <div
-      style={{
-        marginTop: "15px",
-        display: "flex",
-        alignItems: "center",
-        flexDirection: "column",
-      }}
-    >
-      <StyledContainer>
+    <Container $cont1>
+      <Container $cont2>
         <Button
           variant="contained"
           onClick={() => navigate(`/rooms/${roomId}`)}
@@ -109,10 +102,10 @@ function EditRoom() {
         <Typography component="h1" variant="h4" sx={{ textAlign: "center" }}>
           {`Edit Room ${roomId}`}
         </Typography>
-      </StyledContainer>
-      <div style={{ display: "flex" }}>
+      </Container>
+      <Container $cont3>
         <Card variant="outlined">
-          <div style={{ padding: "1vh 0.5vw" }}>
+          <Container $cont4>
             <Typography
               component="h2"
               variant="h5"
@@ -140,10 +133,10 @@ function EditRoom() {
                 );
               })}
             </List>
-          </div>
+          </Container>
         </Card>
         <Card sx={{ marginLeft: "2vw" }} variant="outlined">
-          <div style={{ padding: "1vh 0.5vw" }}>
+          <Container $cont4>
             <Typography
               component="h2"
               variant="h5"
@@ -171,17 +164,10 @@ function EditRoom() {
                 );
               })}
             </List>
-          </div>
+          </Container>
         </Card>
         <Card sx={{ marginLeft: "2vw" }} variant="outlined">
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyItems: "center",
-              padding: "1vh 0.5vw",
-            }}
-          >
+          <Container $cont5>
             <TextField
               variant="outlined"
               label="Email"
@@ -203,17 +189,42 @@ function EditRoom() {
             <Button variant="contained" onClick={handleAddRole}>
               Add
             </Button>
-          </div>
+          </Container>
         </Card>
-      </div>
-    </div>
+      </Container>
+    </Container>
   );
 }
 
 export default EditRoom;
 
-const StyledContainer = styled.div`
-  display: grid;
-  grid-template-columns: 0.15fr 1fr;
-  gap: 15px;
+const Container = styled.div`
+  ${({ $cont1, $cont2, $cont3, $cont4, $cont5 }) =>
+    $cont1
+      ? `
+      margin-top: 15px;
+      display: flex;
+      align-items: center;
+      flex-direction: column;`
+      : $cont2
+      ? `
+        display: grid;
+        grid-template-columns: 0.15fr 1fr;
+        gap: 15px;`
+      : $cont3
+      ? `
+        display: flex
+        `
+      : $cont4
+      ? `
+        padding: 1vh 0.5vw;
+      `
+      : $cont5
+      ? `
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 1vh 0.5vw;
+      `
+      : ""}
 `;
