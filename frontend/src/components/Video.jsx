@@ -57,10 +57,10 @@ function Video(props) {
         height: `${height - outlineWidth * 2}px`,
         minWidth: "160px",
         minHeight: "90px",
-        background: "rgb(60,64,67)",
+        background: `${Colors.darkGrey}`,
         borderRadius: "5px",
         overflow: "hidden",
-        border: `${isSpeaking ? "5px solid red" : ""}`,
+        border: `${isSpeaking ? `5px solid ${Colors.red}` : {}}`,
         ...style,
       }}
     >
@@ -90,7 +90,7 @@ function Video(props) {
             top: 10,
             right: 10,
             color: `${Colors.white} !important`,
-            bgcolor: "rgba(0, 0, 0, 0.2)",
+            bgcolor: `${Colors.midnightBlue}`,
             border: "2px solid",
           }}
         >
@@ -110,7 +110,7 @@ function Video(props) {
             top: 10,
             right: 70,
             color: Colors.white,
-            bgcolor: "rgba(0, 0, 0, 0.2)",
+            bgcolor: `${Colors.midnightBlue}`,
             border: "2px solid",
           }}
         >
@@ -125,7 +125,7 @@ function Video(props) {
           bottom: 10,
           left: 10,
           color: {Colors.white},
-          bgcolor: 'rgba(0, 0, 0, 0.2)',
+          bgcolor: `${Colors.midnightBlue}`,
           border: '2px solid',
           fontSize: `${size * 2}%`,
         }}

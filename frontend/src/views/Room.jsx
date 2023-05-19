@@ -34,6 +34,7 @@ import {
   subscribeToDeleteMessages,
   fetchMessages,
 } from "../utils/chat";
+import { Colors } from "../themes/colors";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -536,7 +537,7 @@ const StyledBox = styled(Box)`
       height: 100%;
       align-items: flex-start;
       position: relative;
-      background-color: rgb(32,33,36);
+      background-color: ${Colors.darkLateGrey};
       flex-direction: ${$direction};
       `
       : $box2
