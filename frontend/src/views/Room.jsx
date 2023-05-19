@@ -2,8 +2,17 @@
 import { React, useState, useEffect, useRef, forwardRef } from "react";
 import { useLoaderData, Navigate, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { Button, Box, CircularProgress } from "@mui/material";
-import MuiAlert from "@mui/material/Alert";
+
+import {
+  Alert as MuiAlert,
+  Badge,
+  Button,
+  Box,
+  CircularProgress,
+  Typography
+} from "@mui/material";
+import { Group as GroupIcon } from "@mui/icons-material";
+
 import styled from "styled-components";
 import useWindowDimensions from "../hooks/useWindowDimesion";
 import useUserPermission from "../hooks/useUserPermission";
@@ -34,6 +43,8 @@ import {
   subscribeToDeleteMessages,
   fetchMessages,
 } from "../utils/chat";
+
+import { Colors } from "../themes/colors";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -437,9 +448,12 @@ function Room() {
 
   const localStreamStyle = {
     position: "absolute",
-    bottom: isChatVisible ? 15 : 30,
+    bottom: 50,
     right: isChatVisible ? 450 : 50,
+    display: 'flex',
+    justifyContent: 'space-between',
   };
+
   const addManyParticipants = (numberOfParticipants) => {
     let videoNumber = 1;
     for (let i = 0; i < numberOfParticipants; i++) {
@@ -484,7 +498,14 @@ function Room() {
 
             <div style={localStreamStyle}>
               <Video stream={localStream} isStreamLocal />
+              <StyledParticipantsCountBox>
+                <Badge badgeContent={room.remoteParticipants.size + 1} showZero>
+                  <GroupIcon sx={{ fontSize: 40 }} />
+                </Badge>
+                <Typography variant="caption">Participants</Typography>
+              </StyledParticipantsCountBox>
             </div>
+
             <RoomControls
               permissionRole={userRole}
               updateScreenShare={updateScreenShare}
@@ -541,6 +562,20 @@ const StyledBox = styled(Box)`
       position: relative;
     `
       : ""}
+`;
+
+const StyledParticipantsCountBox = styled(Box)`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding-top: 12px;
+  width: 160px;
+  margin-left: 10px;
+  color: ${Colors.white};
+  border: 1px solid ${Colors.white};
+  border-radius: 5px;
 `;
 
 const StyledContainer = styled.div`
