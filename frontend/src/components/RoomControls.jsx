@@ -24,6 +24,7 @@ function RoomControls(props) {
   const {
     updateScreenShare,
     isSharingScreen,
+    participantSharingScreen,
     localTracks,
     updateLocalTracksMuted,
     leaveRoom,
@@ -128,10 +129,21 @@ function RoomControls(props) {
       {(permissionRole === ROLES.PRESENTER ||
         permissionRole === ROLES.HOST) && (
         <Tooltip
-          title={!isSharingScreen ? "Share screen" : "Stop sharing screen"}
+          title={
+            !isSharingScreen
+              ? "Share screen"
+              : participantSharingScreen &&
+                participantSharingScreen !== localParticipant.displayName
+              ? ""
+              : "Stop sharing screen"
+          }
         >
           <StyledDiv>
             <Button
+              disabled={
+                participantSharingScreen &&
+                participantSharingScreen !== localParticipant.displayName
+              }
               size="large"
               hover="onHoverTest"
               onClick={() => shareScreen()}
