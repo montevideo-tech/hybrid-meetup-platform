@@ -29,7 +29,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: "",
-        element: <LandingPage />,
+        element: (
+          <AuthRoute>
+            <LandingPage />,
+          </AuthRoute>
+        )
       },
       {
         path: "/rooms",
