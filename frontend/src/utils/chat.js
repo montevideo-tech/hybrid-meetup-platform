@@ -9,11 +9,21 @@ export async function onSendMessage(message) {
 
 export async function onDeleteMessage(id) {
   const { error } = await supabase
-    .from('message-chat')
+    .from("message-chat")
     .delete()
-    .eq('id', id)
+    .eq("id", id)
   if (error) {
-    console.error('Error Sending Messages: ', error);
+    console.error("Error Sending Messages: ", error);
+  }
+}
+
+export async function onDeleteRoomMessage(id) {
+  const { error } = await supabase
+    .from("message-chat")
+    .delete()
+    .eq("providerId", id)
+  if (error) {
+    console.error("Error Sending Messages: ", error);
   }
 }
 
