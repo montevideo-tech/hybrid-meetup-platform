@@ -90,8 +90,8 @@ function ParticipantsCollection(props) {
   // };
 
   return (
-    <StyledBox box1>
-      <StyledBox box2>
+    <StyledBox $box1>
+      <StyledBox $box2>
         <IconButton
           disableRipple
           onClick={goToPreviousPage}
@@ -113,7 +113,7 @@ function ParticipantsCollection(props) {
         </IconButton>
       </StyledBox>
 
-      <StyledBox box3 width={width}>
+      <StyledBox $box3 $width={`${width}px`}>
         {children.map(({ audioStream, name }) => (
           <Audio key={name} stream={audioStream} />
         ))}
@@ -142,7 +142,7 @@ function ParticipantsCollection(props) {
           )}
         </ParticipantLayout>
       </StyledBox>
-      <StyledBox>
+      <StyledBox $box4>
         <IconButton
           disableRipple
           onClick={goToNextPage}
@@ -194,15 +194,15 @@ ParticipantsCollection.defaultProps = {
 export default ParticipantsCollection;
 
 const StyledBox = styled(Box)`
-  ${({ box1, box2, box3, width }) =>
-    box1
+  ${({ $box1, $box2, $box3, $box4, $width }) =>
+    $box1
       ? `
         display: flex;
         background-color: ${Colors.darkLateGrey};
         align-items: center;
         justify-content: space-between;
         height: 100%;`
-      : box2
+      : $box2
       ? `
           width: 40px;
           display: flex;
@@ -210,16 +210,18 @@ const StyledBox = styled(Box)`
           align-items: center;
           margin-left: 12px;
         `
-      : box3
+      : $box3
       ? `
-        width: ${width};
+        width: ${$width};
         z-index: 100;
       `
-      : `
+      : $box4
+      ? `
         width: 40px;
         display: flex;
         justify-content: center;
         align-items: center;
         margin-right: 12px;
-      `}
+      `
+      : ""}
 `;

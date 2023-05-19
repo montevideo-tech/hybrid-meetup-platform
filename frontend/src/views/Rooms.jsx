@@ -165,7 +165,7 @@ function Rooms() {
 
         // Listen to table events
         supabase
-          .channel("any")
+          .channel("roomList")
           .on(
             "postgres_changes",
             { event: "*", schema: "public", table: "rooms" },

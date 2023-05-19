@@ -91,8 +91,8 @@ function EditRoom() {
   }, [roles]);
 
   return (
-    <Container cont1>
-      <Container cont2>
+    <Container $cont1>
+      <Container $cont2>
         <Button
           variant="contained"
           onClick={() => navigate(`/rooms/${roomId}`)}
@@ -103,9 +103,9 @@ function EditRoom() {
           {`Edit Room ${roomId}`}
         </Typography>
       </Container>
-      <Container cont3>
+      <Container $cont3>
         <Card variant="outlined">
-          <Container cont4>
+          <Container $cont4>
             <Typography
               component="h2"
               variant="h5"
@@ -136,7 +136,7 @@ function EditRoom() {
           </Container>
         </Card>
         <Card sx={{ marginLeft: "2vw" }} variant="outlined">
-          <Container cont4>
+          <Container $cont4>
             <Typography
               component="h2"
               variant="h5"
@@ -167,7 +167,7 @@ function EditRoom() {
           </Container>
         </Card>
         <Card sx={{ marginLeft: "2vw" }} variant="outlined">
-          <Container>
+          <Container $cont5>
             <TextField
               variant="outlined"
               label="Email"
@@ -199,30 +199,32 @@ function EditRoom() {
 export default EditRoom;
 
 const Container = styled.div`
-  ${({ cont1, cont2, cont3, cont4 }) =>
-    cont1
+  ${({ $cont1, $cont2, $cont3, $cont4, $cont5 }) =>
+    $cont1
       ? `
       margin-top: 15px;
       display: flex;
       align-items: center;
       flex-direction: column;`
-      : cont2
+      : $cont2
       ? `
         display: grid;
         grid-template-columns: 0.15fr 1fr;
         gap: 15px;`
-      : cont3
+      : $cont3
       ? `
         display: flex
         `
-      : cont4
+      : $cont4
       ? `
         padding: 1vh 0.5vw;
       `
-      : `
+      : $cont5
+      ? `
         display: flex;
         flex-direction: column;
         justify-content: center;
         padding: 1vh 0.5vw;
-      `}
+      `
+      : ""}
 `;

@@ -22,7 +22,7 @@ function ParticipantInfo(props) {
   }
 
   return (
-    <Container height={height}>
+    <Container $height={height}>
       <Typography
         variant="h6"
         fontWeight="700"
@@ -54,7 +54,7 @@ const Container = styled.div`
   bottom: 0;
   left: 0;
   width: 100%;
-  height: ${(props) => props.height};
+  height: ${(props) => props.$height};
   color: transparent;
   background-color: transparent;
   justify-content: center;

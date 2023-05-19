@@ -2,7 +2,7 @@
 import { React, useState, useEffect, useRef, forwardRef } from "react";
 import { useLoaderData, Navigate, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { Button, Box, CircularProgress, Snackbar, Slide } from "@mui/material";
+import { Button, Box, CircularProgress } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import styled from "styled-components";
 import useWindowDimensions from "../hooks/useWindowDimesion";
@@ -29,7 +29,11 @@ import Chat from "../components/Chat";
 import { comparator, updateParticipantRoles } from "../utils/helpers";
 import { getGuestMuted } from "../utils/room";
 import { epochToISO8601 } from "../utils/time";
-import { subscribeToNewMessages, subscribeToDeleteMessages, fetchMessages } from "../utils/chat";
+import {
+  subscribeToNewMessages,
+  subscribeToDeleteMessages,
+  fetchMessages,
+} from "../utils/chat";
 import { Colors } from "../themes/colors";
 
 export async function roomLoader({ params }) {
@@ -68,6 +72,8 @@ function Room() {
   const [isBlockedRemotedGuest, setIsBlockedRemotedGuest] = useState(false);
   const [dateTimeJoined] = useState(epochToISO8601(Date.now()));
   const [messages, setMessages] = useState([]);
+  const [participantSharingScreen, setParticipantSharingScreen] =
+    useState(null);
 
   // To add a new criteria to the comparator you need to
   // Decide if it's higher or lower pririoty compared to the already established
@@ -76,10 +82,6 @@ function Room() {
     remoteStreamsRef.current = data;
     const remoteStreamsSorted = Array.from(data.values()).sort(comparator);
     setRemoteStreams(remoteStreamsSorted);
-  };
-
-  const toggleChatVisibility = () => {
-    setIsChatVisible((prev) => !prev);
   };
 
   const participantsCount = remoteStreams.length;
@@ -229,6 +231,12 @@ function Room() {
       if (track.provider.source === "screenshare") {
         isSharingScreen = true;
         setIsSharingScreen(isSharingScreen);
+        setParticipantSharingScreen(
+          remoteParticipant.displayName.substring(
+            0,
+            remoteParticipant.displayName.indexOf("-screen-share"),
+          ),
+        );
       }
       remoteStreamsRef.current.set(remoteParticipant.id, {
         audioStream,
@@ -251,6 +259,7 @@ function Room() {
     // Check if the participant who left the room was sharing screen
     if (remoteStreamsRef.current.get(p.id)?.isSharingScreen) {
       setIsSharingScreen(false);
+      setParticipantSharingScreen(null);
     }
     remoteStreamsRef.current.delete(p.id);
     setRemoteStreamsRef(remoteStreamsRef.current);
@@ -360,8 +369,8 @@ function Room() {
         );
       } else {
         const error = "A duplicate session has been detected";
-        dispatch(SnackbarAlert({error}));
-        navigate('/rooms');
+        dispatch(SnackbarAlert({ error }));
+        navigate("/rooms");
         setErrorJoiningRoom(true);
       }
     } catch (error) {
@@ -438,10 +447,9 @@ function Room() {
 
   const localStreamStyle = {
     position: "absolute",
-    bottom: isChatVisible ? 55 : 30,
-    right: isChatVisible ? 350 : 50,
+    bottom: isChatVisible ? 15 : 30,
+    right: isChatVisible ? 450 : 50,
   };
-
   const addManyParticipants = (numberOfParticipants) => {
     let videoNumber = 1;
     for (let i = 0; i < numberOfParticipants; i++) {
@@ -467,12 +475,17 @@ function Room() {
 
       {roomNotFound && <Navigate to="/rooms/404" />}
       {room ? (
-        <StyledBox box1 isChatVisible={isChatVisible} direction={direction}>
-          <StyledBox box2>
+        <StyledBox
+          $box1
+          $isChatVisible={isChatVisible}
+          $direction={direction}
+          $width={`${screenShareWidth}px`}
+        >
+          <StyledBox $box2>
             {participantsCount > 0 && renderParticipantCollection()}
 
             {isSharingScreen && (
-              <StyledBox>
+              <StyledBox $box3 $width={`${screenShareWidth}px`}>
                 <ShareScreen width={`${screenShareWidth}px`}>
                   {remoteStreams.find((p) => p.isSharingScreen)}
                 </ShareScreen>
@@ -486,6 +499,7 @@ function Room() {
               permissionRole={userRole}
               updateScreenShare={updateScreenShare}
               isSharingScreen={isSharingScreen}
+              participantSharingScreen={participantSharingScreen}
               localTracks={localTracks}
               updateLocalTracksMuted={updateLocalTracksMuted}
               leaveRoom={leaveRoom}
@@ -495,31 +509,11 @@ function Room() {
               isBlockedRemotedGuest={isBlockedRemotedGuest}
               setIsBlockedRemotedGuest={setIsBlockedRemotedGuest}
             />
-            <Button
-              variant="contained"
-              size="large"
-              onClick={toggleChatVisibility}
-              sx={{
-                position: "absolute",
-                bottom: 0,
-                left: "66%",
-                transform: "translateX(-50%)",
-              }}
-            >
-              {isChatVisible ? "Hide Chat" : "Show Chat"}
-            </Button>
           </StyledBox>
           <Box sx={{ position: "relative", overflow: "hidden" }}>
-            <Slide
-              direction="left"
-              in={isChatVisible}
-              mountOnEnter
-              unmountOnExit
-            >
-              <Box>
-                <Chat messages={messages} isUserAdmin={isUserAdmin} />
-              </Box>
-            </Slide>
+            <Box>
+              <Chat messages={messages} isUserAdmin={isUserAdmin} />
+            </Box>
           </Box>
         </StyledBox>
       ) : (
@@ -534,27 +528,30 @@ function Room() {
 export default Room;
 
 const StyledBox = styled(Box)`
-  ${({ box1, box2, isChatVisible, direction, screenShareWidth }) =>
-    box1
+  ${({ $box1, $box2, $box3, $isChatVisible, $direction, $width }) =>
+    $box1
       ? `
       display: flex;
-      justify-content: ${isChatVisible ? "flex-end" : "center"};
+      justify-content: ${$isChatVisible ? "center" : "flex-end"};
       width: 100%;
       height: 100%;
       align-items: flex-start;
       position: relative;
       background-color: ${Colors.darkLateGrey};
-      direction: ${direction};`
-      : box2
+      flex-direction: ${$direction};
+      `
+      : $box2
       ? `
       margin-top: 10px;
       `
-      : `
+      : $box3
+      ? `
       display: flex;
       max-height: 100%;
-      width: ${screenShareWidth + "px"};
+      width: ${$width};
       position: relative;
-    `}
+    `
+      : ""}
 `;
 
 const StyledContainer = styled.div`
