@@ -127,8 +127,12 @@ function Room() {
   };
 
   useEffect(() => {
-    subscribeToNewMessages(() => fetchMessages(dateTimeJoined, setMessages));
-    subscribeToDeleteMessages(() => fetchMessages(dateTimeJoined, setMessages));
+    subscribeToNewMessages(() =>
+      fetchMessages(roomId, dateTimeJoined, setMessages),
+    );
+    subscribeToDeleteMessages(() =>
+      fetchMessages(roomId, dateTimeJoined, setMessages),
+    );
   }, []);
 
   const handleRoleChange = (payload) => {
