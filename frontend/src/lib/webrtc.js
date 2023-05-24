@@ -8,9 +8,59 @@ import {
   ParticipantEvent,
   TrackEvent,
 } from "@mux/spaces-web";
-
+import config from "./config";
 // TODO we should have a config somewhere which tells us what to use
 // wrap MUX SDK according to table in https://github.com/montevideo-tech/hybrid-meetup-platform/issues/14
+class Provider {
+  constructor(jwt) {
+    this.jwt = jwt;
+  }
+
+  async join() {
+    throw new Error("join() method must be implemented");
+  }
+
+  async leave() {
+    throw new Error("leave() method must be implemented");
+  }
+
+  // Anothers generic events
+}
+
+// Implementing MUX provider
+class MuxProvider extends Provider {
+  constructor(jwt) {
+    super(jwt);
+  }
+
+  async join() {
+    // Implementing join for MUX
+    console.log("Joining with MUX provider...");
+  }
+
+  async leave() {
+    // Implementing leave for MUX
+    console.log("Leaving with MUX provider...");
+  }
+}
+
+class DolbyProvider extends Provider {
+  constructor(jwt) {
+    super(jwt);
+
+  }
+
+  async join() {
+  // Implementing join for DOLBY
+    console.log("Joining with Dolby.io provider...");
+  }
+
+  async leave() {
+// Implementing leave for DOLBY
+    console.log("Leaving with Dolby.io provider...");
+  }
+
+}
 
 export class Track extends EventEmitter {
   constructor(providerTrack) {
