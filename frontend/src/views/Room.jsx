@@ -2,7 +2,7 @@
 import { React, useState, useEffect, useRef, forwardRef } from "react";
 import { useLoaderData, Navigate, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { Button, Box, CircularProgress } from "@mui/material";
+import { Button, Box, CircularProgress, Badge } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import styled from "styled-components";
 import useWindowDimensions from "../hooks/useWindowDimesion";
@@ -35,6 +35,9 @@ import {
   fetchMessages,
 } from "../utils/chat";
 import { Colors } from "../themes/colors";
+import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
+import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
+
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -74,6 +77,8 @@ function Room() {
   const [messages, setMessages] = useState([]);
   const [participantSharingScreen, setParticipantSharingScreen] =
     useState(null);
+  const [chatOpen, setChatOpen] = useState(true);
+  const [unreadMessages, setUnreadMessages] = useState(0);
 
   // To add a new criteria to the comparator you need to
   // Decide if it's higher or lower pririoty compared to the already established
@@ -103,7 +108,6 @@ function Room() {
   let screenShareWidth = isSharingScreen
     ? Math.min(width - collectionWidth - paddingX * 2, width - paddingX * 2)
     : 0;
-  let direction = "row";
   if (width < height) {
     gap = 8;
     collectionWidth = width - paddingX * 2;
@@ -130,6 +134,12 @@ function Room() {
     subscribeToNewMessages(() => fetchMessages(dateTimeJoined, setMessages));
     subscribeToDeleteMessages(() => fetchMessages(dateTimeJoined, setMessages));
   }, []);
+
+  useEffect(() => {
+    if (!chatOpen) {
+      setUnreadMessages((prevUnreadMessages) => prevUnreadMessages + 1);
+    }
+  }, [messages]);
 
   const handleRoleChange = (payload) => {
     if (payload.eventType === "INSERT") {
@@ -161,9 +171,6 @@ function Room() {
 
   const renderParticipantCollection = () => (
     <ParticipantsCollection
-      gap={gap}
-      width={collectionWidth - 330}
-      height={collectionHeight}
       participantsPerPage={participantsPerPage}
       participantsCount={participantsCount}
       localParticipant={localParticipant}
@@ -445,114 +452,111 @@ function Room() {
     setLocalTracks({ ...localTracks });
   };
 
-  const localStreamStyle = {
-    position: "absolute",
-    bottom: isChatVisible ? 15 : 30,
-    right: isChatVisible ? 450 : 50,
-  };
-  const addManyParticipants = (numberOfParticipants) => {
-    let videoNumber = 1;
-    for (let i = 0; i < numberOfParticipants; i++) {
-      addFakeParticipant(roomId, `testing${i}@hotmail.com`, videoNumber);
-      videoNumber++;
-      if (videoNumber > 3) {
-        videoNumber = 0;
-      }
-    }
-  };
-
+  const OnClickChatButton = () => {
+    setChatOpen(!chatOpen);
+    setUnreadMessages(0);
+  } 
   return (
     <>
-      {isUserAdmin && TESTING_MODE && (
-        <Button
-          size="large"
-          disabled={!localTracks.video}
-          onClick={() => addManyParticipants(3)}
-        >
-          ADD USER
-        </Button>
-      )}
-
-      {roomNotFound && <Navigate to="/rooms/404" />}
-      {room ? (
-        <StyledBox
-          $box1
-          $isChatVisible={isChatVisible}
-          $direction={direction}
-          $width={`${screenShareWidth}px`}
-        >
-          <StyledBox $box2>
-            {participantsCount > 0 && renderParticipantCollection()}
-
-            {isSharingScreen && (
-              <StyledBox $box3 $width={`${screenShareWidth}px`}>
-                <ShareScreen width={`${screenShareWidth}px`}>
-                  {remoteStreams.find((p) => p.isSharingScreen)}
-                </ShareScreen>
-              </StyledBox>
-            )}
-
-            <div style={localStreamStyle}>
-              <Video stream={localStream} isStreamLocal />
-            </div>
-            <RoomControls
-              permissionRole={userRole}
-              updateScreenShare={updateScreenShare}
-              isSharingScreen={isSharingScreen}
-              participantSharingScreen={participantSharingScreen}
-              localTracks={localTracks}
-              updateLocalTracksMuted={updateLocalTracksMuted}
-              leaveRoom={leaveRoom}
-              disabled={!room}
-              isEnableToUnmute={isEnableToUnmute}
-              localParticipant={localParticipant}
-              isBlockedRemotedGuest={isBlockedRemotedGuest}
-              setIsBlockedRemotedGuest={setIsBlockedRemotedGuest}
-            />
-          </StyledBox>
-          <Box sx={{ position: "relative", overflow: "hidden" }}>
-            <Box>
-              <Chat messages={messages} isUserAdmin={isUserAdmin} />
-            </Box>
-          </Box>
-        </StyledBox>
-      ) : (
-        <StyledContainer>
-          {!errorJoiningRoom && <CircularProgress />}
-        </StyledContainer>
-      )}
+    {roomNotFound && <Navigate to="/rooms/404" />}
+    {room ?
+      <Container
+        $chatOpen={chatOpen}
+      >
+        <VideosContainer>
+        {renderParticipantCollection()}
+        </VideosContainer>
+        {chatOpen && 
+        <ShowChat>
+          <Chat messages={messages} isUserAdmin={isUserAdmin}/>
+        </ShowChat>}
+        <Buttons>
+          
+          <>
+            <CenteredDiv>
+              <RoomControls
+                permissionRole={userRole}
+                updateScreenShare={updateScreenShare}
+                isSharingScreen={isSharingScreen}
+                participantSharingScreen={participantSharingScreen}
+                localTracks={localTracks}
+                updateLocalTracksMuted={updateLocalTracksMuted}
+                leaveRoom={leaveRoom}
+                disabled={!room}
+                isEnableToUnmute={isEnableToUnmute}
+                localParticipant={localParticipant}
+                isBlockedRemotedGuest={isBlockedRemotedGuest}
+                setIsBlockedRemotedGuest={setIsBlockedRemotedGuest}
+              />
+            </CenteredDiv>
+            <ChatButton
+              onClick={OnClickChatButton}
+            >
+              <Badge badgeContent={unreadMessages} color="secondary">
+                {chatOpen ? <ChatBubbleIcon color="primary" fontSize="large" /> : <ChatOutlinedIcon color="primary" fontSize="large" />}
+              </Badge>
+            </ChatButton>
+          </>
+        </Buttons>
+      </Container>
+    :
+      <StyledContainer>
+        {!errorJoiningRoom && <CircularProgress />}
+      </StyledContainer>
+    }
     </>
   );
 }
 
 export default Room;
 
-const StyledBox = styled(Box)`
-  ${({ $box1, $box2, $box3, $isChatVisible, $direction, $width }) =>
-    $box1
-      ? `
-      display: flex;
-      justify-content: ${$isChatVisible ? "center" : "flex-end"};
-      width: 100%;
-      height: 100%;
-      align-items: flex-start;
-      position: relative;
-      background-color: ${Colors.darkLateGrey};
-      flex-direction: ${$direction};
-      `
-      : $box2
-      ? `
-      margin-top: 10px;
-      `
-      : $box3
-      ? `
-      display: flex;
-      max-height: 100%;
-      width: ${$width};
-      position: relative;
+const Container = styled.div`
+  display: grid;
+  grid-template-rows: 1fr 60px;
+  height: 100%;
+  ${({ $chatOpen }) => $chatOpen ? 
     `
-      : ""}
+    grid-template-columns: 1fr 360px;
+    transition: grid-template-columns 1s ease; 
+    `: 
+    `
+    grid-template-columns: 1fr 0px;
+    transition: grid-template-columns 1s ease;
+    `
+  };
+`
+
+const CenteredDiv = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
+
+const ChatButton = styled.button`
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+`
+
+const Buttons = styled.div`
+  grid-column: 1 / span 2;
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  align-items: center;
+  background-color: ${Colors.black};
+  padding: 0 40px;
+`
+
+const ShowChat = styled.div`
+  background: ${Colors.black};
+  padding: 20px 20px 20px 0;
+`
+
+const VideosContainer = styled.div`
+  background: ${Colors.black};
+`
 
 const StyledContainer = styled.div`
   display: flex;
