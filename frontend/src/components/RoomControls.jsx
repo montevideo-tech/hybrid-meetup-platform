@@ -2,7 +2,7 @@ import { React, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { ButtonGroup, Button, Tooltip, Badge } from "@mui/material";
+import { ButtonGroup, Button, Tooltip } from "@mui/material";
 import {
   Videocam as VideocamIcon,
   VideocamOffOutlined as VideocamOffOutlinedIcon,

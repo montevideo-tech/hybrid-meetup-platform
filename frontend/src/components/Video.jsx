@@ -24,7 +24,6 @@ function Video(props) {
     isSpeaking,
     size,
     name,
-    height,
     onClick,
     onClickMute,
     style,
@@ -43,11 +42,13 @@ function Video(props) {
       videoRef.current.srcObject = stream;
     }
   }, [stream]);
+  const boxHeight= isAlone ? "80vh" : "calc((100vh - 204px)/2)";
+
   return (
     <Box
       sx={{
         position: "relative",
-        height: `${isAlone ? "80vh" : "calc((100vh - 204px)/2)"}`,
+        height: boxHeight,
         width: `${twoParticipant ? "60vh" : "100%"}`,
         background: `${Colors.darkGrey}`,
         borderRadius: "5px",
@@ -77,7 +78,7 @@ function Video(props) {
       >
         <track kind="captions" />
       </StyledVideo>
-      {name && <ParticipantInfo name={name} parentHeight={height} />}
+      {name && <ParticipantInfo name={name} parentHeight={boxHeight} />}
       {(isAudioMuted || permissionRole === ROLES.HOST) && (
         <IconButton
           disabled={!(permissionRole === ROLES.HOST)}
@@ -128,8 +129,6 @@ Video.propTypes = {
   isVideoMuted: PropTypes.bool,
   isSpeaking: PropTypes.bool,
   size: PropTypes.number,
-  width: PropTypes.number,
-  height: PropTypes.number,
   name: PropTypes.string,
   onClick: PropTypes.func,
   onClickMute: PropTypes.func,
@@ -145,8 +144,6 @@ Video.defaultProps = {
   isSpeaking: false,
   size: 100,
   name: "",
-  width: 160,
-  height: 90,
   onClick: () => {},
   onClickMute: () => {},
   style: {},

@@ -2,13 +2,12 @@
 import { React, useState, useEffect, useRef, forwardRef } from "react";
 import { useLoaderData, Navigate, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { Button, Box, CircularProgress, Badge } from "@mui/material";
+import { CircularProgress, Badge } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import styled from "styled-components";
 import useWindowDimensions from "../hooks/useWindowDimesion";
 import useUserPermission from "../hooks/useUserPermission";
 import RoomControls from "../components/RoomControls";
-import Video from "../components/Video";
 
 import { Room as WebRoom } from "../lib/webrtc";
 import { roomJWTprovider } from "../actions";
@@ -22,9 +21,6 @@ import {
 } from "../reducers/roomSlice";
 import subscribeToRoleChanges, { ROLES } from "../utils/roles";
 import ParticipantsCollection from "../components/ParticipantsCollection";
-import addFakeParticipant from "../scripts/addFakeParticipant";
-import ShareScreen from "../components/ShareScreen";
-import { TESTING_MODE } from "../lib/constants";
 import Chat from "../components/Chat";
 import { comparator, updateParticipantRoles } from "../utils/helpers";
 import { getGuestMuted } from "../utils/room";
@@ -169,17 +165,19 @@ function Room() {
     setRemoteStreamsRef(remoteStreamsRef.current);
   };
 
-  const renderParticipantCollection = () => (
-    <ParticipantsCollection
-      participantsPerPage={participantsPerPage}
-      participantsCount={participantsCount}
-      localParticipant={localParticipant}
-      permissionRole={userRole}
-      isEnableToUnmute={isEnableToUnmute}
-    >
-      {remoteStreams.filter((p) => !p.isSharingScreen)}
-    </ParticipantsCollection>
-  );
+  const RenderParticipantCollection = () => {
+    return (
+      <ParticipantsCollection
+        participantsPerPage={participantsPerPage}
+        participantsCount={participantsCount}
+        localParticipant={localParticipant}
+        permissionRole={userRole}
+        isEnableToUnmute={isEnableToUnmute}
+      >
+        {remoteStreams.filter((p) => !p.isSharingScreen)}
+      </ParticipantsCollection>
+    )
+  }
 
   const subscribeToRemoteStreams = async (r) => {
     const { remoteParticipants } = r;
@@ -464,14 +462,13 @@ function Room() {
         $chatOpen={chatOpen}
       >
         <VideosContainer>
-        {renderParticipantCollection()}
+          <RenderParticipantCollection/>
         </VideosContainer>
         {chatOpen && 
         <ShowChat>
           <Chat messages={messages} isUserAdmin={isUserAdmin}/>
         </ShowChat>}
         <Buttons>
-          
           <>
             <CenteredDiv>
               <RoomControls
