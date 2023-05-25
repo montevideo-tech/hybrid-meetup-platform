@@ -58,7 +58,7 @@ function ParticipantsCollection(props) {
         $colums={colums}
         $twoParticipant={twoParticipant}
       >
-      {currentParticipants.map(
+      {currentParticipants.slice(0, 9).map(
         ({ videoStream, name, audioMuted, videoMuted, speaking }) => (
           <Video
             permissionRole={permissionRole}
