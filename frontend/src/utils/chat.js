@@ -8,10 +8,7 @@ export async function onSendMessage(message) {
 }
 
 export async function onDeleteMessage(id) {
-  const { error } = await supabase
-    .from("message-chat")
-    .delete()
-    .eq("id", id)
+  const { error } = await supabase.from("message-chat").delete().eq("id", id);
   if (error) {
     console.error("Error Sending Messages: ", error);
   }
@@ -21,7 +18,7 @@ export async function onDeleteRoomMessage(id) {
   const { error } = await supabase
     .from("message-chat")
     .delete()
-    .eq("providerId", id)
+    .eq("providerId", id);
   if (error) {
     console.error("Error Sending Messages: ", error);
   }
@@ -57,10 +54,11 @@ export function subscribeToDeleteMessages(fetchMessages) {
     .subscribe();
 }
 
-export async function fetchMessages(dateTimeJoined, setMessages) {
+export async function fetchMessages(roomId, dateTimeJoined, setMessages) {
   const { data, error } = await supabase
     .from("message-chat")
     .select("*")
+    .eq("providerId", roomId)
     .gt("created_at", dateTimeJoined)
     .order("created_at", { ascending: true });
   if (error) {
