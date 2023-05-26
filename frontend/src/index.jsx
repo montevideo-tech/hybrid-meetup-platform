@@ -15,7 +15,7 @@ import Rooms from "./views/Rooms";
 import ErrorPage from "./views/ErrorPage";
 import RoomNotFound from "./views/RoomNotFound";
 import EditRoom from "./views/EditRoom";
-import { RoomsLayout } from "./layout/RoomsLayout";
+import { Header } from "./components/Header";
 
 // import RoomTest from './components/RoomTest';
 import AuthRoute from "./components/AuthRoute";
@@ -33,13 +33,13 @@ const router = createBrowserRouter([
           <AuthRoute>
             <LandingPage />,
           </AuthRoute>
-        )
+        ),
       },
       {
         path: "/rooms",
         element: (
           <AuthRoute requireAuth>
-            <RoomsLayout />
+            <Header />
           </AuthRoute>
         ),
         children: [

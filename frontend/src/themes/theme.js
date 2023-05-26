@@ -9,14 +9,14 @@ const theme = createTheme({
       dark: Colors.darkPurple,
     },
     secondary: {
-      main: Colors.blue,
+      main: Colors.lightPurple,
     },
-    background: {
+    disabled: {
       main: Colors.lightGray,
     },
   },
   typography: {
-    fontFamily: "Arial",
+    fontFamily: "Poppins",
     fontSize: 14,
   },
   components: {

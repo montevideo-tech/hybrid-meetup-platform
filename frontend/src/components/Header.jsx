@@ -10,8 +10,9 @@ import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import { logout } from "../reducers/userSlice";
 import { Hybridly } from "../components/hybridly/Hybridly";
+import { Button } from "../themes/componentsStyles";
 
-export function RoomsLayout() {
+export function Header() {
   const [auth, setAuth] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const currentUser = useSelector((state) => state.user);
@@ -42,7 +43,7 @@ export function RoomsLayout() {
       <AppbarContainer>
         <AppBar
           position="relative"
-          sx={{ height: "100%", justifyContent: "center" }}
+          sx={{ height: "100%", justifyContent: "center", padding: "0 30px" }}
         >
           <Toolbar sx={{ justifyContent: "space-between" }}>
             <Hybridly />
@@ -78,6 +79,16 @@ export function RoomsLayout() {
                 </Menu>
               </Container>
             )}
+            <Button
+              $secondary
+              $customStyles={{
+                width: "100px",
+                height: "45px",
+                "text-transform": "uppercase",
+              }}
+            >
+              Log in
+            </Button>
           </Toolbar>
         </AppBar>
       </AppbarContainer>
@@ -88,7 +99,7 @@ export function RoomsLayout() {
   );
 }
 
-export default RoomsLayout;
+export default Header;
 
 const RootContainer = styled.div`
   width: 100%;
