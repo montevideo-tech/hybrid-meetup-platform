@@ -181,6 +181,7 @@ function Rooms() {
     getRoomsList();
   }, []);
 
+  // eslint-disable-next-line react/display-name
   const Alert = forwardRef((props, ref) => (
     <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
   ));
@@ -189,7 +190,7 @@ function Rooms() {
     if (reason === "clickaway") {
       return;
     }
-    dispatch(SnackbarAlert({error: undefined}));
+    dispatch(SnackbarAlert({ error: undefined }));
     setOpen(false);
   };
 
@@ -255,15 +256,17 @@ function Rooms() {
       {user?.role === "admin" && renderCreateRoomButton()}
 
       {loadingRooms ? <RoomsListSkeleton /> : <RoomsList list={roomsList} />}
-      {errorState && <Snackbar open={open} onClose={closeSnackbar}>
-        <Alert
-          onClose={closeSnackbar}
-          severity="error"
-          sx={{ width: "100%" }}
-        >
-          {errorState}
-        </Alert>
-      </Snackbar>}
+      {errorState && (
+        <Snackbar open={open} onClose={closeSnackbar}>
+          <Alert
+            onClose={closeSnackbar}
+            severity="error"
+            sx={{ width: "100%" }}
+          >
+            {errorState}
+          </Alert>
+        </Snackbar>
+      )}
     </Paper>
   );
 }
