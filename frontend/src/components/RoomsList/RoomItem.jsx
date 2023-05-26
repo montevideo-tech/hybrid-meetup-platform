@@ -74,7 +74,7 @@ export const RoomItem = ({ currentUser, room }) => {
                 justifyContent: "center",
               }}
             >
-              <DeleteIcon fontSize="inherit" />
+              <DeleteIcon fontSize="medium" />
             </Button>
             <Button
               aria-label="edit"
@@ -88,7 +88,7 @@ export const RoomItem = ({ currentUser, room }) => {
                 justifyContent: "center",
               }}
             >
-              <EditIcon fontSize="inherit" />
+              <EditIcon fontSize="medium" />
             </Button>
             <Button $primary onClick={() => navigate(`/rooms/${providerId}`)}>
               Join room
