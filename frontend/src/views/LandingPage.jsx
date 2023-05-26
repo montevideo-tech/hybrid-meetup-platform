@@ -3,34 +3,30 @@ import styled from "styled-components";
 import { Colors } from "../themes/colors";
 import meeting from "../assets/meeting.png";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
 
 function LandingPage() {
   const navigate = useNavigate();
   return (
-    <>
-      <Header />
-      <Container>
-        <Headline>
-          <Title>
-            <TitleParts $fontStyle="normal" $color={Colors.davyGray}>
-              A hybrid event platform with
-            </TitleParts>
-            <TitleParts
-              $fontStyle="italic"
-              $color={Colors.purple}
-              $marginLeft="10px"
-            >
-              adaptable WebRTC providers
-            </TitleParts>
-          </Title>
-          <StyledButton onClick={() => navigate("/signIn")}>
-            Check available rooms
-          </StyledButton>
-        </Headline>
-        <Image src={meeting} alt="hybridly meeting" />
-      </Container>
-    </>
+    <Container>
+      <Headline>
+        <Title>
+          <TitleParts $fontStyle="normal" $color={Colors.davyGray}>
+            A hybrid event platform with
+          </TitleParts>
+          <TitleParts
+            $fontStyle="italic"
+            $color={Colors.purple}
+            $marginLeft="10px"
+          >
+            adaptable WebRTC providers
+          </TitleParts>
+        </Title>
+        <StyledButton onClick={() => navigate("/signIn")}>
+          Check available rooms
+        </StyledButton>
+      </Headline>
+      <Image src={meeting} alt="hybridly meeting" />
+    </Container>
   );
 }
 

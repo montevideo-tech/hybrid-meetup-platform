@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import AppBar from "@mui/material/AppBar";
@@ -39,67 +39,83 @@ export function Header() {
     setAnchorEl(null);
   };
   return (
-    <AppbarContainer>
-      <AppBar
-        position="relative"
-        sx={{ height: "100%", justifyContent: "center", padding: "0 30px" }}
-      >
-        <Toolbar sx={{ justifyContent: "space-between" }}>
-          <Hybridly />
-          {auth?.email && auth?.token ? (
-            <Container>
-              <p>{currentUser.email}</p>
-              <IconButton
-                size="large"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit"
-              >
-                <AccountCircle />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "right",
+    <RootContainer>
+      <AppbarContainer>
+        <AppBar
+          position="relative"
+          sx={{ height: "100%", justifyContent: "center", padding: "0 30px" }}
+        >
+          <Toolbar sx={{ justifyContent: "space-between" }}>
+            <Hybridly />
+            {auth?.email && auth?.token ? (
+              <Container>
+                <p>{currentUser.email}</p>
+                <IconButton
+                  size="large"
+                  aria-label="account of current user"
+                  aria-controls="menu-appbar"
+                  aria-haspopup="true"
+                  onClick={handleMenu}
+                  color="inherit"
+                >
+                  <AccountCircle />
+                </IconButton>
+                <Menu
+                  id="menu-appbar"
+                  anchorEl={anchorEl}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "right",
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  open={Boolean(anchorEl)}
+                  onClose={handleClose}
+                >
+                  <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
+                </Menu>
+              </Container>
+            ) : (
+              <Button
+                onClick={() => navigate("/signIn")}
+                $secondary
+                $customStyles={{
+                  width: "100px",
+                  height: "45px",
+                  "text-transform": "uppercase",
                 }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
               >
-                <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
-              </Menu>
-            </Container>
-          ) : (
-            <Button
-              onClick={() => navigate("/signIn")}
-              $secondary
-              $customStyles={{
-                width: "100px",
-                height: "45px",
-                "text-transform": "uppercase",
-              }}
-            >
-              Log in
-            </Button>
-          )}
-        </Toolbar>
-      </AppBar>
-    </AppbarContainer>
+                Log in
+              </Button>
+            )}
+          </Toolbar>
+        </AppBar>
+      </AppbarContainer>
+      <OutletContainer>
+        <Outlet />
+      </OutletContainer>
+    </RootContainer>
   );
 }
 
 export default Header;
 
+const RootContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+`;
+
 const AppbarContainer = styled.div`
   height: 4rem;
+`;
+
+const OutletContainer = styled.div`
+  height: 100%;
 `;
 
 const Container = styled.div`
