@@ -13,4 +13,5 @@ export const Colors = {
   red: "#EA4335",
   midnightBlue: "#000033",
   dimGray: "#4D4747",
+  davyGray: "#555555",
 };
