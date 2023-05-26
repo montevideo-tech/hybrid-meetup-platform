@@ -1,4 +1,4 @@
-import { React, useEffect } from "react";
+import { React, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -20,6 +20,7 @@ import { setGuestMuted } from "../utils/room";
 
 function RoomControls(props) {
   const navigate = useNavigate();
+  const [muted, setMuted] = useState(false);
 
   const {
     updateScreenShare,
@@ -34,16 +35,37 @@ function RoomControls(props) {
     localParticipant,
     isBlockedRemotedGuest,
     setIsBlockedRemotedGuest,
+    setLocalTracks,
   } = props;
+  const [localVideoTrack, setLocalVideoTrack] = useState(localTracks.video);
 
-  const toggleMuteTrack = (t) => {
+  const toggleMuteTrack = async (t) => {
     if (isEnableToUnmute || t.kind === "video") {
-      if (t.muted) {
-        t.unmute();
-        updateLocalTracksMuted(t.kind, false);
+      if (t.kind === "video") {
+        if (muted) {
+          setMuted(false)
+          const tracks = await localParticipant.publishTracks({
+            constraints: { video: true, audio: false },
+          });
+          const newLocalTracks = { ...localTracks };
+            newLocalTracks[tracks[0].kind] = tracks[0];
+          setLocalVideoTrack(tracks[0]);
+          setLocalTracks(newLocalTracks);
+          updateLocalTracksMuted(t.kind, false);
+        } else {
+          setMuted(true);
+          localVideoTrack.mute();
+          localParticipant.unpublishTracks([localVideoTrack]);
+          updateLocalTracksMuted(localVideoTrack.kind, true);
+        }
       } else {
-        t.mute();
-        updateLocalTracksMuted(t.kind, true);
+        if (t.muted) {
+          t.unmute();
+          updateLocalTracksMuted(t.kind, false);
+        } else {
+          t.mute();
+          updateLocalTracksMuted(t.kind, true);
+        }
       }
     }
   };
@@ -56,6 +78,10 @@ function RoomControls(props) {
       }, 500);
     }
   }, [localTracks.audio]);
+
+  useEffect(() => {
+    setLocalVideoTrack(localTracks.video);
+  }, [localTracks.video]);
 
   const endCall = () => {
     leaveRoom();

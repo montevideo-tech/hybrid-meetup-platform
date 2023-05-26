@@ -512,6 +512,7 @@ function Room() {
               localParticipant={localParticipant}
               isBlockedRemotedGuest={isBlockedRemotedGuest}
               setIsBlockedRemotedGuest={setIsBlockedRemotedGuest}
+              setLocalTracks={setLocalTracks}
             />
           </StyledBox>
           <Box sx={{ position: "relative", overflow: "hidden" }}>
