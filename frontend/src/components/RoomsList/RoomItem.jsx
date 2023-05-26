@@ -117,7 +117,7 @@ const CreatedBy = styled.div`
   font-weight: 500;
   font-size: 12px;
   line-height: 18px;
-  color: #555555;
+  color: ${Colors.davyGray};
   padding: 12px 0;
 `;
 
