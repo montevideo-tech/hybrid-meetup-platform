@@ -132,6 +132,7 @@ const Title = styled.div`
 
 const StyledCardActions = styled(CardActions)`
   justify-content: flex-end;
+  padding: 23px !important;
 `
 
 export default RoomItem;
