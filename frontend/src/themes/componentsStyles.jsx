@@ -10,6 +10,7 @@ export const Button = styled.button`
   width: 136px;
   height: 35px;
   border-radius: 35px;
+  font-family: "Poppins";
   font-weight: 500;
   transition: 0.4s;
   background-color: ${(props) =>
@@ -19,6 +20,8 @@ export const Button = styled.button`
   border: ${(props) =>
     props.$primary ? "none" : `2px solid ${theme.palette.primary.main}`};
   font-size: ${(props) => (props.$primary ? "0.875rem" : "1rem")};
+  line-height: ${(props) => (props.$primary ? "21px" : "24px")};
+
   ${(props) =>
     props.$customStyles} // these styles override all the above ones, leave them here
   &:hover {

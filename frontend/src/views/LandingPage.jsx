@@ -98,7 +98,6 @@ const StyledButton = styled.button`
   height: 2.813rem;
   color: ${Colors.purple};
   background-color: ${Colors.lightPurple};
-  font-family: "Poppins";
   font-weight: 500;
   font-size: 1rem;
   border: 2px solid ${Colors.purple};

@@ -47,7 +47,7 @@ export function Header() {
         >
           <Toolbar sx={{ justifyContent: "space-between" }}>
             <Hybridly />
-            {auth?.email && auth?.token && (
+            {auth?.email && auth?.token ? (
               <Container>
                 <p>{currentUser.email}</p>
                 <IconButton
@@ -78,17 +78,19 @@ export function Header() {
                   <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
                 </Menu>
               </Container>
+            ) : (
+              <Button
+                onClick={() => navigate("/signIn")}
+                $secondary
+                $customStyles={{
+                  width: "100px",
+                  height: "45px",
+                  "text-transform": "uppercase",
+                }}
+              >
+                Log in
+              </Button>
             )}
-            <Button
-              $secondary
-              $customStyles={{
-                width: "100px",
-                height: "45px",
-                "text-transform": "uppercase",
-              }}
-            >
-              Log in
-            </Button>
           </Toolbar>
         </AppBar>
       </AppbarContainer>
