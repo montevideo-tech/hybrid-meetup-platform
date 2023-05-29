@@ -17,7 +17,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Alert from "@mui/material/Alert";
 import {
-  StyledButton,
+  Button,
   StyledLink,
   StyledHeader,
   StyledAvatar,
@@ -183,17 +183,13 @@ function SignUp() {
             error={!!errors.confirmPassword}
             helperText={errors.confirmPassword?.message}
           />
-          <StyledButton
-            theme={theme}
+          <Button
+            $primary
             type="submit"
-            fullWidth
-            variant="contained"
             disabled={Object.keys(errors).length > 0}
-            sx={{ mt: 3, mb: 2 }}
-            className="custom-button"
           >
             Sign Up
-          </StyledButton>
+          </Button>
           <Grid container justifyContent="flex-end">
             <Grid item>
               <StyledLink

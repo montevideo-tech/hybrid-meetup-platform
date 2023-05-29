@@ -1,6 +1,6 @@
 import React, { useState, useEffect, forwardRef } from "react";
+import { Button } from "../themes/componentsStyles";
 import {
-  Button,
   CircularProgress,
   Grid,
   IconButton,
@@ -185,11 +185,13 @@ function Rooms() {
     <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
   ));
 
+  Alert.displayName = "SnackbarAlert";
+
   const closeSnackbar = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
-    dispatch(SnackbarAlert({error: undefined}));
+    dispatch(SnackbarAlert({ error: undefined }));
     setOpen(false);
   };
 
@@ -232,17 +234,12 @@ function Rooms() {
       </Grid>
     ) : (
       <Button
-        variant="contained"
         onClick={() => setShowNameInput(true)}
         disabled={loadingRooms || creatingRoom}
-        sx={{
-          my: 2,
-          ml: 1,
-          width: 150,
-          height: 40,
-        }}
+        $secondary
+        $customStyles={{ margin: "10px 0", width: "190px", height: "45px" }}
       >
-        {creatingRoom ? <CircularProgress size={20} /> : "Create Room"}
+        {creatingRoom ? <CircularProgress size={20} /> : "Create new room +"}
       </Button>
     );
 
@@ -255,15 +252,17 @@ function Rooms() {
       {user?.role === "admin" && renderCreateRoomButton()}
 
       {loadingRooms ? <RoomsListSkeleton /> : <RoomsList list={roomsList} />}
-      {errorState && <Snackbar open={open} onClose={closeSnackbar}>
-        <Alert
-          onClose={closeSnackbar}
-          severity="error"
-          sx={{ width: "100%" }}
-        >
-          {errorState}
-        </Alert>
-      </Snackbar>}
+      {errorState && (
+        <Snackbar open={open} onClose={closeSnackbar}>
+          <Alert
+            onClose={closeSnackbar}
+            severity="error"
+            sx={{ width: "100%" }}
+          >
+            {errorState}
+          </Alert>
+        </Snackbar>
+      )}
     </Paper>
   );
 }

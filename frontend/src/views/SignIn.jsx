@@ -18,7 +18,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import EmailIcon from "@mui/icons-material/Email";
 import Alert from "@mui/material/Alert";
 import {
-  StyledButton,
+  Button,
   StyledLink,
   StyledHeader,
   StyledAvatar,
@@ -138,16 +138,13 @@ function SignIn() {
             error={!!errors.password}
             helperText={errors.password?.message}
           />
-          <StyledButton
-            theme={theme}
+          <Button
+            $primary
             type="submit"
-            fullWidth
-            variant="contained"
             disabled={Object.keys(errors).length > 0}
-            sx={{ mt: 2, mb: 1 }}
           >
             Sign In
-          </StyledButton>
+          </Button>
           <Grid container justifyContent="flex-end">
             <Grid item>
               <StyledLink

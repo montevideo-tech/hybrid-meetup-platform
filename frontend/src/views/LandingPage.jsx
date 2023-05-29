@@ -38,6 +38,9 @@ const Container = styled.div`
   display: grid;
   grid-template-areas: "headline img";
   column-gap: 21px;
+  @media (min-width: 1025px) {
+    grid-template-columns: 1.3fr 1fr;
+  }
   @media (max-width: 1025px) {
     grid-template-areas:
       "headline"
@@ -54,6 +57,7 @@ const Headline = styled.div`
   @media (max-width: 1025px) {
     align-items: center;
     text-align: center;
+    justify-content: end;
   }
 `;
 
@@ -80,10 +84,11 @@ const Image = styled.img`
   width: 539.25px;
   height: 382.22px;
   align-self: center;
+  justify-self: center;
   @media (max-width: 1025px) {
     justify-self: center;
-    width: 429.25px;
-    height: 272.22px;
+    width: 500px;
+    height: 342.97px;
     margin-top: 20px;
   }
 `;
@@ -94,7 +99,6 @@ const StyledButton = styled.button`
   height: 2.813rem;
   color: ${Colors.purple};
   background-color: ${Colors.lightPurple};
-  font-family: "Poppins";
   font-weight: 500;
   font-size: 1rem;
   border: 2px solid ${Colors.purple};

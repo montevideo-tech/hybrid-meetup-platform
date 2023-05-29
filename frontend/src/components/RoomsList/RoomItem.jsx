@@ -1,7 +1,8 @@
 import React from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Colors } from "../../themes/colors";
-
+import { Button } from "../../themes/componentsStyles";
 import {
   Grid,
   Card,
@@ -11,18 +12,14 @@ import {
   IconButton,
 } from "@mui/material";
 import { Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
-
-import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import Button from "@mui/material/Button";
 import { deleteRoom } from "../../actions";
 import { ROLES } from "../../utils/roles";
-import theme from "../../themes/theme";
 import { onDeleteRoomMessage } from "../../utils/chat";
 
 export const RoomItem = ({ currentUser, room }) => {
   const { id, name, providerId, createdBy } = room;
-
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   if (!id || !name || !providerId) {
@@ -59,23 +56,15 @@ export const RoomItem = ({ currentUser, room }) => {
         </CardContent>
         {currentUser?.role === ROLES.USER ? (
           <CardActions>
-            <StyledButton
-              className="custom-button"
-              component={RouterLink}
-              to={`/rooms/${providerId}`}
-            >
-              Join Room
-            </StyledButton>
+            <Button $primary onClick={() => navigate(`/rooms/${providerId}`)}>
+              Join room
+            </Button>
           </CardActions>
         ) : (
           <CardActions>
-            <StyledButton
-              className="custom-button"
-              component={RouterLink}
-              to={`/rooms/${providerId}`}
-            >
-              Join Room
-            </StyledButton>
+            <Button $primary onClick={() => navigate(`/rooms/${providerId}`)}>
+              Join room
+            </Button>
             <IconButton
               aria-label="delete"
               size="medium"
@@ -97,19 +86,6 @@ export const RoomItem = ({ currentUser, room }) => {
     </Grid>
   );
 };
-
-const StyledButton = styled(Button)`
-  &&.custom-button {
-    background-color: ${theme.palette.primary.main};
-    color: ${Colors.white};
-  }
-  &&.custom-button:hover {
-    background-color: ${theme.palette.primary.dark};
-  }
-  &&.custom-button:disabled {
-    background-color: ${Colors.lightgrey};
-  }
-`;
 
 const StyledCard = styled(Card)`
   &&.custom-card {
