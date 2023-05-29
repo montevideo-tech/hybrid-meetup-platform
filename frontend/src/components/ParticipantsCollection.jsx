@@ -13,11 +13,10 @@ function ParticipantsCollection(props) {
     children,
     localParticipant,
     permissionRole,
+    localVideoStream,
+    localAudioStream,
+    localName,
   } = props;
-
-  const [localVideoStream, setLocalVideoStream] = useState(undefined);
-  const [localAudioStream, setLocalAudioStream] = useState(undefined);
-  const [localName, setLocalName] = useState(undefined);
 
   const currentParticipants = useMemo(() => {
     return children;
@@ -32,18 +31,6 @@ function ParticipantsCollection(props) {
   const onClickMute = (r, isMuted) => {
     localParticipant.blockMuteRemoteParticipant(r, isMuted);
   };
-
-  useEffect(() => {
-    if (localParticipant?.provider?.videoTracks?.entries().next()?.value) {
-      let localVideoStream = new MediaStream();
-      localVideoStream.addTrack(localParticipant?.provider?.videoTracks?.entries().next()?.value[1].track);
-      setLocalVideoStream(localVideoStream);
-    }
-    if (localParticipant?.provider?.audioTracks?.entries().next()?.value) {
-      setLocalAudioStream(localParticipant?.provider?.audioTracks?.entries().next()?.value[1]);
-    }
-    setLocalName(localParticipant?.displayName);
-  },[localParticipant.provider.audioTracks.entries().next().done, localParticipant.provider.videoTracks.entries().next().done])
 
   const colums = Math.round((participantsCount + 1 ) /2);
   const isAlone = currentParticipants.length === 0;
