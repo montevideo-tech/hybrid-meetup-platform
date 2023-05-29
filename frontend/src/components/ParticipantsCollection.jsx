@@ -1,71 +1,29 @@
-import React, { useCallback, useMemo, useState, ReactNode } from "react";
+import React, { useMemo, useState, ReactNode, useEffect } from "react";
 import { LocalParticipant } from "@mux/spaces-web";
 import PropTypes from "prop-types";
-import { Box, IconButton } from "@mui/material";
-import ChevronLeftIcon from "./icons/ChevronLeftIcon";
-import ChevronRightIcon from "./icons/ChevronRightIcon";
 import { MAX_PARTICIPANTS_PER_PAGE } from "../lib/constants";
 import Audio from "./Audio";
 import Video from "./Video";
-import ParticipantLayout from "./ParticipantLayout";
 import { ROLES } from "../utils/roles";
-import { Colors } from "../themes/colors";
 import styled from "styled-components";
 
 function ParticipantsCollection(props) {
   const {
-    width,
-    height,
-    participantsPerPage,
     participantsCount,
-    gap,
     children,
     localParticipant,
     permissionRole,
   } = props;
 
-  const [currentPage, setCurrentPage] = useState(1);
-  // const [selectedParticipant, setSelectedParticipant] = useState(null);
-
-  const numberPages = useMemo(() => {
-    if (participantsCount >= participantsPerPage) {
-      return Math.ceil(participantsCount / participantsPerPage);
-    }
-    return 1;
-  }, [participantsCount, participantsPerPage]);
-
-  const goToPreviousPage = useCallback(() => {
-    if (currentPage > 1) {
-      setCurrentPage((page) => page - 1);
-    }
-  }, [currentPage]);
+  const [localVideoStream, setLocalVideoStream] = useState(undefined);
+  const [localAudioStream, setLocalAudioStream] = useState(undefined);
+  const [localName, setLocalName] = useState(undefined);
 
   const currentParticipants = useMemo(() => {
-    const startIndex = (currentPage - 1) * participantsPerPage;
-    let endIndex = startIndex + participantsPerPage;
-    if (endIndex > participantsCount) {
-      endIndex = participantsCount;
-    }
-    const pageParticipants = children.slice(startIndex, endIndex);
-    if (pageParticipants.length === 0 && currentPage > 1) {
-      goToPreviousPage();
-    }
-    return pageParticipants;
+    return children;
   }, [
-    currentPage,
-    participantsPerPage,
-    participantsCount,
     children,
-    goToPreviousPage,
   ]);
-
-  const goToNextPage = () => {
-    if (currentPage < numberPages) {
-      setCurrentPage((page) => page + 1);
-    }
-  };
-
-  const widthBetweenPagination = numberPages === 1 ? width : width - 80;
 
   const onClickRemove = (r) => {
     localParticipant.removeRemoteParticipant(r);
@@ -75,96 +33,65 @@ function ParticipantsCollection(props) {
     localParticipant.blockMuteRemoteParticipant(r, isMuted);
   };
 
-  // const handleParticipantSelection = (participant) => {
-  //   setSelectedParticipant(participant);
-  // };
+  useEffect(() => {
+    if (localParticipant?.provider?.videoTracks?.entries().next()?.value) {
+      let localVideoStream = new MediaStream();
+      localVideoStream.addTrack(localParticipant?.provider?.videoTracks?.entries().next()?.value[1].track);
+      setLocalVideoStream(localVideoStream);
+    }
+    if (localParticipant?.provider?.audioTracks?.entries().next()?.value) {
+      setLocalAudioStream(localParticipant?.provider?.audioTracks?.entries().next()?.value[1]);
+    }
+    setLocalName(localParticipant?.displayName);
+  },[localParticipant.provider.audioTracks.entries().next().done, localParticipant.provider.videoTracks.entries().next().done])
 
-  // const selectedParticipantStyle = {
-  //   border: '2px solid blue',
-  //   transform: 'scale(1.5)',
-  // };
-
-  // const normalParticipantStyle = {
-  //   border: 'none',
-  //   transform: 'none',
-  // };
-
+  const colums = Math.round((participantsCount + 1 ) /2);
+  const isAlone = currentParticipants.length === 0;
+  const oddNumber = !isAlone && currentParticipants.length % 2 === 0; //I check that it is an even number since the local participant is added.
+  const twoParticipant = currentParticipants.length === 1;
   return (
-    <StyledBox $box1>
-      <StyledBox $box2>
-        <IconButton
-          disableRipple
-          onClick={goToPreviousPage}
-          opacity={numberPages === 1 ? 0 : 1}
-          sx={
-            currentPage === 1
-              ? { display: "none" }
-              : {
-                  color: Colors.white,
-                  border: "2px solid",
-                  borderColor: Colors.gray,
-                  bgcolor: Colors.darkGray,
-                  variant: "outline",
-                  zIndex: "2",
-                }
-          }
-        >
-          <ChevronLeftIcon />
-        </IconButton>
-      </StyledBox>
-
-      <StyledBox $box3 $width={`${width}px`}>
-        {children.map(({ audioStream, name }) => (
-          <Audio key={name} stream={audioStream} />
-        ))}
-        <ParticipantLayout
-          width={widthBetweenPagination}
-          height={height}
-          gap={gap}
-        >
-          {currentParticipants.map(
-            ({ videoStream, name, audioMuted, videoMuted, speaking }) => (
-              <Video
-                permissionRole={permissionRole}
-                key={name}
-                stream={videoStream}
-                isAudioMuted={audioMuted || false}
-                isVideoMuted={videoMuted || false}
-                isSpeaking={speaking || false}
-                name={name}
-                onClick={() => onClickRemove(name)}
-                onClickMute={() => onClickMute(name, audioMuted)}
-                // style={selectedParticipant === name
-                //   ? selectedParticipantStyle : normalParticipantStyle}
-                // onClick={() => handleParticipantSelection(name)}
-              />
-            ),
-          )}
-        </ParticipantLayout>
-      </StyledBox>
-      <StyledBox $box4>
-        <IconButton
-          disableRipple
-          onClick={goToNextPage}
-          opacity={numberPages === 1 ? 0 : 1}
-          sx={
-            currentPage === numberPages
-              ? { display: "none" }
-              : {
-                  color: Colors.white,
-                  border: "2px solid",
-                  borderColor: Colors.gray,
-                  bgcolor: Colors.darkGray,
-                  variant: "outline",
-                  zIndex: "2",
-                }
-          }
-        >
-          <ChevronRightIcon />
-        </IconButton>
-      </StyledBox>
-    </StyledBox>
-  );
+    <>
+      {children.map(({ audioStream, name }) => (
+        <Audio key={name} stream={audioStream} />
+      ))}
+     <Content
+        $colums={colums}
+        $twoParticipant={twoParticipant}
+      >
+      {currentParticipants.slice(0, 9).map(
+        ({ videoStream, name, audioMuted, videoMuted, speaking }) => (
+          <Video
+            permissionRole={permissionRole}
+            key={name}
+            stream={videoStream}
+            isAudioMuted={audioMuted || false}
+            isVideoMuted={videoMuted || false}
+            isSpeaking={speaking || false}
+            name={name}
+            onClick={() => onClickRemove(name)}
+            onClickMute={() => onClickMute(name, audioMuted)}
+            twoParticipant={twoParticipant}
+          />
+        ),
+      )}
+      { localAudioStream && localVideoStream && 
+        <Video
+          permissionRole=''
+          key={localName}
+          stream={localVideoStream}
+          isAudioMuted={localAudioStream.muted || false}
+          isVideoMuted={localVideoStream.muted || false}
+          isSpeaking={false}
+          name={localName}
+          onClick={() => onClickRemove(localName)}
+          onClickMute={() => onClickMute(localName, localAudioStream.muted)}
+          oddNumber={oddNumber}
+          isAlone={isAlone}
+          twoParticipant={twoParticipant}
+        />}
+      </Content>
+    </>
+  )
 }
 
 ParticipantsCollection.propTypes = {
@@ -191,37 +118,15 @@ ParticipantsCollection.defaultProps = {
   isEnableToUnmute: true,
 };
 
-export default ParticipantsCollection;
+const Content = styled.div`
+  ${({ $colums, $twoParticipant }) => `
+    display: grid;
+    grid-template-columns: repeat(${$colums}, 1fr);
+    gap: 20px;
+    padding: 20px;
+    justify-items: ${$twoParticipant ? "center" : "stretch"};
+    justify-content: center;
+  ` }
+`
 
-const StyledBox = styled(Box)`
-  ${({ $box1, $box2, $box3, $box4, $width }) =>
-    $box1
-      ? `
-        display: flex;
-        background-color: ${Colors.darkLateGrey};
-        align-items: center;
-        justify-content: space-between;
-        height: 100%;`
-      : $box2
-      ? `
-          width: 40px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          margin-left: 12px;
-        `
-      : $box3
-      ? `
-        width: ${$width};
-        z-index: 100;
-      `
-      : $box4
-      ? `
-        width: 40px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-right: 12px;
-      `
-      : ""}
-`;
+export default ParticipantsCollection;

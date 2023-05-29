@@ -1,23 +1,39 @@
 import styled from "styled-components";
-import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
+import theme from "./theme";
 
-export const StyledButton = styled(Button)(({ theme }) => ({
-  backgroundColor: theme.palette.primary.main,
-  color: theme.palette.common.white,
-  "&:hover": {
-    backgroundColor: theme.palette.primary.dark,
-  },
-  "&:disabled": {
-    backgroundColor: theme.palette.grey[400],
-  },
-  textDecoration: "none",
-  " &:hover": {
-    textDecoration: "underline",
-  },
-}));
+export const Button = styled.button`
+  // TODO it should receive an icon (for the control buttons of the Room)
+  cursor: pointer;
+  width: 136px;
+  height: 35px;
+  border-radius: 35px;
+  font-family: "Poppins";
+  font-weight: 500;
+  transition: 0.4s;
+  background-color: ${(props) =>
+    props.$primary ? theme.palette.primary.main : theme.palette.secondary.main};
+  color: ${(props) =>
+    props.$primary ? theme.palette.common.white : theme.palette.primary.main};
+  border: ${(props) =>
+    props.$primary ? "none" : `2px solid ${theme.palette.primary.main}`};
+  font-size: ${(props) => (props.$primary ? "0.875rem" : "1rem")};
+  line-height: ${(props) => (props.$primary ? "21px" : "24px")};
+
+  ${(props) =>
+    props.$customStyles} // these styles override all the above ones, leave them here
+  &:hover {
+    background-color: ${(props) =>
+      props.$primary
+        ? theme.palette.primary.dark
+        : theme.palette.secondary.main};
+  }
+  &:disabled {
+    background-color: ${theme.palette.disabled.main};
+  }
+`;
 
 export const StyledLink = styled(Link)`
   color: ${({ theme }) => theme.palette.secondary.main};

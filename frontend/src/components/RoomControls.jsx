@@ -99,15 +99,10 @@ function RoomControls(props) {
   };
 
   return (
-    <ButtonGroup
+    <Container
       variant="contained"
       size="large"
       disabled={disabled}
-      sx={{
-        position: "fixed",
-        bottom: 0,
-        left: "calc(50% - 103px)",
-      }}
     >
       <Tooltip
         title={
@@ -204,7 +199,7 @@ function RoomControls(props) {
           </Button>
         </StyledDiv>
       </Tooltip>
-    </ButtonGroup>
+    </Container>
   );
 }
 
@@ -232,8 +227,16 @@ RoomControls.defaultProps = {
   isBlockedRemotedGuest: false,
 };
 
-export default RoomControls;
+const Container = styled(ButtonGroup)`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-content: center;
+  border: transparent !important;
+`
 
 const StyledDiv = styled.div`
   padding: 2px;
 `;
+
+export default RoomControls;
