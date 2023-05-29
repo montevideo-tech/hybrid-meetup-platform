@@ -63,10 +63,10 @@ export const RoomItem = ({ currentUser, room }) => {
         ) : (
           <StyledCardActions>
             <Button
-              aria-label="edit"
+              aria-label="delete"
               size="medium"
               component={RouterLink}
-              to={`/rooms/${providerId}/edit`}
+              onClick={handleDeleteRoom}
               $customStyles={{
                 width: "35px",
                 display: "flex",
@@ -80,7 +80,7 @@ export const RoomItem = ({ currentUser, room }) => {
               aria-label="edit"
               size="medium"
               component={RouterLink}
-              to={`/rooms/${providerId}/edit`}
+              onClick={() => navigate(`/rooms/${providerId}/edit`)}
               $customStyles={{
                 width: "35px",
                 display: "flex",
