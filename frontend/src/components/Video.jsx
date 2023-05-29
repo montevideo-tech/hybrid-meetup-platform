@@ -42,7 +42,7 @@ function Video(props) {
       videoRef.current.srcObject = stream;
     }
   }, [stream]);
-  const boxHeight= isAlone ? "calc((100vh - 164px)" : "calc((100vh - 204px)/2)";
+  const boxHeight= isAlone ? "calc((100vh - 170px))" : "calc((100vh - 204px)/2)";
 
   return (
     <Box
