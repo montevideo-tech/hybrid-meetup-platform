@@ -62,7 +62,6 @@ function Room() {
   const dispatch = useDispatch();
   const { width = 0, height = 0 } = useWindowDimensions();
   const headerHeight = 153.6; // 8vh
-  let gap = 10;
   const paddingY = height < 600 ? 10 : 40;
   const paddingX = width < 800 ? 40 : 60;
   const navigate = useNavigate();
@@ -100,16 +99,11 @@ function Room() {
     collectionWidth = Math.max(collectionWidth, 160);
   }
   let collectionHeight = height - headerHeight - paddingY * 2;
-  let screenShareWidth = isSharingScreen
-    ? Math.min(width - collectionWidth - paddingX * 2, width - paddingX * 2)
-    : 0;
+
   if (width < height) {
-    gap = 8;
     collectionWidth = width - paddingX * 2;
     if (isSharingScreen) {
-      direction = "column";
       collectionHeight = height - headerHeight - (width / 4) * 3;
-      screenShareWidth = width - paddingX * 2;
     }
   }
 
@@ -486,6 +480,7 @@ function Room() {
                   localParticipant={localParticipant}
                   isBlockedRemotedGuest={isBlockedRemotedGuest}
                   setIsBlockedRemotedGuest={setIsBlockedRemotedGuest}
+                  setLocalTracks={setLocalTracks}
                 />
               </CenteredDiv>
               <ChatButton onClick={OnClickChatButton}>

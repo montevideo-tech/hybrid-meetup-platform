@@ -173,7 +173,7 @@ const EmailContainer = styled.div`
     object-fit: cover;
   }
   span {
-    color: ${Colors.secondaryBlack};
+    color: ${Colors.blackPurple};
     font-weight: 500;
     font-size: 0.625rem;
     line-height: 0.938rem;
