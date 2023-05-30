@@ -10,7 +10,7 @@ function ShareScreen(props) {
     <Container>
       <Video
         style={{
-          height: `calc(${height}px - 180px)`,
+          height: `calc(100vh - 350px)`,
           margin: "0px auto",
         }}
         stream={children.videoStream}

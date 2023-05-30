@@ -70,7 +70,6 @@ function Room() {
   const [chatOpen, setChatOpen] = useState(true);
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [screenWidth, setScreenWidth] = useState(0);
-  const [screenHeight, setScreenHeight] = useState(0);
   const [localVideoStream, setLocalVideoStream] = useState(undefined);
   const [localAudioStream, setLocalAudioStream] = useState(undefined);
   const [localName, setLocalName] = useState(undefined);
@@ -122,17 +121,10 @@ function Room() {
 
   const divRef = useRef(null);
   useEffect(() => {
-    const handleResize = () => {
-      if (divRef.current) {
-        const divElement = divRef.current;
-        const { height, width } = divElement.getBoundingClientRect();
-        setScreenWidth(width);
-        setScreenHeight(height);
-      }
-    };
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
+    if (divRef.current) {
+      const divElement = divRef.current;
+      const { width } = divElement.getBoundingClientRect();
+      setScreenWidth(width);
     };
   }, [divRef.current]);
 
@@ -227,7 +219,7 @@ function Room() {
             }
           )}
         </ShareScreenParticipants>
-        <ShareScreen height={screenHeight}>
+        <ShareScreen>
           {remoteStreams.find((p) => p.isSharingScreen)}
         </ShareScreen>
       </ShareScreenContainer>
