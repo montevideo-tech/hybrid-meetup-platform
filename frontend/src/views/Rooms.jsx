@@ -244,7 +244,7 @@ function Rooms() {
     );
 
   return (
-    <Paper sx={{ p: 2 }}>
+    <Paper sx={{ p: "30px" }}>
       <Typography variant="h4" component="h1">
         Rooms
       </Typography>

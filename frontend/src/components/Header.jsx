@@ -45,7 +45,7 @@ export function Header() {
       <AppbarContainer>
         <AppBar
           position="relative"
-          sx={{ height: "100%", justifyContent: "center", padding: "0 30px" }}
+          sx={{ justifyContent: "center", padding: "0 30px" }}
         >
           <Toolbar sx={{ justifyContent: "space-between" }}>
             <Hybridly />
@@ -112,7 +112,7 @@ export function Header() {
                 $customStyles={{
                   width: "100px",
                   height: "45px",
-                  "text-transform": "uppercase",
+                  textTransform: "uppercase",
                 }}
               >
                 Log in
@@ -133,16 +133,17 @@ export default Header;
 const RootContainer = styled.div`
   width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
 `;
 
 const AppbarContainer = styled.div`
   height: 4rem;
+  .css-1yo9slo-MuiToolbar-root {
+    padding: 0;
+  }
 `;
 
 const OutletContainer = styled.div`
-  height: 100%;
+  height: calc(100vh - 4rem);
 `;
 
 const StyledMenu = styled(Menu)`
