@@ -122,12 +122,18 @@ function Room() {
 
   const divRef = useRef(null);
   useEffect(() => {
-    if (divRef.current) {
-      const divElement = divRef.current;
-      const { height, width } = divElement.getBoundingClientRect();
-      setScreenWidth(width);
-      setScreenHeight(height);
-    }
+    const handleResize = () => {
+      if (divRef.current) {
+        const divElement = divRef.current;
+        const { height, width } = divElement.getBoundingClientRect();
+        setScreenWidth(width);
+        setScreenHeight(height);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, [divRef.current]);
 
   const handleRoleChange = (payload) => {
