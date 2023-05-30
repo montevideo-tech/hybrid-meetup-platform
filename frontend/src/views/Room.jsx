@@ -158,6 +158,14 @@ function Room() {
     setRemoteStreamsRef(remoteStreamsRef.current);
   };
 
+  const onClickRemove = (r) => {
+    localParticipant.removeRemoteParticipant(r);
+  };
+
+  const onClickMute = (r, isMuted) => {
+    localParticipant.blockMuteRemoteParticipant(r, isMuted);
+  };
+
   const RenderParticipantCollection = () => {
     return (
       <ParticipantsCollection
