@@ -488,6 +488,7 @@ function Room() {
                 localParticipant={localParticipant}
                 isBlockedRemotedGuest={isBlockedRemotedGuest}
                 setIsBlockedRemotedGuest={setIsBlockedRemotedGuest}
+                setLocalTracks={setLocalTracks}
               />
             </CenteredDiv>
             <ChatButton
