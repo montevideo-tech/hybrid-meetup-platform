@@ -4,13 +4,15 @@ import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import AccountCircle from "@mui/icons-material/AccountCircle";
-import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import { logout } from "../reducers/userSlice";
 import { Hybridly } from "../components/hybridly/Hybridly";
 import { Button } from "../themes/componentsStyles";
+import user from "../assets/user.svg";
+import arrow from "../assets/arrow.svg";
+import line from "../assets/line.svg";
+import { Colors } from "../themes/colors";
+import { MenuItem } from "@mui/material";
 
 export function Header() {
   const [auth, setAuth] = useState(null);
@@ -48,19 +50,25 @@ export function Header() {
           <Toolbar sx={{ justifyContent: "space-between" }}>
             <Hybridly />
             {auth?.email && auth?.token ? (
-              <Container>
-                <p>{currentUser.email}</p>
-                <IconButton
-                  size="large"
-                  aria-label="account of current user"
+              <>
+                <Button
+                  onClick={handleMenu}
                   aria-controls="menu-appbar"
                   aria-haspopup="true"
-                  onClick={handleMenu}
-                  color="inherit"
+                  $secondary
+                  $customStyles={{
+                    width: "100px",
+                    height: "45px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "0 16px",
+                  }}
                 >
-                  <AccountCircle />
-                </IconButton>
-                <Menu
+                  <img alt="user" src={user} />
+                  <img alt="arrow" src={arrow} />
+                </Button>
+                <StyledMenu
                   id="menu-appbar"
                   anchorEl={anchorEl}
                   anchorOrigin={{
@@ -75,9 +83,28 @@ export function Header() {
                   open={Boolean(anchorEl)}
                   onClose={handleClose}
                 >
-                  <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
-                </Menu>
-              </Container>
+                  <EmailContainer>
+                    <span>{currentUser.email}</span>
+                    <img alt="line" src={line} />
+                  </EmailContainer>
+                  <MenuItem>
+                    <Button
+                      onClick={handleSignOut}
+                      $primary
+                      $customStyles={{
+                        width: "100%",
+                        height: "22px",
+                        fontWeight: "600",
+                        fontSize: "8px",
+                        lineHeight: "12px",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      Log out
+                    </Button>
+                  </MenuItem>
+                </StyledMenu>
+              </>
             ) : (
               <Button
                 onClick={() => navigate("/signIn")}
@@ -118,7 +145,37 @@ const OutletContainer = styled.div`
   height: 100%;
 `;
 
-const Container = styled.div`
+const StyledMenu = styled(Menu)`
+  .MuiPopover-paper {
+    background-color: ${Colors.lightPurple};
+    border-radius: 15px;
+  }
+  .MuiMenu-list {
+    padding: 0;
+  }
+  .MuiMenuItem-root {
+    padding: 6px 14px 12px 14px;
+    :hover {
+      background-color: transparent;
+    }
+  }
+`;
+
+const EmailContainer = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
+  padding: 12px 14px 0 14px;
+  img {
+    width: 100%;
+    height: 2px;
+    object-fit: cover;
+  }
+  span {
+    color: ${Colors.secondaryBlack};
+    font-weight: 500;
+    font-size: 0.625rem;
+    line-height: 0.938rem;
+    margin-bottom: 6px;
+  }
 `;
