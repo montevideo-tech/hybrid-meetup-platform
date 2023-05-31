@@ -37,6 +37,7 @@ function RoomControls(props) {
   } = props;
 
   const toggleMuteTrack = (t) => {
+    console.log("t", t);
     if (isEnableToUnmute || t.kind === "video") {
       if (t.muted) {
         t.unmute();

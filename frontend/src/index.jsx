@@ -11,7 +11,7 @@ import Root from "./views/Root";
 import SignIn from "./views/SignIn";
 import SignUp from "./views/SignUp";
 import Room, { roomLoader } from "./views/Room";
-// import Rooms from "./views/Rooms";
+import Rooms from "./views/Rooms";
 import ErrorPage from "./views/ErrorPage";
 import RoomNotFound from "./views/RoomNotFound";
 import EditRoom from "./views/EditRoom";
@@ -20,7 +20,7 @@ import { RoomsLayout } from "./layout/RoomsLayout";
 // import RoomTest from './components/RoomTest';
 import AuthRoute from "./components/AuthRoute";
 import LandingPage from "./views/LandingPage";
-import Dolby from "./Dolby/Dolby";
+// import Dolby from "./Dolby/Dolby";
 
 const router = createBrowserRouter([
   {
@@ -46,7 +46,7 @@ const router = createBrowserRouter([
         children: [
           {
             path: "",
-            element: <Dolby />,
+            element: <Rooms />,
           },
           {
             path: "404",

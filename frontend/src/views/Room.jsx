@@ -10,7 +10,7 @@ import useUserPermission from "../hooks/useUserPermission";
 import RoomControls from "../components/RoomControls";
 import Video from "../components/Video";
 
-import { Room as WebRoom } from "../lib/webrtc";
+import { Room as WebRoom } from "../Dolby/dolbyProvider";
 import { roomJWTprovider } from "../actions";
 import {
   initRoom,
@@ -315,15 +315,17 @@ function Room() {
   };
 
   const joinRoom = async () => {
-    const JWT = await roomJWTprovider(
-      roomId,
-      currentUser.email,
-      null,
-      null,
-      () => {
-        setRoomNotFound(true);
-      },
-    );
+    const JWT =
+      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkb2xieS5pbyIsImlhdCI6MTY4NTUzODk3NCwic3ViIjoid195UDNYVDJaVy1RbmZ6TXR5V1MwZz09IiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9DVVNUT01FUiJdLCJ0YXJnZXQiOiJzZXNzaW9uIiwib2lkIjoiOTg3MDFkMDctZWEyNi00ODM1LWJhM2ItMTBiMGU4MjkyODcyIiwiYWlkIjoiYjU3NmZhYjctY2JiMC00NWRhLTg1YWQtOGQ5MmZhZWEyNDY5IiwiYmlkIjoiOGEzNjgwZGU4ODJjOTlmNTAxODgyZmUxNGJmMTZiMmIiLCJleHAiOjE2ODU2MjUzNzR9.p_Y8tNe7nkT1JqauvmJ2yVYsmd7fK1rHBYphcfT4Ch8AhdysSwDWG-WzFKOWt_khEiKIXKXO16WfxdDitljwlQ";
+    // const JWT = await roomJWTprovider(
+    //   roomId,
+    //   currentUser.email,
+    //   null,
+    //   null,
+    //   () => {
+    //     setRoomNotFound(true);
+    //   },
+    // );
     const guestMuted = await getGuestMuted();
     setIsBlockedRemotedGuest(guestMuted);
     if (currentUser.role !== ROLES.ADMIN) {
@@ -446,6 +448,7 @@ function Room() {
 
   const updateLocalTracksMuted = (kind, muted) => {
     localTracks[kind].muted = muted;
+    console.log(localTracks);
     setLocalTracks({ ...localTracks });
   };
 
