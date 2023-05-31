@@ -13,6 +13,10 @@ const theme = createTheme({
     },
     disabled: {
       main: Colors.lightGray,
+      secondary: Colors.davyGray,
+    },
+    fonts: {
+      main: Colors.blackPurple,
     },
   },
   typography: {

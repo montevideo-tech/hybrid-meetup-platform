@@ -6,10 +6,6 @@ import * as Yup from "yup";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import { useTheme } from "@mui/material/styles";
-import TextField from "@mui/material/TextField";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
 import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -18,32 +14,17 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Alert from "@mui/material/Alert";
 import {
   Button,
+  Card,
+  Input,
+  Label,
   StyledLink,
-  StyledHeader,
-  StyledAvatar,
   formVariants,
 } from "../themes/componentsStyles";
 import { signUp } from "../actions";
-
-const StyledContainer = styled(Box)`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 90vh;
-`;
-
-const StyledForm = styled(Box)`
-  &.form {
-    max-width: 400px;
-  }
-  background-color: ${({ theme }) => theme.palette.background.paper};
-  border-radius: 10px;
-  box-shadow: ${({ theme }) => theme.shadows[3]};
-  padding: ${({ theme }) => theme.spacing(4)};
-`;
+import { Colors } from "../themes/colors";
+import logo2 from "../assets/logo2.svg";
 
 function SignUp() {
-  const theme = useTheme();
   const navigate = useNavigate();
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Name is required"),
@@ -84,133 +65,194 @@ function SignUp() {
   };
 
   return (
-    <StyledContainer>
-      <motion.div
-        variants={formVariants}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-      >
-        <StyledForm
-          theme={theme}
-          component="form"
-          onSubmit={handleSubmit(onSubmit)}
-          className="form"
+    <Container>
+      <Card>
+        <motion.div
+          variants={formVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
         >
-          <StyledAvatar theme={theme}>
-            <LockOutlinedIcon />
-          </StyledAvatar>
-          <StyledHeader variant="h5">Sign Up</StyledHeader>
-          <TextField
-            margin="normal"
-            fullWidth
-            id="Name"
-            label="Name"
-            name="name"
-            autoFocus
-            {...register("name")}
-            error={!!errors.name}
-            helperText={errors.name?.message}
-          />
-          <TextField
-            margin="normal"
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoFocus
-            {...register("email")}
-            error={!!errors.email}
-            helperText={errors.email?.message}
-          />
-          <TextField
-            margin="normal"
-            fullWidth
-            name="password"
-            label="Password"
-            type={showPassword ? "text" : "password"}
-            id="password"
-            {...register("password")}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <LockOutlinedIcon />
-                </InputAdornment>
-              ),
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={() => setShowPassword(!showPassword)}
-                    onMouseDown={(event) => event.preventDefault()}
-                    edge="end"
-                  >
-                    {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            error={!!errors.password}
-            helperText={errors.password?.message}
-          />
-          <TextField
-            margin="normal"
-            fullWidth
-            name="confirmPassword"
-            label="Confirm password"
-            type={showPassword ? "text" : "password"}
-            id="confirmPassword"
-            {...register("confirmPassword")}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <LockOutlinedIcon />
-                </InputAdornment>
-              ),
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={() => setShowPassword(!showPassword)}
-                    onMouseDown={(event) => event.preventDefault()}
-                    edge="end"
-                  >
-                    {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            error={!!errors.confirmPassword}
-            helperText={errors.confirmPassword?.message}
-          />
-          <Button
-            $primary
-            type="submit"
-            disabled={Object.keys(errors).length > 0}
+          <StyledForm
+            component="form"
+            className="form"
+            onSubmit={handleSubmit(onSubmit)}
           >
-            Sign Up
-          </Button>
-          <Grid container justifyContent="flex-end">
-            <Grid item>
-              <StyledLink
-                theme={theme}
-                component={RouterLink}
-                to="/signIn"
-                variant="body2"
-              >
-                Already have an account? Sign In
+            <img src={logo2} alt="hybridly" height="38.18px" width="160.85px" />
+            <Title>Create an Account</Title>
+            <Label
+              htmlFor="name"
+              $customStyles={{ alignSelf: "start", marginLeft: "15px" }}
+            >
+              Name
+            </Label>
+            <Input
+              id="name"
+              label="Name"
+              name="name"
+              autoFocus
+              {...register("name")}
+              error={!!errors.name}
+              helperText={errors.name?.message}
+              placeholder="name"
+              $customStyles={{ marginBottom: "14px" }}
+            />
+            <Label
+              htmlFor="email"
+              $customStyles={{ alignSelf: "start", marginLeft: "15px" }}
+            >
+              Email address
+            </Label>
+            <Input
+              id="email"
+              name="email"
+              autoFocus
+              {...register("email")}
+              error={!!errors.email}
+              helperText={errors.email?.message}
+              placeholder="email address"
+              $customStyles={{ marginBottom: "14px" }}
+            />
+            <Label
+              htmlFor="password"
+              $customStyles={{ alignSelf: "start", marginLeft: "15px" }}
+            >
+              Password
+            </Label>
+            <Input
+              id="password"
+              name="password"
+              label="Email Address"
+              type={showPassword ? "text" : "password"}
+              {...register("password")}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <LockOutlinedIcon />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={() => setShowPassword(!showPassword)}
+                      onMouseDown={(event) => event.preventDefault()}
+                      edge="end"
+                    >
+                      {showPassword ? (
+                        <VisibilityIcon />
+                      ) : (
+                        <VisibilityOffIcon />
+                      )}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              error={!!errors.password}
+              helperText={errors.password?.message}
+              placeholder="password"
+              $customStyles={{ marginBottom: "14px" }}
+            />
+            <Label
+              htmlFor="confirmPassword"
+              $customStyles={{ alignSelf: "start", marginLeft: "15px" }}
+            >
+              Confirm password
+            </Label>
+            <Input
+              id="confirmPassword"
+              name="confirmPassword"
+              label="Confirm password"
+              type={showPassword ? "text" : "password"}
+              {...register("confirmPassword")}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <LockOutlinedIcon />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={() => setShowPassword(!showPassword)}
+                      onMouseDown={(event) => event.preventDefault()}
+                      edge="end"
+                    >
+                      {showPassword ? (
+                        <VisibilityIcon />
+                      ) : (
+                        <VisibilityOffIcon />
+                      )}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              error={!!errors.confirmPassword}
+              helperText={errors.confirmPassword?.message}
+              placeholder="password"
+            />
+            <Button
+              $primary
+              $customStyles={{ margin: "25px 0", alignSelf: "end" }}
+              type="submit"
+              disabled={Object.keys(errors).length > 0}
+            >
+              Sign up
+            </Button>
+            <LoginContainer>
+              <span>Already have an account?</span>
+              <StyledLink component={RouterLink} to="/signIn">
+                Login
               </StyledLink>
-            </Grid>
-          </Grid>
-          {alert.message && (
-            <Alert severity={alert.type} sx={{ mt: 2 }}>
-              {alert.message}
-            </Alert>
-          )}
-        </StyledForm>
-      </motion.div>
-    </StyledContainer>
+            </LoginContainer>
+            {alert.message && (
+              <Alert severity={alert.type} sx={{ mt: 2 }}>
+                {alert.message}
+              </Alert>
+            )}
+          </StyledForm>
+        </motion.div>
+      </Card>
+    </Container>
   );
 }
 
 export default SignUp;
+
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background-color: ${Colors.purple};
+`;
+
+const StyledForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+`;
+
+const Title = styled.h1`
+  font-family: "Poppins";
+  font-weight: 600;
+  font-size: 1.563rem;
+  line-height: 38px;
+  color: ${Colors.purple};
+  margin: 14px 0 27px 0;
+`;
+
+const LoginContainer = styled.div`
+  align-self: end;
+  font-family: "Poppins";
+  font-style: italic;
+  font-weight: 500;
+  font-size: 0.75rem;
+  line-height: 18px;
+  span {
+    margin-right: 2px;
+    color: ${Colors.davyGray};
+  }
+`;

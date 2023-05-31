@@ -34,8 +34,56 @@ export const Button = styled.button`
   }
 `;
 
+export const Card = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 320px;
+  background-color: ${theme.palette.secondary.main};
+  border: 2px solid ${theme.palette.primary.main};
+  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 30px;
+  padding: 30px;
+
+  ${(props) =>
+    props.$customStyles}// these styles override all the above ones, leave them here
+`;
+
+export const Input = styled.input`
+  width: calc(100% - 50px);
+  height: 35px;
+  border: 1.98px solid ${theme.palette.primary.main};
+  border-radius: 34px;
+  background-color: ${theme.palette.secondary.main};
+  color: ${theme.palette.fonts.main};
+  font-family: "Poppins";
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 23px;
+  padding: 0 30px;
+  ::placeholder {
+    color: ${theme.palette.disabled.secondary};
+    opacity: 50%;
+  }
+
+  ${(props) =>
+    props.$customStyles}// these styles override all the above ones, leave them here
+`;
+
+export const Label = styled.label`
+  font-family: "Poppins";
+  font-style: italic;
+  font-weight: 500;
+  font-size: 0.75rem;
+  line-height: 18px;
+  color: ${theme.palette.disabled.secondary};
+
+  ${(props) =>
+    props.$customStyles}// these styles override all the above ones, leave them here
+`;
+
 export const StyledLink = styled(Link)`
-  color: ${({ theme }) => theme.palette.secondary.main};
+  color: ${theme.palette.primary.main};
 `;
 
 export const StyledHeader = styled(Typography)`
