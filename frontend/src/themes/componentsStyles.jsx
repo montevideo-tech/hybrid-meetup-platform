@@ -59,7 +59,7 @@ export const Input = styled.input`
   font-weight: 500;
   font-size: 1rem;
   line-height: 23px;
-  padding: 0 30px;
+  padding-right: 30px;
   ::placeholder {
     color: ${theme.palette.disabled.secondary};
     opacity: 50%;

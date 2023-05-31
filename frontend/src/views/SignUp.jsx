@@ -23,6 +23,9 @@ import {
 import { signUp } from "../actions";
 import { Colors } from "../themes/colors";
 import logo2 from "../assets/logo2.svg";
+import orangeUser from "../assets/orangeUser.svg";
+import envelope from "../assets/envelope.svg";
+import lock from "../assets/lock.svg";
 
 function SignUp() {
   const navigate = useNavigate();
@@ -95,7 +98,11 @@ function SignUp() {
               error={!!errors.name}
               helperText={errors.name?.message}
               placeholder="name"
-              $customStyles={{ marginBottom: "14px" }}
+              $customStyles={{
+                marginBottom: "14px",
+                background: `url(${orangeUser}) no-repeat scroll 15px 7px`,
+                paddingLeft: "43px",
+              }}
             />
             <Label
               htmlFor="email"
@@ -111,7 +118,11 @@ function SignUp() {
               error={!!errors.email}
               helperText={errors.email?.message}
               placeholder="email address"
-              $customStyles={{ marginBottom: "14px" }}
+              $customStyles={{
+                marginBottom: "14px",
+                background: `url(${envelope}) no-repeat scroll 15px 9px`,
+                paddingLeft: "43px",
+              }}
             />
             <Label
               htmlFor="password"
@@ -151,7 +162,11 @@ function SignUp() {
               error={!!errors.password}
               helperText={errors.password?.message}
               placeholder="password"
-              $customStyles={{ marginBottom: "14px" }}
+              $customStyles={{
+                marginBottom: "14px",
+                background: `url(${lock}) no-repeat scroll 15px 7px`,
+                paddingLeft: "43px",
+              }}
             />
             <Label
               htmlFor="confirmPassword"
@@ -191,6 +206,10 @@ function SignUp() {
               error={!!errors.confirmPassword}
               helperText={errors.confirmPassword?.message}
               placeholder="password"
+              $customStyles={{
+                background: `url(${lock}) no-repeat scroll 15px 7px`,
+                paddingLeft: "43px",
+              }}
             />
             <Button
               $primary
