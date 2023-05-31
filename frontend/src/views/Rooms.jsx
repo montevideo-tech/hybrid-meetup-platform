@@ -248,9 +248,7 @@ function Rooms() {
   return (
     <Container>
       <ContainerWithTitleAndButton>
-        <Title>
-          Choose your room
-        </Title>
+        <Title>Choose your room</Title>
 
         {user?.role === "admin" && renderCreateRoomButton()}
       </ContainerWithTitleAndButton>
@@ -272,8 +270,8 @@ function Rooms() {
 }
 
 const Container = styled.div`
-  padding: 55px;
-`
+  padding: 30px;
+`;
 
 const ContainerWithTitleAndButton = styled.div`
   display: flex;
@@ -281,15 +279,15 @@ const ContainerWithTitleAndButton = styled.div`
   justify-content: space-between;
   align-items: center;
   padding-bottom: 40px;
-`
+`;
 
 const Title = styled.div`
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-style: normal;
   font-weight: 600;
   font-size: 30px;
   line-height: 45px;
   color: ${Colors.blackPurple};
-`
+`;
 
 export default Rooms;

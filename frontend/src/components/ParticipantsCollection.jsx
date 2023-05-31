@@ -8,12 +8,8 @@ import { ROLES } from "../utils/roles";
 import styled from "styled-components";
 
 function ParticipantsCollection(props) {
-  const {
-    participantsCount,
-    children,
-    localParticipant,
-    permissionRole,
-  } = props;
+  const { participantsCount, children, localParticipant, permissionRole } =
+    props;
 
   const [localVideoStream, setLocalVideoStream] = useState(undefined);
   const [localAudioStream, setLocalAudioStream] = useState(undefined);
@@ -21,9 +17,7 @@ function ParticipantsCollection(props) {
 
   const currentParticipants = useMemo(() => {
     return children;
-  }, [
-    children,
-  ]);
+  }, [children]);
 
   const onClickRemove = (r) => {
     localParticipant.removeRemoteParticipant(r);
@@ -36,16 +30,24 @@ function ParticipantsCollection(props) {
   useEffect(() => {
     if (localParticipant?.provider?.videoTracks?.entries().next()?.value) {
       let localVideoStream = new MediaStream();
-      localVideoStream.addTrack(localParticipant?.provider?.videoTracks?.entries().next()?.value[1].track);
+      localVideoStream.addTrack(
+        localParticipant?.provider?.videoTracks?.entries().next()?.value[1]
+          .track,
+      );
       setLocalVideoStream(localVideoStream);
     }
     if (localParticipant?.provider?.audioTracks?.entries().next()?.value) {
-      setLocalAudioStream(localParticipant?.provider?.audioTracks?.entries().next()?.value[1]);
+      setLocalAudioStream(
+        localParticipant?.provider?.audioTracks?.entries().next()?.value[1],
+      );
     }
     setLocalName(localParticipant?.displayName);
-  },[localParticipant.provider.audioTracks.entries().next().done, localParticipant.provider.videoTracks.entries().next().done])
+  }, [
+    localParticipant.provider.audioTracks.entries().next().done,
+    localParticipant.provider.videoTracks.entries().next().done,
+  ]);
 
-  const colums = Math.round((participantsCount + 1 ) /2);
+  const colums = Math.round((participantsCount + 1) / 2);
   const isAlone = currentParticipants.length === 0;
   const oddNumber = !isAlone && currentParticipants.length % 2 === 0; //I check that it is an even number since the local participant is added.
   const twoParticipant = currentParticipants.length === 1;
@@ -54,44 +56,42 @@ function ParticipantsCollection(props) {
       {children.map(({ audioStream, name }) => (
         <Audio key={name} stream={audioStream} />
       ))}
-     <Content
-        $colums={colums}
-        $twoParticipant={twoParticipant}
-      >
-      {currentParticipants.slice(0, 9).map(
-        ({ videoStream, name, audioMuted, videoMuted, speaking }) => (
+      <Content $colums={colums} $twoParticipant={twoParticipant}>
+        {currentParticipants
+          .slice(0, 9)
+          .map(({ videoStream, name, audioMuted, videoMuted, speaking }) => (
+            <Video
+              permissionRole={permissionRole}
+              key={name}
+              stream={videoStream}
+              isAudioMuted={audioMuted || false}
+              isVideoMuted={videoMuted || false}
+              isSpeaking={speaking || false}
+              name={name}
+              onClick={() => onClickRemove(name)}
+              onClickMute={() => onClickMute(name, audioMuted)}
+              twoParticipant={twoParticipant}
+            />
+          ))}
+        {localAudioStream && localVideoStream && (
           <Video
-            permissionRole={permissionRole}
-            key={name}
-            stream={videoStream}
-            isAudioMuted={audioMuted || false}
-            isVideoMuted={videoMuted || false}
-            isSpeaking={speaking || false}
-            name={name}
-            onClick={() => onClickRemove(name)}
-            onClickMute={() => onClickMute(name, audioMuted)}
+            permissionRole=""
+            key={localName}
+            stream={localVideoStream}
+            isAudioMuted={localAudioStream.muted || false}
+            isVideoMuted={localVideoStream.muted || false}
+            isSpeaking={false}
+            name={localName}
+            onClick={() => onClickRemove(localName)}
+            onClickMute={() => onClickMute(localName, localAudioStream.muted)}
+            oddNumber={oddNumber}
+            isAlone={isAlone}
             twoParticipant={twoParticipant}
           />
-        ),
-      )}
-      { localAudioStream && localVideoStream && 
-        <Video
-          permissionRole=''
-          key={localName}
-          stream={localVideoStream}
-          isAudioMuted={localAudioStream.muted || false}
-          isVideoMuted={localVideoStream.muted || false}
-          isSpeaking={false}
-          name={localName}
-          onClick={() => onClickRemove(localName)}
-          onClickMute={() => onClickMute(localName, localAudioStream.muted)}
-          oddNumber={oddNumber}
-          isAlone={isAlone}
-          twoParticipant={twoParticipant}
-        />}
+        )}
       </Content>
     </>
-  )
+  );
 }
 
 ParticipantsCollection.propTypes = {
@@ -123,10 +123,10 @@ const Content = styled.div`
     display: grid;
     grid-template-columns: repeat(${$colums}, 1fr);
     gap: 20px;
-    padding: 20px;
+    padding: 20px 30px;
     justify-items: ${$twoParticipant ? "center" : "stretch"};
     justify-content: center;
-  ` }
-`
+  `}
+`;
 
 export default ParticipantsCollection;

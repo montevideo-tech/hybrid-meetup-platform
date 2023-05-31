@@ -33,7 +33,7 @@ function LandingPage() {
 export default LandingPage;
 
 const Container = styled.div`
-  padding: 70px;
+  margin: auto 6%;
   height: 100%;
   display: grid;
   grid-template-areas: "headline img";

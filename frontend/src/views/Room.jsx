@@ -32,8 +32,7 @@ import {
 } from "../utils/chat";
 import { Colors } from "../themes/colors";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
-import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
-
+import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -63,7 +62,6 @@ function Room() {
   const dispatch = useDispatch();
   const { width = 0, height = 0 } = useWindowDimensions();
   const headerHeight = 153.6; // 8vh
-  let gap = 10;
   const paddingY = height < 600 ? 10 : 40;
   const paddingX = width < 800 ? 40 : 60;
   const navigate = useNavigate();
@@ -101,16 +99,11 @@ function Room() {
     collectionWidth = Math.max(collectionWidth, 160);
   }
   let collectionHeight = height - headerHeight - paddingY * 2;
-  let screenShareWidth = isSharingScreen
-    ? Math.min(width - collectionWidth - paddingX * 2, width - paddingX * 2)
-    : 0;
+
   if (width < height) {
-    gap = 8;
     collectionWidth = width - paddingX * 2;
     if (isSharingScreen) {
-      direction = "column";
       collectionHeight = height - headerHeight - (width / 4) * 3;
-      screenShareWidth = width - paddingX * 2;
     }
   }
 
@@ -180,8 +173,8 @@ function Room() {
       >
         {remoteStreams.filter((p) => !p.isSharingScreen)}
       </ParticipantsCollection>
-    )
-  }
+    );
+  };
 
   const subscribeToRemoteStreams = async (r) => {
     const { remoteParticipants } = r;
@@ -457,55 +450,56 @@ function Room() {
   const OnClickChatButton = () => {
     setChatOpen(!chatOpen);
     setUnreadMessages(0);
-  } 
+  };
   return (
     <>
-    {roomNotFound && <Navigate to="/rooms/404" />}
-    {room ?
-      <Container
-        $chatOpen={chatOpen}
-      >
-        <VideosContainer>
-          <RenderParticipantCollection/>
-        </VideosContainer>
-        {chatOpen && 
-        <ShowChat>
-          <Chat messages={messages} isUserAdmin={isUserAdmin}/>
-        </ShowChat>}
-        <Buttons>
-          <>
-            <CenteredDiv>
-              <RoomControls
-                permissionRole={userRole}
-                updateScreenShare={updateScreenShare}
-                isSharingScreen={isSharingScreen}
-                participantSharingScreen={participantSharingScreen}
-                localTracks={localTracks}
-                updateLocalTracksMuted={updateLocalTracksMuted}
-                leaveRoom={leaveRoom}
-                disabled={!room}
-                isEnableToUnmute={isEnableToUnmute}
-                localParticipant={localParticipant}
-                isBlockedRemotedGuest={isBlockedRemotedGuest}
-                setIsBlockedRemotedGuest={setIsBlockedRemotedGuest}
-                setLocalTracks={setLocalTracks}
-              />
-            </CenteredDiv>
-            <ChatButton
-              onClick={OnClickChatButton}
-            >
-              <Badge badgeContent={unreadMessages} color="secondary">
-                {chatOpen ? <ChatBubbleIcon color="primary" fontSize="large" /> : <ChatOutlinedIcon color="primary" fontSize="large" />}
-              </Badge>
-            </ChatButton>
-          </>
-        </Buttons>
-      </Container>
-    :
-      <StyledContainer>
-        {!errorJoiningRoom && <CircularProgress />}
-      </StyledContainer>
-    }
+      {roomNotFound && <Navigate to="/rooms/404" />}
+      {room ? (
+        <Container $chatOpen={chatOpen}>
+          <VideosContainer>
+            <RenderParticipantCollection />
+          </VideosContainer>
+          {chatOpen && (
+            <ShowChat>
+              <Chat messages={messages} isUserAdmin={isUserAdmin} />
+            </ShowChat>
+          )}
+          <Buttons>
+            <>
+              <CenteredDiv>
+                <RoomControls
+                  permissionRole={userRole}
+                  updateScreenShare={updateScreenShare}
+                  isSharingScreen={isSharingScreen}
+                  participantSharingScreen={participantSharingScreen}
+                  localTracks={localTracks}
+                  updateLocalTracksMuted={updateLocalTracksMuted}
+                  leaveRoom={leaveRoom}
+                  disabled={!room}
+                  isEnableToUnmute={isEnableToUnmute}
+                  localParticipant={localParticipant}
+                  isBlockedRemotedGuest={isBlockedRemotedGuest}
+                  setIsBlockedRemotedGuest={setIsBlockedRemotedGuest}
+                  setLocalTracks={setLocalTracks}
+                />
+              </CenteredDiv>
+              <ChatButton onClick={OnClickChatButton}>
+                <Badge badgeContent={unreadMessages} color="secondary">
+                  {chatOpen ? (
+                    <ChatBubbleIcon color="primary" fontSize="large" />
+                  ) : (
+                    <ChatOutlinedIcon color="primary" fontSize="large" />
+                  )}
+                </Badge>
+              </ChatButton>
+            </>
+          </Buttons>
+        </Container>
+      ) : (
+        <StyledContainer>
+          {!errorJoiningRoom && <CircularProgress />}
+        </StyledContainer>
+      )}
     </>
   );
 }
@@ -516,17 +510,17 @@ const Container = styled.div`
   display: grid;
   grid-template-rows: 1fr 60px;
   height: 100%;
-  ${({ $chatOpen }) => $chatOpen ? 
-    `
+  ${({ $chatOpen }) =>
+    $chatOpen
+      ? `
     grid-template-columns: 1fr 360px;
     transition: grid-template-columns 1s ease; 
-    `: 
     `
+      : `
     grid-template-columns: 1fr 0px;
     transition: grid-template-columns 1s ease;
-    `
-  };
-`
+    `};
+`;
 
 const CenteredDiv = styled.div`
   flex: 1;
@@ -539,7 +533,7 @@ const ChatButton = styled.button`
   background-color: transparent;
   border: none;
   cursor: pointer;
-`
+`;
 
 const Buttons = styled.div`
   grid-column: 1 / span 2;
@@ -549,16 +543,16 @@ const Buttons = styled.div`
   align-items: center;
   background-color: ${Colors.black};
   padding: 0 40px;
-`
+`;
 
 const ShowChat = styled.div`
   background: ${Colors.black};
-  padding: 20px 20px 20px 0;
-`
+  padding: 20px 30px 20px 0;
+`;
 
 const VideosContainer = styled.div`
   background: ${Colors.black};
-`
+`;
 
 const StyledContainer = styled.div`
   display: flex;
