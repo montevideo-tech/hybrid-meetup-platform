@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import Link from "@mui/material/Link";
 import Avatar from "@mui/material/Avatar";
+import envelope from "../assets/envelope.svg";
+import lock from "../assets/lock.svg";
 import theme from "./theme";
 
 export const Button = styled.button`
@@ -59,7 +61,18 @@ export const Input = styled.input`
   font-weight: 500;
   font-size: 1rem;
   line-height: 23px;
-  padding-right: 30px;
+  padding-left: 43px; 
+  background-repeat: no-repeat;
+  background-position: 15px center;
+  background-size: 16px 16px;
+
+  &.email {
+    background-image: url(${envelope});
+  }
+
+  &.password {
+    background-image: url(${lock});
+  }
   ::placeholder {
     color: ${theme.palette.disabled.secondary};
     opacity: 50%;

@@ -7,12 +7,6 @@ import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import Grid from "@mui/material/Grid";
-import InputAdornment from "@mui/material/InputAdornment";
-import IconButton from "@mui/material/IconButton";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import EmailIcon from "@mui/icons-material/Email";
 import Alert from "@mui/material/Alert";
 import {
   Button,
@@ -75,14 +69,17 @@ function SignIn() {
             </Label>
             <Input
               id="email"
-              label="Email Address"
               name="email"
-              placeholder="email adress"
               autoFocus
-              $customStyles={{ marginBottom: "14px" }}
+              className="email"
               {...register("email")}
               error={!!errors.email}
               helperText={errors.email?.message}
+              placeholder="email address"
+              $customStyles={{
+                marginBottom: "14px",
+                paddingLeft: "43px",
+              }}
             />
             {errors.email && (
               <ErrorMessage>{errors.email.message}</ErrorMessage>
@@ -97,13 +94,16 @@ function SignIn() {
               name="password"
               label="Password"
               placeholder="password"
-              className="password-icon"
+              className="password"
               type={showPassword ? "text" : "password"}
               id="password"
               {...register("password")}
               error={!!errors.password}
               helperText={errors.password?.message}
-              $customStyles={{ marginBottom: "14px" }}
+              $customStyles={{
+                marginBottom: "14px",
+                paddingLeft: "43px",
+              }}
             />
             {errors.password && (
               <ErrorMessage>{errors.password.message}</ErrorMessage>
