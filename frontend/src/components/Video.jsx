@@ -31,6 +31,8 @@ function Video(props) {
     oddNumber,
     isAlone,
     twoParticipant,
+    isSharingScreen,
+    isScreenShared,
   } = props;
 
   useEffect(() => {
@@ -42,14 +44,15 @@ function Video(props) {
       videoRef.current.srcObject = stream;
     }
   }, [stream]);
-  const boxHeight= isAlone ? "calc((100vh - 170px))" : "calc((100vh - 204px)/2)";
+  const boxHeight = isSharingScreen ? "150px" : isAlone ? "calc((100vh - 170px))" : "calc((100vh - 204px)/2)";
+  const boxWidth = isScreenShared ? "auto" : isSharingScreen ? "200px" : twoParticipant ? "60vh" : "100%"
 
   return (
     <Box
       sx={{
         position: "relative",
         height: boxHeight,
-        width: `${twoParticipant ? "60vh" : "100%"}`,
+        width: boxWidth,
         background: `${Colors.darkGrey}`,
         borderRadius: "5px",
         overflow: "hidden",
