@@ -32,7 +32,7 @@ import {
 import ShareScreen from "../components/ShareScreen";
 import { Colors } from "../themes/colors";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
-import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
+import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import Audio from "../components/Audio";
 import Video from "../components/Video";
 
@@ -500,7 +500,7 @@ function Room() {
   const OnClickChatButton = () => {
     setChatOpen(!chatOpen);
     setUnreadMessages(0);
-  } 
+  };
   return (
     <>
     {roomNotFound && <Navigate to="/rooms/404" />}
@@ -563,17 +563,17 @@ const Container = styled.div`
   display: grid;
   grid-template-rows: 1fr 60px;
   height: 100%;
-  ${({ $chatOpen }) => $chatOpen ? 
-    `
+  ${({ $chatOpen }) =>
+    $chatOpen
+      ? `
     grid-template-columns: 1fr 360px;
     transition: grid-template-columns 1s ease; 
-    `: 
     `
+      : `
     grid-template-columns: 1fr 0px;
     transition: grid-template-columns 1s ease;
-    `
-  };
-`
+    `};
+`;
 
 const CenteredDiv = styled.div`
   flex: 1;
@@ -586,7 +586,7 @@ const ChatButton = styled.button`
   background-color: transparent;
   border: none;
   cursor: pointer;
-`
+`;
 
 const Buttons = styled.div`
   grid-column: 1 / span 2;
@@ -596,16 +596,16 @@ const Buttons = styled.div`
   align-items: center;
   background-color: ${Colors.black};
   padding: 0 40px;
-`
+`;
 
 const ShowChat = styled.div`
   background: ${Colors.black};
-  padding: 20px 20px 20px 0;
-`
+  padding: 20px 30px 20px 0;
+`;
 
 const VideosContainer = styled.div`
   background: ${Colors.black};
-`
+`;
 
 const StyledContainer = styled.div`
   display: flex;

@@ -31,7 +31,7 @@ const router = createBrowserRouter([
         path: "",
         element: (
           <AuthRoute>
-            <Header />,
+            <Header />
           </AuthRoute>
         ),
         children: [{ path: "", element: <LandingPage /> }],
@@ -97,6 +97,7 @@ const router = createBrowserRouter([
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
 root.render(
   <ThemeProvider theme={theme}>
     <Provider store={store}>

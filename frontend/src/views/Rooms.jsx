@@ -12,6 +12,8 @@ import {
 import MuiAlert from "@mui/material/Alert";
 import { Check as CheckIcon, Close as CloseIcon } from "@mui/icons-material";
 
+import { Colors } from "../themes/colors";
+import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { supabase } from "../lib/api";
 import { createRoom, addRoomToDb, giveUserRoleOnRoom } from "../actions";
@@ -244,12 +246,12 @@ function Rooms() {
     );
 
   return (
-    <Paper sx={{ p: 2 }}>
-      <Typography variant="h4" component="h1">
-        Rooms
-      </Typography>
+    <Container>
+      <ContainerWithTitleAndButton>
+        <Title>Choose your room</Title>
 
-      {user?.role === "admin" && renderCreateRoomButton()}
+        {user?.role === "admin" && renderCreateRoomButton()}
+      </ContainerWithTitleAndButton>
 
       {loadingRooms ? <RoomsListSkeleton /> : <RoomsList list={roomsList} />}
       {errorState && (
@@ -263,8 +265,29 @@ function Rooms() {
           </Alert>
         </Snackbar>
       )}
-    </Paper>
+    </Container>
   );
 }
+
+const Container = styled.div`
+  padding: 30px;
+`;
+
+const ContainerWithTitleAndButton = styled.div`
+  display: flex;
+  align-content: center;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 40px;
+`;
+
+const Title = styled.div`
+  font-family: "Poppins", sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 30px;
+  line-height: 45px;
+  color: ${Colors.blackPurple};
+`;
 
 export default Rooms;

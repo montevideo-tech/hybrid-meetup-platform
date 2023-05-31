@@ -5,7 +5,6 @@ import Avatar from "@mui/material/Avatar";
 import theme from "./theme";
 
 export const Button = styled.button`
-  // TODO it should receive an icon (for the control buttons of the Room)
   cursor: pointer;
   width: 136px;
   height: 35px;
