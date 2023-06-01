@@ -59,7 +59,10 @@ function SignUp() {
       }, 3000);
     };
     const onError = (error) => {
-      setAlert({ type: "error", message: `An error occurred: ${error} ` });
+      setAlert({
+        type: "error",
+        message: `An error occurred: ${error.response.data.error} `,
+      });
     };
     dispatch(signUp(data, onSuccess, onError));
   };
@@ -100,6 +103,7 @@ function SignUp() {
                 $customStyles={{ width: "250px" }}
               />
             </InputContainer>
+            {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
             <Label
               htmlFor="email"
               $customStyles={{ alignSelf: "start", marginLeft: "15px" }}
@@ -119,6 +123,9 @@ function SignUp() {
                 $customStyles={{ width: "250px" }}
               />
             </InputContainer>
+            {errors.email && (
+              <ErrorMessage>{errors.email.message}</ErrorMessage>
+            )}
             <Label
               htmlFor="password"
               $customStyles={{ alignSelf: "start", marginLeft: "15px" }}
@@ -144,6 +151,9 @@ function SignUp() {
                 $customStyles={{ width: "250px" }}
               />
             </InputContainer>
+            {errors.password && (
+              <ErrorMessage>{errors.password.message}</ErrorMessage>
+            )}
             <Label
               htmlFor="confirmPassword"
               $customStyles={{ alignSelf: "start", marginLeft: "15px" }}
@@ -169,6 +179,9 @@ function SignUp() {
                 $customStyles={{ width: "250px" }}
               />
             </InputContainer>
+            {errors.confirmPassword && (
+              <ErrorMessage>{errors.confirmPassword.message}</ErrorMessage>
+            )}
             <Button
               $primary
               $customStyles={{ margin: "25px 0", alignSelf: "end" }}
@@ -253,4 +266,11 @@ const LoginContainer = styled.div`
     margin-right: 2px;
     color: ${Colors.davyGray};
   }
+`;
+
+const ErrorMessage = styled.div`
+  font-family: "Poppins";
+  font-size: 0.75rem;
+  color: red;
+  margin-top: -10px;
 `;
