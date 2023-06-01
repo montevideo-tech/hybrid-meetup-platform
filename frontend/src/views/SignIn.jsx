@@ -68,7 +68,7 @@ function SignIn() {
               htmlFor="email"
               $customStyles={{ alignSelf: "start", marginLeft: "15px" }}
             >
-              Email Adress
+              Email Address
             </Label>
             <InputContainer>
               <StartIcon src={envelope} alt="lock" />
