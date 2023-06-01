@@ -93,9 +93,9 @@ export function Header() {
                       $primary
                       $customStyles={{
                         width: "100%",
-                        height: "22px",
+                        height: "25px",
                         fontWeight: "600",
-                        fontSize: "8px",
+                        fontSize: "0.65rem",
                         lineHeight: "12px",
                         textTransform: "uppercase",
                       }}
@@ -175,7 +175,7 @@ const EmailContainer = styled.div`
   span {
     color: ${Colors.blackPurple};
     font-weight: 500;
-    font-size: 0.625rem;
+    font-size: 0.8rem;
     line-height: 0.938rem;
     margin-bottom: 6px;
   }
