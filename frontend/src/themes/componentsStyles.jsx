@@ -39,7 +39,7 @@ export const Card = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 320px;
+  width: 370px;
   background-color: ${theme.palette.secondary.main};
   border: 2px solid ${theme.palette.primary.main};
   box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1);
@@ -51,9 +51,8 @@ export const Card = styled.div`
 `;
 
 export const Input = styled.input`
-  width: calc(100% - 50px);
-  height: 35px;
-  border: 1.98px solid ${theme.palette.primary.main};
+  height: 37px;
+  border: 2px solid ${theme.palette.primary.main};
   border-radius: 34px;
   background-color: ${theme.palette.secondary.main};
   color: ${theme.palette.fonts.main};
@@ -61,21 +60,17 @@ export const Input = styled.input`
   font-weight: 500;
   font-size: 1rem;
   line-height: 23px;
-  padding-left: 43px; 
-  background-repeat: no-repeat;
-  background-position: 15px center;
-  background-size: 16px 16px;
+  padding: 0 40px;
 
-  &.email {
-    background-image: url(${envelope});
-  }
-
-  &.password {
-    background-image: url(${lock});
-  }
   ::placeholder {
     color: ${theme.palette.disabled.secondary};
     opacity: 50%;
+  }
+
+  :focus-visible {
+    outline: none !important;
+    border: 2px solid ${theme.palette.logo.main};
+    box-shadow: 0 0 2px ${theme.palette.logo.main};
   }
 
   ${(props) =>

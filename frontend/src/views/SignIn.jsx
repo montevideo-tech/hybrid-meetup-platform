@@ -19,6 +19,10 @@ import {
 import { signInWithEmail } from "../actions";
 import { Colors } from "../themes/colors";
 import Logo from "../assets/logo2.svg";
+import envelope from "../assets/envelope.svg";
+import lock from "../assets/lock.svg";
+import eye from "../assets/eye.svg";
+import eyeSlash from "../assets/eyeSlash.svg";
 
 function SignIn() {
   const navigate = useNavigate();
@@ -36,7 +40,6 @@ function SignIn() {
   });
   const [alert, setAlert] = useState({ type: "success", message: null });
   const [showPassword, setShowPassword] = useState(false);
-
   const onSubmit = async (data) => {
     const onSuccess = () => {
       navigate("/rooms");
@@ -67,20 +70,22 @@ function SignIn() {
             >
               Email Adress
             </Label>
-            <Input
-              id="email"
-              name="email"
-              autoFocus
-              className="email"
-              {...register("email")}
-              error={!!errors.email}
-              helperText={errors.email?.message}
-              placeholder="email address"
-              $customStyles={{
-                marginBottom: "14px",
-                paddingLeft: "43px",
-              }}
-            />
+            <InputContainer>
+              <StartIcon src={envelope} alt="lock" />
+              <Input
+                id="email"
+                name="email"
+                autoFocus
+                className="email"
+                {...register("email")}
+                error={!!errors.email}
+                helperText={errors.email?.message}
+                placeholder="email address"
+                $customStyles={{
+                  width: "250px",
+                }}
+              />
+            </InputContainer>
             {errors.email && (
               <ErrorMessage>{errors.email.message}</ErrorMessage>
             )}
@@ -90,21 +95,26 @@ function SignIn() {
             >
               Password
             </Label>
-            <Input
-              name="password"
-              label="Password"
-              placeholder="password"
-              className="password"
-              type={showPassword ? "text" : "password"}
-              id="password"
-              {...register("password")}
-              error={!!errors.password}
-              helperText={errors.password?.message}
-              $customStyles={{
-                marginBottom: "14px",
-                paddingLeft: "43px",
-              }}
-            />
+            <InputContainer>
+              <StartIcon src={lock} alt="lock" />
+              <EndIcon
+                onClick={() => setShowPassword(!showPassword)}
+                src={showPassword ? eye : eyeSlash}
+                alt="view password"
+              />
+              <Input
+                name="password"
+                label="Password"
+                placeholder="password"
+                className="password"
+                type={showPassword ? "text" : "password"}
+                id="password"
+                {...register("password")}
+                error={!!errors.password}
+                helperText={errors.password?.message}
+                $customStyles={{ width: "250px" }}
+              />
+            </InputContainer>
             {errors.password && (
               <ErrorMessage>{errors.password.message}</ErrorMessage>
             )}
@@ -182,4 +192,25 @@ const ErrorMessage = styled.div`
   font-size: 0.75rem;
   color: red;
   margin-top: -10px;
+`;
+
+const InputContainer = styled.div`
+  align-self: center;
+  justify-self: center;
+  margin-bottom: 14px;
+`;
+
+const StartIcon = styled.img`
+  position: absolute;
+  padding: 11px 0 0 15px;
+  width: 20px;
+  height: 20px;
+`;
+
+const EndIcon = styled.img`
+  cursor: pointer;
+  position: absolute;
+  margin: 11px 0 0 297px;
+  width: 20px;
+  height: 20px;
 `;
