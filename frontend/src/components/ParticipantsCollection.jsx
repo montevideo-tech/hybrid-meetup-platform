@@ -8,12 +8,15 @@ import { ROLES } from "../utils/roles";
 import styled from "styled-components";
 
 function ParticipantsCollection(props) {
-  const { participantsCount, children, localParticipant, permissionRole } =
-    props;
-
-  const [localVideoStream, setLocalVideoStream] = useState(undefined);
-  const [localAudioStream, setLocalAudioStream] = useState(undefined);
-  const [localName, setLocalName] = useState(undefined);
+  const {
+    participantsCount,
+    children,
+    localParticipant,
+    permissionRole,
+    localVideoStream,
+    localAudioStream,
+    localName,
+  } = props;
 
   const currentParticipants = useMemo(() => {
     return children;
@@ -27,27 +30,7 @@ function ParticipantsCollection(props) {
     localParticipant.blockMuteRemoteParticipant(r, isMuted);
   };
 
-  useEffect(() => {
-    if (localParticipant?.provider?.videoTracks?.entries().next()?.value) {
-      let localVideoStream = new MediaStream();
-      localVideoStream.addTrack(
-        localParticipant?.provider?.videoTracks?.entries().next()?.value[1]
-          .track,
-      );
-      setLocalVideoStream(localVideoStream);
-    }
-    if (localParticipant?.provider?.audioTracks?.entries().next()?.value) {
-      setLocalAudioStream(
-        localParticipant?.provider?.audioTracks?.entries().next()?.value[1],
-      );
-    }
-    setLocalName(localParticipant?.displayName);
-  }, [
-    localParticipant.provider.audioTracks.entries().next().done,
-    localParticipant.provider.videoTracks.entries().next().done,
-  ]);
-
-  const colums = Math.round((participantsCount + 1) / 2);
+  const colums = Math.round((participantsCount + 1 ) /2);
   const isAlone = currentParticipants.length === 0;
   const oddNumber = !isAlone && currentParticipants.length % 2 === 0; //I check that it is an even number since the local participant is added.
   const twoParticipant = currentParticipants.length === 1;
