@@ -1,7 +1,8 @@
 import styled from "styled-components";
 import Link from "@mui/material/Link";
-import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
+import envelope from "../assets/envelope.svg";
+import lock from "../assets/lock.svg";
 import theme from "./theme";
 
 export const Button = styled.button`
@@ -92,13 +93,8 @@ export const StyledLink = styled(Link)`
   color: ${theme.palette.primary.main};
 `;
 
-export const StyledHeader = styled(Typography)`
-  font-weight: bold;
-  text-align: center;
-`;
-
 export const StyledAvatar = styled(Avatar)`
-  background-color: ${({ theme }) => theme.palette.secondary.main};
+  background-color: ${theme.palette.secondary.main};
 `;
 
 export const formVariants = {
