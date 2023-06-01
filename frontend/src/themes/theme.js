@@ -18,6 +18,9 @@ const theme = createTheme({
     fonts: {
       main: Colors.blackPurple,
     },
+    logo: {
+      main: Colors.orange,
+    },
   },
   typography: {
     fontFamily: "Poppins",
