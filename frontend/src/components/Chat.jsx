@@ -23,13 +23,6 @@ function Chat(props) {
     return filteredContent;
   };
 
-  useEffect(() => {
-    const lastMessage = messages[messages.length - 1];
-    if (lastMessage && lastMessage.email !== email) {
-      setUnreadMessages((prevUnreadMessages) => prevUnreadMessages + 1);
-    }
-  }, [messages, email]);
-
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!email || !content) return;

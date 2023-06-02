@@ -116,6 +116,8 @@ function Room() {
   useEffect(() => {
     if (!chatOpen) {
       setUnreadMessages((prevUnreadMessages) => prevUnreadMessages + 1);
+    } else {
+      setUnreadMessages(0);
     }
   }, [messages]);
 
