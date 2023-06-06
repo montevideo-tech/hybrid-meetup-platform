@@ -8,7 +8,8 @@ import styled from "styled-components";
 import useUserPermission from "../hooks/useUserPermission";
 import RoomControls from "../components/RoomControls";
 
-import { Room as WebRoom } from "../Dolby/dolbyProvider";
+import { Room as DolbyWebRoom } from "../Dolby/dolbyProvider";
+import { Room as MuxWebRoom } from "../lib/webrtc";
 import { roomJWTprovider } from "../actions";
 import {
   initRoom,
@@ -36,6 +37,7 @@ import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import Audio from "../components/Audio";
 import Video from "../components/Video";
 
+import { VITE_WEBRTC_PROVIDER_NAME } from "../lib/constants";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -103,15 +105,23 @@ function Room() {
 
   useEffect(() => {
     if (localParticipant?.provider?.videoTracks?.entries().next()?.value) {
-      let localVideoStream = new MediaStream();
-      localVideoStream.addTrack(localParticipant?.provider?.videoTracks?.entries().next()?.value[1].track);
+      const localVideoStream = new MediaStream();
+      localVideoStream.addTrack(
+        localParticipant?.provider?.videoTracks?.entries().next()?.value[1]
+          .track,
+      );
       setLocalVideoStream(localVideoStream);
     }
     if (localParticipant?.provider?.audioTracks?.entries().next()?.value) {
-      setLocalAudioStream(localParticipant?.provider?.audioTracks?.entries().next()?.value[1]);
+      setLocalAudioStream(
+        localParticipant?.provider?.audioTracks?.entries().next()?.value[1],
+      );
     }
     setLocalName(localParticipant?.displayName);
-  },[localParticipant?.provider.audioTracks.entries().next().done, localParticipant?.provider.videoTracks.entries().next().done])
+  }, [
+    localParticipant?.provider?.audioTracks?.entries().next().done,
+    localParticipant?.provider?.videoTracks?.entries().next().done,
+  ]);
 
   useEffect(() => {
     if (!chatOpen) {
@@ -127,7 +137,7 @@ function Room() {
       const divElement = divRef.current;
       const { width } = divElement.getBoundingClientRect();
       setScreenWidth(width);
-    };
+    }
   }, [divRef.current]);
 
   const handleRoleChange = (payload) => {
@@ -167,6 +177,7 @@ function Room() {
   };
 
   const RenderParticipantCollection = () => {
+    console.log("Entra aca");
     return (
       <ParticipantsCollection
         participantsCount={participantsCount}
@@ -179,9 +190,9 @@ function Room() {
       >
         {remoteStreams.filter((p) => !p.isSharingScreen)}
       </ParticipantsCollection>
-    )
-  }
-  
+    );
+  };
+
   const RenderSharingScreen = () => {
     const maxParticipant = Math.trunc(screenWidth / 200) - 1;
     return (
@@ -191,7 +202,7 @@ function Room() {
         ))}
         <ShareScreenParticipants>
           <Video
-            permissionRole=''
+            permissionRole=""
             key={localName}
             stream={localVideoStream}
             isAudioMuted={localAudioStream.muted || false}
@@ -217,16 +228,15 @@ function Room() {
                   onClickMute={() => onClickMute(name, audioMuted)}
                   isSharingScreen={isSharingScreen}
                 />
-              )
-            }
-          )}
+              );
+            })}
         </ShareScreenParticipants>
         <ShareScreen>
           {remoteStreams.find((p) => p.isSharingScreen)}
         </ShareScreen>
       </ShareScreenContainer>
-    )
-  }
+    );
+  };
 
   const subscribeToRemoteStreams = async (r) => {
     const { remoteParticipants } = r;
@@ -365,24 +375,29 @@ function Room() {
   };
 
   const joinRoom = async () => {
-    const JWT =
-      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkb2xieS5pbyIsImlhdCI6MTY4NTUzODk3NCwic3ViIjoid195UDNYVDJaVy1RbmZ6TXR5V1MwZz09IiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9DVVNUT01FUiJdLCJ0YXJnZXQiOiJzZXNzaW9uIiwib2lkIjoiOTg3MDFkMDctZWEyNi00ODM1LWJhM2ItMTBiMGU4MjkyODcyIiwiYWlkIjoiYjU3NmZhYjctY2JiMC00NWRhLTg1YWQtOGQ5MmZhZWEyNDY5IiwiYmlkIjoiOGEzNjgwZGU4ODJjOTlmNTAxODgyZmUxNGJmMTZiMmIiLCJleHAiOjE2ODU2MjUzNzR9.p_Y8tNe7nkT1JqauvmJ2yVYsmd7fK1rHBYphcfT4Ch8AhdysSwDWG-WzFKOWt_khEiKIXKXO16WfxdDitljwlQ";
-    // const JWT = await roomJWTprovider(
-    //   roomId,
-    //   currentUser.email,
-    //   null,
-    //   null,
-    //   () => {
-    //     setRoomNotFound(true);
-    //   },
-    // );
+    const DolbyJWT =
+      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkb2xieS5pbyIsImlhdCI6MTY4NjA1Nzc0NCwic3ViIjoid195UDNYVDJaVy1RbmZ6TXR5V1MwZz09IiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9DVVNUT01FUiJdLCJ0YXJnZXQiOiJzZXNzaW9uIiwib2lkIjoiOTg3MDFkMDctZWEyNi00ODM1LWJhM2ItMTBiMGU4MjkyODcyIiwiYWlkIjoiYjU3NmZhYjctY2JiMC00NWRhLTg1YWQtOGQ5MmZhZWEyNDY5IiwiYmlkIjoiOGEzNjgwZGU4ODJjOTlmNTAxODgyZmUxNGJmMTZiMmIiLCJleHAiOjE2ODYxNDQxNDR9.Gx7Neluob3x4unYTWyph9RmQqNO9n_OsTxEo-uLt38gCxqLj5s4ls9zoVYyAX9QTHn7Ho3xM9vXTw3D0dKUzEw";
+
+    const MuxJWT = await roomJWTprovider(
+      roomId,
+      currentUser.email,
+      null,
+      null,
+      () => {
+        setRoomNotFound(true);
+      },
+    );
     const guestMuted = await getGuestMuted();
     setIsBlockedRemotedGuest(guestMuted);
     if (currentUser.role !== ROLES.ADMIN) {
       setIsEnableToUnmute(!guestMuted);
     }
     try {
-      const newRoom = new WebRoom(JWT);
+      console.log("pROVIDER NAME", VITE_WEBRTC_PROVIDER_NAME);
+      const newRoom =
+        VITE_WEBRTC_PROVIDER_NAME === "MUX"
+          ? new MuxWebRoom(MuxJWT)
+          : new DolbyWebRoom(DolbyJWT);
       const newParticipant = await newRoom.join();
       setLocalParticipant(newParticipant);
       if (newParticipant) {
@@ -406,6 +421,7 @@ function Room() {
         const tracks = await newParticipant.publishTracks({
           constraints: { video: true, audio: true },
         });
+
         const stream = new MediaStream();
         const newLocalTracks = { ...localTracks };
         tracks.forEach((track) => {
@@ -454,7 +470,7 @@ function Room() {
           setRoomNotFound(true);
         },
       );
-      const newScreenRoom = new WebRoom(JWT);
+      const newScreenRoom = new MuxWebRoom(JWT);
       const newlocalParticipant = await newScreenRoom.join();
       setScreenRoom(newScreenRoom);
       try {
@@ -508,56 +524,58 @@ function Room() {
   };
   return (
     <>
-    {roomNotFound && <Navigate to="/rooms/404" />}
-    {room ?
-      <Container
-        $chatOpen={chatOpen}
-      >
-        <VideosContainer ref={divRef}>
-          {isSharingScreen ? (
-            <RenderSharingScreen />
-          ): localAudioStream && localVideoStream && 
-            <RenderParticipantCollection/>
-          }
-        </VideosContainer>
-        {chatOpen && 
-        <ShowChat>
-          <Chat messages={messages} isUserAdmin={isUserAdmin}/>
-        </ShowChat>}
-        <Buttons>
-          <>
-            <CenteredDiv>
-              <RoomControls
-                permissionRole={userRole}
-                updateScreenShare={updateScreenShare}
-                isSharingScreen={isSharingScreen}
-                participantSharingScreen={participantSharingScreen}
-                localTracks={localTracks}
-                updateLocalTracksMuted={updateLocalTracksMuted}
-                leaveRoom={leaveRoom}
-                disabled={!room}
-                isEnableToUnmute={isEnableToUnmute}
-                localParticipant={localParticipant}
-                isBlockedRemotedGuest={isBlockedRemotedGuest}
-                setIsBlockedRemotedGuest={setIsBlockedRemotedGuest}
-                setLocalTracks={setLocalTracks}
-              />
-            </CenteredDiv>
-            <ChatButton
-              onClick={OnClickChatButton}
-            >
-              <Badge badgeContent={unreadMessages} color="secondary">
-                {chatOpen ? <ChatBubbleIcon color="primary" fontSize="large" /> : <ChatOutlinedIcon color="primary" fontSize="large" />}
-              </Badge>
-            </ChatButton>
-          </>
-        </Buttons>
-      </Container>
-    :
-      <StyledContainer>
-        {!errorJoiningRoom && <CircularProgress />}
-      </StyledContainer>
-    }
+      {roomNotFound && <Navigate to="/rooms/404" />}
+      {room ? (
+        <Container $chatOpen={chatOpen}>
+          <VideosContainer ref={divRef}>
+            {isSharingScreen ? (
+              <RenderSharingScreen />
+            ) : (
+              localAudioStream &&
+              localVideoStream && <RenderParticipantCollection />
+            )}
+          </VideosContainer>
+          {chatOpen && (
+            <ShowChat>
+              <Chat messages={messages} isUserAdmin={isUserAdmin} />
+            </ShowChat>
+          )}
+          <Buttons>
+            <>
+              <CenteredDiv>
+                <RoomControls
+                  permissionRole={userRole}
+                  updateScreenShare={updateScreenShare}
+                  isSharingScreen={isSharingScreen}
+                  participantSharingScreen={participantSharingScreen}
+                  localTracks={localTracks}
+                  updateLocalTracksMuted={updateLocalTracksMuted}
+                  leaveRoom={leaveRoom}
+                  disabled={!room}
+                  isEnableToUnmute={isEnableToUnmute}
+                  localParticipant={localParticipant}
+                  isBlockedRemotedGuest={isBlockedRemotedGuest}
+                  setIsBlockedRemotedGuest={setIsBlockedRemotedGuest}
+                  setLocalTracks={setLocalTracks}
+                />
+              </CenteredDiv>
+              <ChatButton onClick={OnClickChatButton}>
+                <Badge badgeContent={unreadMessages} color="secondary">
+                  {chatOpen ? (
+                    <ChatBubbleIcon color="primary" fontSize="large" />
+                  ) : (
+                    <ChatOutlinedIcon color="primary" fontSize="large" />
+                  )}
+                </Badge>
+              </ChatButton>
+            </>
+          </Buttons>
+        </Container>
+      ) : (
+        <StyledContainer>
+          {!errorJoiningRoom && <CircularProgress />}
+        </StyledContainer>
+      )}
     </>
   );
 }
@@ -623,9 +641,9 @@ const ShareScreenContainer = styled.div`
   display: grid;
   height: 100%;
   grid-template-rows: 170px 1fr;
-`
+`;
 
 const ShareScreenParticipants = styled.div`
   padding: 10px 0;
   display: flex;
-`
+`;
