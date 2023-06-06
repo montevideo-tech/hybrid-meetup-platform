@@ -1,4 +1,4 @@
-import { React, useEffect } from "react";
+import { React, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -20,6 +20,7 @@ import { setGuestMuted } from "../utils/room";
 
 function RoomControls(props) {
   const navigate = useNavigate();
+  const [muted, setMuted] = useState(false);
 
   const {
     updateScreenShare,
@@ -34,17 +35,37 @@ function RoomControls(props) {
     localParticipant,
     isBlockedRemotedGuest,
     setIsBlockedRemotedGuest,
+    setLocalTracks,
   } = props;
+  const [localVideoTrack, setLocalVideoTrack] = useState(localTracks.video);
 
-  const toggleMuteTrack = (t) => {
-    console.log("t", t);
+  const toggleMuteTrack = async (t) => {
     if (isEnableToUnmute || t.kind === "video") {
-      if (t.muted) {
-        t.unmute();
-        updateLocalTracksMuted(t.kind, false);
+      if (t.kind === "video") {
+        if (muted) {
+          setMuted(false);
+          const tracks = await localParticipant.publishTracks({
+            constraints: { video: true, audio: false },
+          });
+          const newLocalTracks = { ...localTracks };
+          newLocalTracks[tracks[0].kind] = tracks[0];
+          setLocalVideoTrack(tracks[0]);
+          setLocalTracks(newLocalTracks);
+          updateLocalTracksMuted(t.kind, false);
+        } else {
+          setMuted(true);
+          localVideoTrack.mute();
+          localParticipant.unpublishTracks([localVideoTrack]);
+          updateLocalTracksMuted(localVideoTrack.kind, true);
+        }
       } else {
-        t.mute();
-        updateLocalTracksMuted(t.kind, true);
+        if (t.muted) {
+          t.unmute();
+          updateLocalTracksMuted(t.kind, false);
+        } else {
+          t.mute();
+          updateLocalTracksMuted(t.kind, true);
+        }
       }
     }
   };
@@ -57,6 +78,10 @@ function RoomControls(props) {
       }, 500);
     }
   }, [localTracks.audio]);
+
+  useEffect(() => {
+    setLocalVideoTrack(localTracks.video);
+  }, [localTracks.video]);
 
   const endCall = () => {
     leaveRoom();
@@ -74,16 +99,7 @@ function RoomControls(props) {
   };
 
   return (
-    <ButtonGroup
-      variant="contained"
-      size="large"
-      disabled={disabled}
-      sx={{
-        position: "fixed",
-        bottom: 0,
-        left: "calc(50% - 103px)",
-      }}
-    >
+    <Container variant="contained" size="large" disabled={disabled}>
       <Tooltip
         title={
           !localTracks.video || localTracks.video.muted
@@ -179,7 +195,7 @@ function RoomControls(props) {
           </Button>
         </StyledDiv>
       </Tooltip>
-    </ButtonGroup>
+    </Container>
   );
 }
 
@@ -207,8 +223,16 @@ RoomControls.defaultProps = {
   isBlockedRemotedGuest: false,
 };
 
-export default RoomControls;
+const Container = styled(ButtonGroup)`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-content: center;
+  border: transparent !important;
+`;
 
 const StyledDiv = styled.div`
   padding: 2px;
 `;
+
+export default RoomControls;

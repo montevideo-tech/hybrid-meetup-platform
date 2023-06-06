@@ -1,7 +1,8 @@
 import React from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Colors } from "../../themes/colors";
-
+import { Button } from "../../themes/componentsStyles";
 import {
   Grid,
   Card,
@@ -11,18 +12,14 @@ import {
   IconButton,
 } from "@mui/material";
 import { Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
-
-import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import Button from "@mui/material/Button";
 import { deleteRoom } from "../../actions";
 import { ROLES } from "../../utils/roles";
-import theme from "../../themes/theme";
 import { onDeleteRoomMessage } from "../../utils/chat";
 
 export const RoomItem = ({ currentUser, room }) => {
   const { id, name, providerId, createdBy } = room;
-
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   if (!id || !name || !providerId) {
@@ -50,75 +47,92 @@ export const RoomItem = ({ currentUser, room }) => {
     <Grid item xs={12} sm={6} md={4} key={id}>
       <StyledCard className="custom-card">
         <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
+          <Title gutterBottom variant="h5" component="div">
             {name}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
+          </Title>
+          <CreatedBy variant="body2" color="text.secondary">
             {createdByStr}
-          </Typography>
+          </CreatedBy>
         </CardContent>
         {currentUser?.role === ROLES.USER ? (
-          <CardActions>
-            <StyledButton
-              className="custom-button"
-              component={RouterLink}
-              to={`/rooms/${providerId}`}
-            >
-              Join Room
-            </StyledButton>
-          </CardActions>
+          <StyledCardActions>
+            <Button $primary onClick={() => navigate(`/rooms/${providerId}`)}>
+              Join room
+            </Button>
+          </StyledCardActions>
         ) : (
-          <CardActions>
-            <StyledButton
-              className="custom-button"
-              component={RouterLink}
-              to={`/rooms/${providerId}`}
-            >
-              Join Room
-            </StyledButton>
-            <IconButton
+          <StyledCardActions>
+            <Button
               aria-label="delete"
               size="medium"
+              component={RouterLink}
               onClick={handleDeleteRoom}
+              $customStyles={{
+                width: "35px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
             >
-              <DeleteIcon fontSize="inherit" />
-            </IconButton>
-            <IconButton
+              <DeleteIcon fontSize="medium" />
+            </Button>
+            <Button
               aria-label="edit"
               size="medium"
               component={RouterLink}
-              to={`/rooms/${providerId}/edit`}
+              onClick={() => navigate(`/rooms/${providerId}/edit`)}
+              $customStyles={{
+                width: "35px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
             >
-              <EditIcon fontSize="inherit" />
-            </IconButton>
-          </CardActions>
+              <EditIcon fontSize="medium" />
+            </Button>
+            <Button $primary onClick={() => navigate(`/rooms/${providerId}`)}>
+              Join room
+            </Button>
+          </StyledCardActions>
         )}
       </StyledCard>
     </Grid>
   );
 };
 
-const StyledButton = styled(Button)`
-  &&.custom-button {
-    background-color: ${theme.palette.primary.main};
-    color: ${Colors.white};
-  }
-  &&.custom-button:hover {
-    background-color: ${theme.palette.primary.dark};
-  }
-  &&.custom-button:disabled {
-    background-color: ${Colors.lightgrey};
-  }
-`;
-
 const StyledCard = styled(Card)`
   &&.custom-card {
-    border: 1px solid ${Colors.lightPurple};
-    box-shadow: 0px 3px 2px ${Colors.dimGray};
+    border: 2px solid ${Colors.purple};
+    background: ${Colors.lightPurple};
     display: flex;
     flex-direction: column;
     justify-content: center;
+    border-radius: 30px;
   }
 `;
+
+const CreatedBy = styled.div`
+  font-family: 'Poppins', sans-serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 18px;
+  color: ${Colors.davyGray};
+  padding: 12px 0;
+`;
+
+const Title = styled.div`
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 25px;
+  line-height: 38px;
+  color: ${Colors.purple};
+  border-bottom: solid 2px ${Colors.purple};
+`
+
+const StyledCardActions = styled(CardActions)`
+  justify-content: flex-end;
+  padding: 23px !important;
+`
 
 export default RoomItem;

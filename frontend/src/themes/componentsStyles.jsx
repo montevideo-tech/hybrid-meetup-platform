@@ -1,35 +1,100 @@
 import styled from "styled-components";
-import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
-import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
+import envelope from "../assets/envelope.svg";
+import lock from "../assets/lock.svg";
+import theme from "./theme";
 
-export const StyledButton = styled(Button)(({ theme }) => ({
-  backgroundColor: theme.palette.primary.main,
-  color: theme.palette.common.white,
-  "&:hover": {
-    backgroundColor: theme.palette.primary.dark,
-  },
-  "&:disabled": {
-    backgroundColor: theme.palette.grey[400],
-  },
-  textDecoration: "none",
-  " &:hover": {
-    textDecoration: "underline",
-  },
-}));
+export const Button = styled.button`
+  cursor: pointer;
+  width: 136px;
+  height: 35px;
+  border-radius: 35px;
+  font-family: "Poppins";
+  font-weight: 500;
+  transition: 0.4s;
+  background-color: ${(props) =>
+    props.$primary ? theme.palette.primary.main : theme.palette.secondary.main};
+  color: ${(props) =>
+    props.$primary ? theme.palette.common.white : theme.palette.primary.main};
+  border: ${(props) =>
+    props.$primary ? "none" : `2px solid ${theme.palette.primary.main}`};
+  font-size: ${(props) => (props.$primary ? "0.875rem" : "1rem")};
+  line-height: ${(props) => (props.$primary ? "21px" : "24px")};
 
-export const StyledLink = styled(Link)`
-  color: ${({ theme }) => theme.palette.secondary.main};
+  ${(props) =>
+    props.$customStyles} // these styles override all the above ones, leave them here
+  &:hover {
+    background-color: ${(props) =>
+      props.$primary
+        ? theme.palette.primary.dark
+        : theme.palette.secondary.main};
+  }
+  &:disabled {
+    background-color: ${theme.palette.disabled.main};
+  }
 `;
 
-export const StyledHeader = styled(Typography)`
-  font-weight: bold;
-  text-align: center;
+export const Card = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 370px;
+  background-color: ${theme.palette.secondary.main};
+  border: 2px solid ${theme.palette.primary.main};
+  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 30px;
+  padding: 30px;
+
+  ${(props) =>
+    props.$customStyles}// these styles override all the above ones, leave them here
+`;
+
+export const Input = styled.input`
+  height: 37px;
+  border: 2px solid ${theme.palette.primary.main};
+  border-radius: 34px;
+  background-color: ${theme.palette.secondary.main};
+  color: ${theme.palette.fonts.main};
+  font-family: "Poppins";
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 23px;
+  padding: 0 40px;
+
+  ::placeholder {
+    color: ${theme.palette.disabled.secondary};
+    opacity: 50%;
+  }
+
+  :focus-visible {
+    outline: none !important;
+    border: 2px solid ${theme.palette.logo.main};
+    box-shadow: 0 0 2px ${theme.palette.logo.main};
+  }
+
+  ${(props) =>
+    props.$customStyles}// these styles override all the above ones, leave them here
+`;
+
+export const Label = styled.label`
+  font-family: "Poppins";
+  font-style: italic;
+  font-weight: 500;
+  font-size: 0.75rem;
+  line-height: 18px;
+  color: ${theme.palette.disabled.secondary};
+
+  ${(props) =>
+    props.$customStyles}// these styles override all the above ones, leave them here
+`;
+
+export const StyledLink = styled(Link)`
+  color: ${theme.palette.primary.main};
 `;
 
 export const StyledAvatar = styled(Avatar)`
-  background-color: ${({ theme }) => theme.palette.secondary.main};
+  background-color: ${theme.palette.secondary.main};
 `;
 
 export const formVariants = {

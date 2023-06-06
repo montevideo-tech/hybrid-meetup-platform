@@ -24,18 +24,16 @@ function Video(props) {
     isSpeaking,
     size,
     name,
-    width,
-    height,
     onClick,
     onClickMute,
     style,
     permissionRole,
+    oddNumber,
+    isAlone,
+    twoParticipant,
+    isSharingScreen,
+    isScreenShared,
   } = props;
-  // const [isPinned, setIsPinned] = useState(false);
-
-  // const handlePinClick = () => {
-  // setIsPinned(!isPinned); // Cambiar el valor de la variable de estado al hacer clic en el icono
-  // };
 
   useEffect(() => {
     if (!stream) {
@@ -46,21 +44,24 @@ function Video(props) {
       videoRef.current.srcObject = stream;
     }
   }, [stream]);
-
-  const outlineWidth = 3;
+  const boxHeight = isSharingScreen ? "150px" : isAlone ? "calc((100vh - 170px))" : "calc((100vh - 204px)/2)";
+  const boxWidth = isScreenShared ? "auto" : isSharingScreen ? "200px" : twoParticipant ? "60vh" : "100%"
 
   return (
     <Box
       sx={{
         position: "relative",
-        width: `${width - outlineWidth * 2}px`,
-        height: `${height - outlineWidth * 2}px`,
-        minWidth: "160px",
-        minHeight: "90px",
+        height: boxHeight,
+        width: boxWidth,
         background: `${Colors.darkGrey}`,
         borderRadius: "5px",
         overflow: "hidden",
-        border: `${isSpeaking ? `5px solid ${Colors.red}` : {}}`,
+        border: `${isSpeaking ? `2px solid ${Colors.red}` : `2px solid ${Colors.black}`}`,
+        display: "flex",
+        alignContent: "center",
+        justifyContent: "center",
+        alignItems: "center",
+        gridColumn: `${oddNumber ? "span 2" : ""}`,
         ...style,
       }}
     >
@@ -72,6 +73,7 @@ function Video(props) {
         />
       )}
       <StyledVideo
+        $oddNumber={oddNumber}
         autoPlay
         ref={videoRef}
         $size={`${size}%`}
@@ -79,7 +81,7 @@ function Video(props) {
       >
         <track kind="captions" />
       </StyledVideo>
-      {name && <ParticipantInfo name={name} parentHeight={height} />}
+      {name && <ParticipantInfo name={name} parentHeight={boxHeight} />}
       {(isAudioMuted || permissionRole === ROLES.HOST) && (
         <IconButton
           disabled={!(permissionRole === ROLES.HOST)}
@@ -92,6 +94,7 @@ function Video(props) {
             color: `${Colors.white} !important`,
             bgcolor: `${Colors.midnightBlue}`,
             border: "2px solid",
+            background: "transparent",
           }}
         >
           {isAudioMuted ? (
@@ -112,27 +115,12 @@ function Video(props) {
             color: Colors.white,
             bgcolor: `${Colors.midnightBlue}`,
             border: "2px solid",
+            background: "transparent",
           }}
         >
           <DeleteOutlineIcon sx={{ ml: "2px" }} />
         </IconButton>
       )}
-
-      {/* <IconButton
-        onClick={handlePinClick}
-        sx={{
-          position: 'absolute',
-          bottom: 10,
-          left: 10,
-          color: {Colors.white},
-          bgcolor: `${Colors.midnightBlue}`,
-          border: '2px solid',
-          fontSize: `${size * 2}%`,
-        }}
-      >
-        {isPinned
-          ? <PushPinRoundedIcon sx={{ ml: '2px' }} /> : <PushPinOutlinedIcon sx={{ ml: '2px' }} />}
-      </IconButton> */}
     </Box>
   );
 }
@@ -144,8 +132,6 @@ Video.propTypes = {
   isVideoMuted: PropTypes.bool,
   isSpeaking: PropTypes.bool,
   size: PropTypes.number,
-  width: PropTypes.number,
-  height: PropTypes.number,
   name: PropTypes.string,
   onClick: PropTypes.func,
   onClickMute: PropTypes.func,
@@ -161,15 +147,11 @@ Video.defaultProps = {
   isSpeaking: false,
   size: 100,
   name: "",
-  width: 160,
-  height: 90,
   onClick: () => {},
   onClickMute: () => {},
   style: {},
   permissionRole: ROLES.GUEST,
 };
-
-export default Video;
 
 const StyledImg = styled.img`
   width: ${(props) => props.$size};
@@ -179,5 +161,10 @@ const StyledImg = styled.img`
 `;
 
 const StyledVideo = styled.video`
-  width: ${(props) => props.$size};
+  width: ${(props) => (props.$oddNumber ? "60%" : "100%")};
+  height: 100%;
+  object-fit: cover;
+  border-radius: 5px;
 `;
+
+export default Video;

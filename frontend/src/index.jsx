@@ -15,7 +15,7 @@ import Rooms from "./views/Rooms";
 import ErrorPage from "./views/ErrorPage";
 import RoomNotFound from "./views/RoomNotFound";
 import EditRoom from "./views/EditRoom";
-import { RoomsLayout } from "./layout/RoomsLayout";
+import { Header } from "./components/Header";
 
 // import RoomTest from './components/RoomTest';
 import AuthRoute from "./components/AuthRoute";
@@ -32,15 +32,16 @@ const router = createBrowserRouter([
         path: "",
         element: (
           <AuthRoute>
-            <LandingPage />,
+            <Header />
           </AuthRoute>
         ),
+        children: [{ path: "", element: <LandingPage /> }],
       },
       {
         path: "/rooms",
         element: (
           <AuthRoute requireAuth>
-            <RoomsLayout />
+            <Header />
           </AuthRoute>
         ),
         children: [
@@ -97,6 +98,7 @@ const router = createBrowserRouter([
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
 root.render(
   <ThemeProvider theme={theme}>
     <Provider store={store}>
