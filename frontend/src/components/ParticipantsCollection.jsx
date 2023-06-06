@@ -17,11 +17,10 @@ function ParticipantsCollection(props) {
     localAudioStream,
     localName,
   } = props;
-
   const currentParticipants = useMemo(() => {
     return children;
   }, [children]);
-
+  console.log(localVideoStream)
   const onClickRemove = (r) => {
     localParticipant.removeRemoteParticipant(r);
   };
@@ -56,12 +55,12 @@ function ParticipantsCollection(props) {
               twoParticipant={twoParticipant}
             />
           ))}
-        {localAudioStream && localVideoStream && (
+        {localVideoStream && (
           <Video
             permissionRole=""
             key={localName}
             stream={localVideoStream}
-            isAudioMuted={localAudioStream.muted || false}
+            isAudioMuted={true}
             isVideoMuted={localVideoStream.muted || false}
             isSpeaking={false}
             name={localName}

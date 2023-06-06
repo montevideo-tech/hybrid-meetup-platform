@@ -5,19 +5,13 @@ export class Track extends EventEmitter {
   constructor(providerTrack) {
     super();
     this.provider = providerTrack;
-    console.log(providerTrack);
-    console.log(this.provider);
     this.id = this.provider.id;
     this.muted = this.provider.muted;
-    this.kind = this.provider.track.kind;
-    this.mediaStreamTrack = this.provider.mediaStream;
-
-    this.provider.on(VoxeetSDK.video.local.stop(), () => this.emit("Muted"));
-    this.provider.on(VoxeetSDK.video.local.start(), () => this.emit("Unmuted"));
+    this.kind = this.provider.kind;
+    this.mediaStreamTrack = this.provider.mediaStreamTrack;
   }
 
   mute() {
-    console.log("SE EJECUTO EL MUTE", this.mediaStreamTrack);
     this.mediaStreamTrack.enabled = false;
     this.muted = true;
     this.provider.emit("Muted", this.provider);
@@ -48,14 +42,13 @@ class Participant extends EventEmitter {
 }
 
 export class LocalParticipant extends Participant {
-  async publishTracks(constraints) {
-    console.log(constraints);
+  async publishTracks(props) {
+    const { constraints } = props;
     // Check if video constraints are specified
     const videoConstraints = {
       width: { ideal: 1280 },
       height: { ideal: 720 },
     };
-    console.log("if del contraint", videoConstraints);
     // If video constraints exist, start local video
     if (videoConstraints) {
       const mediaStreamTrack = await VoxeetSDK.video.local.start(
@@ -68,17 +61,16 @@ export class LocalParticipant extends Participant {
           mediaStreamTrack: mediaStreamTrack,
         },
       ];
-
       // If audio is also enabled, add a dummy audio track (replace with actual audio track if available)
       if (constraints.audio) {
+        const audioTrack = VoxeetSDK.audio.local.start();
         tracks.push({
           kind: "audio",
           // Replace with actual MediaStreamTrack for audio
-          mediaStreamTrack: VoxeetSDK.audio.local.start(),
+          mediaStreamTrack: audioTrack,
         });
       }
-
-      return tracks;
+      return tracks.map((t) => new Track(t));
     }
 
     // If no video constraints, return an empty array
@@ -87,7 +79,7 @@ export class LocalParticipant extends Participant {
 
   async unpublishVideoTrack() {
     try {
-      await VoxeetSDK.conference.stopVideo(VoxeetSDK.session.participant);
+      await VoxeetSDK.video.local.stop();
     } catch (error) {
       console.error("Error unpublishing video track:", error);
     }
