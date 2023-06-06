@@ -69,7 +69,7 @@ function SignUp() {
 
   return (
     <Container>
-      <Card $customStyles={{ padding: "2.5%" }}>
+      <Card $customStyles={{ padding: "2%" }}>
         <motion.div
           variants={formVariants}
           initial="initial"
