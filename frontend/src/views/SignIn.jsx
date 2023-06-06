@@ -54,7 +54,7 @@ function SignIn() {
   };
   return (
     <Container>
-      <Card>
+      <Card $customStyles={{ padding: "2.5%" }}>
         <motion.div
           variants={formVariants}
           initial="initial"
@@ -171,7 +171,7 @@ const Title = styled.h1`
   font-size: 1.563rem;
   line-height: 38px;
   color: ${Colors.purple};
-  margin: 14px 0 27px 0;
+  margin: 4.5% 0 8% 0;
 `;
 
 const LoginContainer = styled.div`
@@ -197,7 +197,7 @@ const ErrorMessage = styled.div`
 const InputContainer = styled.div`
   align-self: center;
   justify-self: center;
-  margin-bottom: 14px;
+  margin-bottom: 4%;
 `;
 
 const StartIcon = styled.img`

@@ -36,7 +36,6 @@ import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import Audio from "../components/Audio";
 import Video from "../components/Video";
 
-
 export async function roomLoader({ params }) {
   return params.roomId;
 }
@@ -104,14 +103,22 @@ function Room() {
   useEffect(() => {
     if (localParticipant?.provider?.videoTracks?.entries().next()?.value) {
       let localVideoStream = new MediaStream();
-      localVideoStream.addTrack(localParticipant?.provider?.videoTracks?.entries().next()?.value[1].track);
+      localVideoStream.addTrack(
+        localParticipant?.provider?.videoTracks?.entries().next()?.value[1]
+          .track,
+      );
       setLocalVideoStream(localVideoStream);
     }
     if (localParticipant?.provider?.audioTracks?.entries().next()?.value) {
-      setLocalAudioStream(localParticipant?.provider?.audioTracks?.entries().next()?.value[1]);
+      setLocalAudioStream(
+        localParticipant?.provider?.audioTracks?.entries().next()?.value[1],
+      );
     }
     setLocalName(localParticipant?.displayName);
-  },[localParticipant?.provider.audioTracks.entries().next().done, localParticipant?.provider.videoTracks.entries().next().done])
+  }, [
+    localParticipant?.provider.audioTracks.entries().next().done,
+    localParticipant?.provider.videoTracks.entries().next().done,
+  ]);
 
   useEffect(() => {
     if (!chatOpen) {
@@ -127,7 +134,7 @@ function Room() {
       const divElement = divRef.current;
       const { width } = divElement.getBoundingClientRect();
       setScreenWidth(width);
-    };
+    }
   }, [divRef.current]);
 
   const handleRoleChange = (payload) => {
@@ -179,9 +186,9 @@ function Room() {
       >
         {remoteStreams.filter((p) => !p.isSharingScreen)}
       </ParticipantsCollection>
-    )
-  }
-  
+    );
+  };
+
   const RenderSharingScreen = () => {
     const maxParticipant = Math.trunc(screenWidth / 200) - 1;
     return (
@@ -191,7 +198,7 @@ function Room() {
         ))}
         <ShareScreenParticipants>
           <Video
-            permissionRole=''
+            permissionRole=""
             key={localName}
             stream={localVideoStream}
             isAudioMuted={localAudioStream.muted || false}
@@ -217,16 +224,15 @@ function Room() {
                   onClickMute={() => onClickMute(name, audioMuted)}
                   isSharingScreen={isSharingScreen}
                 />
-              )
-            }
-          )}
+              );
+            })}
         </ShareScreenParticipants>
         <ShareScreen>
           {remoteStreams.find((p) => p.isSharingScreen)}
         </ShareScreen>
       </ShareScreenContainer>
-    )
-  }
+    );
+  };
 
   const subscribeToRemoteStreams = async (r) => {
     const { remoteParticipants } = r;
@@ -387,7 +393,7 @@ function Room() {
         dispatch(
           initRoom({
             id: roomId,
-            participants: [{ name: currentUser.email, role: ROLES.GUEST }],
+            participants: [{ name: currentUser.username, role: ROLES.GUEST }],
           }),
         );
 
@@ -431,6 +437,8 @@ function Room() {
       console.error(error);
     }
   };
+
+  console.log("currentUser", currentUser);
 
   // initialize room
   useEffect(() => {
@@ -505,56 +513,58 @@ function Room() {
   };
   return (
     <>
-    {roomNotFound && <Navigate to="/rooms/404" />}
-    {room ?
-      <Container
-        $chatOpen={chatOpen}
-      >
-        <VideosContainer ref={divRef}>
-          {isSharingScreen ? (
-            <RenderSharingScreen />
-          ): localAudioStream && localVideoStream && 
-            <RenderParticipantCollection/>
-          }
-        </VideosContainer>
-        {chatOpen && 
-        <ShowChat>
-          <Chat messages={messages} isUserAdmin={isUserAdmin}/>
-        </ShowChat>}
-        <Buttons>
-          <>
-            <CenteredDiv>
-              <RoomControls
-                permissionRole={userRole}
-                updateScreenShare={updateScreenShare}
-                isSharingScreen={isSharingScreen}
-                participantSharingScreen={participantSharingScreen}
-                localTracks={localTracks}
-                updateLocalTracksMuted={updateLocalTracksMuted}
-                leaveRoom={leaveRoom}
-                disabled={!room}
-                isEnableToUnmute={isEnableToUnmute}
-                localParticipant={localParticipant}
-                isBlockedRemotedGuest={isBlockedRemotedGuest}
-                setIsBlockedRemotedGuest={setIsBlockedRemotedGuest}
-                setLocalTracks={setLocalTracks}
-              />
-            </CenteredDiv>
-            <ChatButton
-              onClick={OnClickChatButton}
-            >
-              <Badge badgeContent={unreadMessages} color="secondary">
-                {chatOpen ? <ChatBubbleIcon color="primary" fontSize="large" /> : <ChatOutlinedIcon color="primary" fontSize="large" />}
-              </Badge>
-            </ChatButton>
-          </>
-        </Buttons>
-      </Container>
-    :
-      <StyledContainer>
-        {!errorJoiningRoom && <CircularProgress />}
-      </StyledContainer>
-    }
+      {roomNotFound && <Navigate to="/rooms/404" />}
+      {room ? (
+        <Container $chatOpen={chatOpen}>
+          <VideosContainer ref={divRef}>
+            {isSharingScreen ? (
+              <RenderSharingScreen />
+            ) : (
+              localAudioStream &&
+              localVideoStream && <RenderParticipantCollection />
+            )}
+          </VideosContainer>
+          {chatOpen && (
+            <ShowChat>
+              <Chat messages={messages} isUserAdmin={isUserAdmin} />
+            </ShowChat>
+          )}
+          <Buttons>
+            <>
+              <CenteredDiv>
+                <RoomControls
+                  permissionRole={userRole}
+                  updateScreenShare={updateScreenShare}
+                  isSharingScreen={isSharingScreen}
+                  participantSharingScreen={participantSharingScreen}
+                  localTracks={localTracks}
+                  updateLocalTracksMuted={updateLocalTracksMuted}
+                  leaveRoom={leaveRoom}
+                  disabled={!room}
+                  isEnableToUnmute={isEnableToUnmute}
+                  localParticipant={localParticipant}
+                  isBlockedRemotedGuest={isBlockedRemotedGuest}
+                  setIsBlockedRemotedGuest={setIsBlockedRemotedGuest}
+                  setLocalTracks={setLocalTracks}
+                />
+              </CenteredDiv>
+              <ChatButton onClick={OnClickChatButton}>
+                <Badge badgeContent={unreadMessages} color="secondary">
+                  {chatOpen ? (
+                    <ChatBubbleIcon color="primary" fontSize="large" />
+                  ) : (
+                    <ChatOutlinedIcon color="primary" fontSize="large" />
+                  )}
+                </Badge>
+              </ChatButton>
+            </>
+          </Buttons>
+        </Container>
+      ) : (
+        <StyledContainer>
+          {!errorJoiningRoom && <CircularProgress />}
+        </StyledContainer>
+      )}
     </>
   );
 }
@@ -620,9 +630,9 @@ const ShareScreenContainer = styled.div`
   display: grid;
   height: 100%;
   grid-template-rows: 170px 1fr;
-`
+`;
 
 const ShareScreenParticipants = styled.div`
   padding: 10px 0;
   display: flex;
-`
+`;
