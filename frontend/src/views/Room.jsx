@@ -1,4 +1,3 @@
-// Room
 import { React, useState, useEffect, useRef, forwardRef } from "react";
 import { useLoaderData, Navigate, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -7,7 +6,6 @@ import MuiAlert from "@mui/material/Alert";
 import styled from "styled-components";
 import useUserPermission from "../hooks/useUserPermission";
 import RoomControls from "../components/RoomControls";
-
 import { Room as WebRoom } from "../lib/webrtc";
 import { roomJWTprovider } from "../actions";
 import {
@@ -32,10 +30,10 @@ import {
 import ShareScreen from "../components/ShareScreen";
 import { Colors } from "../themes/colors";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
-import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import Audio from "../components/Audio";
 import Video from "../components/Video";
-
+import { Button } from "../themes/componentsStyles";
+import chat from "../assets/chat.svg";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -45,7 +43,6 @@ function Room() {
   const [room, setRoom] = useState();
   const [localParticipant, setLocalParticipant] = useState();
   const userRole = useUserPermission();
-  const [localStream, setLocalStream] = useState();
   // this helps keep track of muting/unmuting with RoomControls
   const [localTracks, setLocalTracks] = useState({ video: null, audio: null });
   const [isSharingScreen, setIsSharingScreen] = useState(false);
@@ -103,15 +100,23 @@ function Room() {
 
   useEffect(() => {
     if (localParticipant?.provider?.videoTracks?.entries().next()?.value) {
-      let localVideoStream = new MediaStream();
-      localVideoStream.addTrack(localParticipant?.provider?.videoTracks?.entries().next()?.value[1].track);
+      const localVideoStream = new MediaStream();
+      localVideoStream.addTrack(
+        localParticipant?.provider?.videoTracks?.entries().next()?.value[1]
+          .track,
+      );
       setLocalVideoStream(localVideoStream);
     }
     if (localParticipant?.provider?.audioTracks?.entries().next()?.value) {
-      setLocalAudioStream(localParticipant?.provider?.audioTracks?.entries().next()?.value[1]);
+      setLocalAudioStream(
+        localParticipant?.provider?.audioTracks?.entries().next()?.value[1],
+      );
     }
     setLocalName(localParticipant?.displayName);
-  },[localParticipant?.provider.audioTracks.entries().next().done, localParticipant?.provider.videoTracks.entries().next().done])
+  }, [
+    localParticipant?.provider.audioTracks.entries().next().done,
+    localParticipant?.provider.videoTracks.entries().next().done,
+  ]);
 
   useEffect(() => {
     if (!chatOpen) {
@@ -127,7 +132,7 @@ function Room() {
       const divElement = divRef.current;
       const { width } = divElement.getBoundingClientRect();
       setScreenWidth(width);
-    };
+    }
   }, [divRef.current]);
 
   const handleRoleChange = (payload) => {
@@ -179,9 +184,9 @@ function Room() {
       >
         {remoteStreams.filter((p) => !p.isSharingScreen)}
       </ParticipantsCollection>
-    )
-  }
-  
+    );
+  };
+
   const RenderSharingScreen = () => {
     const maxParticipant = Math.trunc(screenWidth / 200) - 1;
     return (
@@ -191,7 +196,7 @@ function Room() {
         ))}
         <ShareScreenParticipants>
           <Video
-            permissionRole=''
+            permissionRole=""
             key={localName}
             stream={localVideoStream}
             isAudioMuted={localAudioStream.muted || false}
@@ -217,16 +222,15 @@ function Room() {
                   onClickMute={() => onClickMute(name, audioMuted)}
                   isSharingScreen={isSharingScreen}
                 />
-              )
-            }
-          )}
+              );
+            })}
         </ShareScreenParticipants>
         <ShareScreen>
           {remoteStreams.find((p) => p.isSharingScreen)}
         </ShareScreen>
       </ShareScreenContainer>
-    )
-  }
+    );
+  };
 
   const subscribeToRemoteStreams = async (r) => {
     const { remoteParticipants } = r;
@@ -410,7 +414,6 @@ function Room() {
           stream.addTrack(track.mediaStreamTrack);
           newLocalTracks[track.kind] = track;
         });
-        setLocalStream(stream);
         setLocalTracks(newLocalTracks);
         subscribeToRemoteStreams(newRoom);
         subscribeToRoleChanges(roomId, handleRoleChange);
@@ -505,56 +508,62 @@ function Room() {
   };
   return (
     <>
-    {roomNotFound && <Navigate to="/rooms/404" />}
-    {room ?
-      <Container
-        $chatOpen={chatOpen}
-      >
-        <VideosContainer ref={divRef}>
-          {isSharingScreen ? (
-            <RenderSharingScreen />
-          ): localAudioStream && localVideoStream && 
-            <RenderParticipantCollection/>
-          }
-        </VideosContainer>
-        {chatOpen && 
-        <ShowChat>
-          <Chat messages={messages} isUserAdmin={isUserAdmin}/>
-        </ShowChat>}
-        <Buttons>
-          <>
-            <CenteredDiv>
-              <RoomControls
-                permissionRole={userRole}
-                updateScreenShare={updateScreenShare}
-                isSharingScreen={isSharingScreen}
-                participantSharingScreen={participantSharingScreen}
-                localTracks={localTracks}
-                updateLocalTracksMuted={updateLocalTracksMuted}
-                leaveRoom={leaveRoom}
-                disabled={!room}
-                isEnableToUnmute={isEnableToUnmute}
-                localParticipant={localParticipant}
-                isBlockedRemotedGuest={isBlockedRemotedGuest}
-                setIsBlockedRemotedGuest={setIsBlockedRemotedGuest}
-                setLocalTracks={setLocalTracks}
-              />
-            </CenteredDiv>
-            <ChatButton
-              onClick={OnClickChatButton}
-            >
-              <Badge badgeContent={unreadMessages} color="secondary">
-                {chatOpen ? <ChatBubbleIcon color="primary" fontSize="large" /> : <ChatOutlinedIcon color="primary" fontSize="large" />}
-              </Badge>
-            </ChatButton>
-          </>
-        </Buttons>
-      </Container>
-    :
-      <StyledContainer>
-        {!errorJoiningRoom && <CircularProgress />}
-      </StyledContainer>
-    }
+      {roomNotFound && <Navigate to="/rooms/404" />}
+      {room ? (
+        <Container $chatOpen={chatOpen}>
+          <VideosContainer ref={divRef}>
+            {isSharingScreen ? (
+              <RenderSharingScreen />
+            ) : (
+              localAudioStream &&
+              localVideoStream && <RenderParticipantCollection />
+            )}
+          </VideosContainer>
+          {chatOpen && (
+            <ShowChat>
+              <Chat messages={messages} isUserAdmin={isUserAdmin} />
+            </ShowChat>
+          )}
+          <Buttons>
+            <>
+              <CenteredDiv>
+                <RoomControls
+                  permissionRole={userRole}
+                  updateScreenShare={updateScreenShare}
+                  isSharingScreen={isSharingScreen}
+                  participantSharingScreen={participantSharingScreen}
+                  localTracks={localTracks}
+                  updateLocalTracksMuted={updateLocalTracksMuted}
+                  leaveRoom={leaveRoom}
+                  disabled={!room}
+                  isEnableToUnmute={isEnableToUnmute}
+                  localParticipant={localParticipant}
+                  isBlockedRemotedGuest={isBlockedRemotedGuest}
+                  setIsBlockedRemotedGuest={setIsBlockedRemotedGuest}
+                  setLocalTracks={setLocalTracks}
+                />
+              </CenteredDiv>
+              <Button
+                $secondary
+                $customStyles={{ width: "40px", height: "40px" }}
+                onClick={OnClickChatButton}
+              >
+                <Badge badgeContent={unreadMessages} color="secondary">
+                  {chatOpen ? (
+                    <img src={chat} alt="messages" />
+                  ) : (
+                    <ChatOutlinedIcon color="primary" sx={{ fontSize: 17 }} />
+                  )}
+                </Badge>
+              </Button>
+            </>
+          </Buttons>
+        </Container>
+      ) : (
+        <StyledContainer>
+          {!errorJoiningRoom && <CircularProgress />}
+        </StyledContainer>
+      )}
     </>
   );
 }
@@ -568,7 +577,7 @@ const Container = styled.div`
   ${({ $chatOpen }) =>
     $chatOpen
       ? `
-    grid-template-columns: 1fr 360px;
+    grid-template-columns: 1fr 250px;
     transition: grid-template-columns 1s ease; 
     `
       : `
@@ -582,12 +591,6 @@ const CenteredDiv = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-`;
-
-const ChatButton = styled.button`
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
 `;
 
 const Buttons = styled.div`
@@ -620,9 +623,9 @@ const ShareScreenContainer = styled.div`
   display: grid;
   height: 100%;
   grid-template-rows: 170px 1fr;
-`
+`;
 
 const ShareScreenParticipants = styled.div`
   padding: 10px 0;
   display: flex;
-`
+`;
