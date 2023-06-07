@@ -47,12 +47,11 @@ function RoomControls(props) {
           const tracks = await localParticipant.publishTracks({
             constraints: { video: true, audio: false },
           });
-          console.log(tracks[0])
           const newLocalTracks = { ...localTracks };
           newLocalTracks[tracks[0].kind] = tracks[0];
           setLocalVideoTrack(tracks[0]);
           setLocalTracks(newLocalTracks);
-          updateLocalTracksMuted(t.kind, false);
+          // updateLocalTracksMuted(t.kind, false);
         } else {
           setMuted(true);
           // localVideoTrack.mute();

@@ -121,10 +121,9 @@ function Room() {
       setLocalName(localParticipant?.displayName);
     } else {
       if (localTracks.video) {
-        const localVideoStream = new MediaStream();
-        console.log(localTracks.video)
-        localVideoStream.addTrack(localTracks.video.mediaStreamTrack);
-        setLocalVideoStream(localVideoStream);
+        const newlocalVideoStream = new MediaStream();
+        newlocalVideoStream.addTrack(localTracks.video.mediaStreamTrack);
+        setLocalVideoStream(newlocalVideoStream);
       }
     }
 
@@ -386,7 +385,7 @@ function Room() {
 
   const joinRoom = async () => {
     const DolbyJWT =
-      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkb2xieS5pbyIsImlhdCI6MTY4NjA1Nzc0NCwic3ViIjoid195UDNYVDJaVy1RbmZ6TXR5V1MwZz09IiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9DVVNUT01FUiJdLCJ0YXJnZXQiOiJzZXNzaW9uIiwib2lkIjoiOTg3MDFkMDctZWEyNi00ODM1LWJhM2ItMTBiMGU4MjkyODcyIiwiYWlkIjoiYjU3NmZhYjctY2JiMC00NWRhLTg1YWQtOGQ5MmZhZWEyNDY5IiwiYmlkIjoiOGEzNjgwZGU4ODJjOTlmNTAxODgyZmUxNGJmMTZiMmIiLCJleHAiOjE2ODYxNDQxNDR9.Gx7Neluob3x4unYTWyph9RmQqNO9n_OsTxEo-uLt38gCxqLj5s4ls9zoVYyAX9QTHn7Ho3xM9vXTw3D0dKUzEw";
+      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkb2xieS5pbyIsImlhdCI6MTY4NjE0NTM4NSwic3ViIjoid195UDNYVDJaVy1RbmZ6TXR5V1MwZz09IiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9DVVNUT01FUiJdLCJ0YXJnZXQiOiJzZXNzaW9uIiwib2lkIjoiOTg3MDFkMDctZWEyNi00ODM1LWJhM2ItMTBiMGU4MjkyODcyIiwiYWlkIjoiYjU3NmZhYjctY2JiMC00NWRhLTg1YWQtOGQ5MmZhZWEyNDY5IiwiYmlkIjoiOGEzNjgwZGU4ODJjOTlmNTAxODgyZmUxNGJmMTZiMmIiLCJleHAiOjE2ODYyMzE3ODV9.VjYSVuZ8UiVsBM-xfEEiSROUpHYaMuZa8ZMUclZod1FRonqBar79Cz9IIkrECnYrkK_vBziUmizVVEEGlekkcw";
 
     const MuxJWT = await roomJWTprovider(
       roomId,

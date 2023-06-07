@@ -20,7 +20,7 @@ function ParticipantsCollection(props) {
   const currentParticipants = useMemo(() => {
     return children;
   }, [children]);
-  console.log(localVideoStream)
+
   const onClickRemove = (r) => {
     localParticipant.removeRemoteParticipant(r);
   };
