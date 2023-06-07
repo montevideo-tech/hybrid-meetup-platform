@@ -104,23 +104,32 @@ function Room() {
   }, []);
 
   useEffect(() => {
-    if (localParticipant?.provider?.videoTracks?.entries().next()?.value) {
-      const localVideoStream = new MediaStream();
-      localVideoStream.addTrack(
-        localParticipant?.provider?.videoTracks?.entries().next()?.value[1]
-          .track,
-      );
-      setLocalVideoStream(localVideoStream);
+    if (VITE_WEBRTC_PROVIDER_NAME === "MUX") {
+      if (localParticipant?.provider?.videoTracks?.entries().next()?.value) {
+        const localVideoStream = new MediaStream();
+        localVideoStream.addTrack(
+          localParticipant?.provider?.videoTracks?.entries().next()?.value[1]
+            .track,
+        );
+        setLocalVideoStream(localVideoStream);
+      }
+      if (localParticipant?.provider?.audioTracks?.entries().next()?.value) {
+        setLocalAudioStream(
+          localParticipant?.provider?.audioTracks?.entries().next()?.value[1],
+        );
+      }
+      setLocalName(localParticipant?.displayName);
+    } else {
+      if (localTracks.video) {
+        const newlocalVideoStream = new MediaStream();
+        newlocalVideoStream.addTrack(localTracks.video.mediaStreamTrack);
+        setLocalVideoStream(newlocalVideoStream);
+      }
     }
-    if (localParticipant?.provider?.audioTracks?.entries().next()?.value) {
-      setLocalAudioStream(
-        localParticipant?.provider?.audioTracks?.entries().next()?.value[1],
-      );
-    }
-    setLocalName(localParticipant?.displayName);
   }, [
     localParticipant?.provider?.audioTracks?.entries().next().done,
     localParticipant?.provider?.videoTracks?.entries().next().done,
+    localTracks,
   ]);
 
   useEffect(() => {
@@ -177,7 +186,6 @@ function Room() {
   };
 
   const RenderParticipantCollection = () => {
-    console.log("Entra aca");
     return (
       <ParticipantsCollection
         participantsCount={participantsCount}
@@ -393,7 +401,6 @@ function Room() {
       setIsEnableToUnmute(!guestMuted);
     }
     try {
-      console.log("pROVIDER NAME", VITE_WEBRTC_PROVIDER_NAME);
       const newRoom =
         VITE_WEBRTC_PROVIDER_NAME === "MUX"
           ? new MuxWebRoom(MuxJWT)
@@ -419,9 +426,8 @@ function Room() {
         setRoom(newRoom);
         roomRef.current = newRoom;
         const tracks = await newParticipant.publishTracks({
-          constraints: { video: true, audio: true },
+          constraints: { video: true, audio: false },
         });
-
         const stream = new MediaStream();
         const newLocalTracks = { ...localTracks };
         tracks.forEach((track) => {
@@ -514,7 +520,6 @@ function Room() {
 
   const updateLocalTracksMuted = (kind, muted) => {
     localTracks[kind].muted = muted;
-    console.log(localTracks);
     setLocalTracks({ ...localTracks });
   };
 
@@ -531,7 +536,6 @@ function Room() {
             {isSharingScreen ? (
               <RenderSharingScreen />
             ) : (
-              localAudioStream &&
               localVideoStream && <RenderParticipantCollection />
             )}
           </VideosContainer>
