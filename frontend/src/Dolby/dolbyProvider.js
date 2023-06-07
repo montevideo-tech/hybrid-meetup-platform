@@ -1,6 +1,8 @@
 import EventEmitter from "events";
 import VoxeetSDK from "@voxeet/voxeet-web-sdk";
 
+const users = ["jona", "felipe", "claudio", "pique"];
+
 export class Track extends EventEmitter {
   constructor(providerTrack) {
     super();
@@ -30,7 +32,7 @@ class Participant extends EventEmitter {
     this.provider = providerParticipant;
     this.id = this.provider.id;
     this.displayName = this.provider.info.name;
-
+    console.log("PROVIDER PARTICIPANT", providerParticipant);
     this.provider.on("streamAdded", () => this.emit("StartedSpeaking"));
     this.provider.on("streamRemoved", () => this.emit("StoppedSpeaking"));
   }
@@ -114,22 +116,42 @@ export class Room extends EventEmitter {
     VoxeetSDK.initializeToken(jwt, () => Promise.resolve(jwt));
 
     this.provider = VoxeetSDK.session;
-
-    // Add a new property for remote participants
-    this.remoteParticipants = new Map();
-
-    this.provider.on("participantAdded", (p) => {
-      // Create a new RemoteParticipant
-      const participant = new RemoteParticipant(p);
-      // Add the new participant to the map
-      this.remoteParticipants.set(participant.id, participant);
-      this.emit("ParticipantJoined", participant);
+    VoxeetSDK.conference.on("streamUpdated", (participant, stream) => {
+      console.log("STREAM UPDATED", participant, stream);
     });
+    VoxeetSDK.conference.on("streamAdded", (participant, stream) => {
+      console.log("STREAM ADDED", participant, stream);
+      const tracks = [
+        {
+          kind: "video",
+          mediaStreamTrack: stream,
+        },
+      ];
+      this.emit(
+        "ParticipantTrackSubscribed",
+        new RemoteParticipant(participant),
+        new Track(tracks),
+      );
+    });
+
+    VoxeetSDK.conference.on("streamRemoved", (p) =>
+      this.emit("ParticipantLeft", new RemoteParticipant(p)),
+    );
   }
 
   async join() {
     try {
-      await VoxeetSDK.session.open({ name: "John Doe" });
+      const randomIndex = Math.floor(Math.random() * users.length);
+      const randomName = users[randomIndex];
+      await VoxeetSDK.session.open({ name: randomName });
+      const conference = await VoxeetSDK.conference.create({
+        alias: "roomName",
+      });
+      console.log(conference.id);
+      const joined = await VoxeetSDK.conference.join(conference, {
+        constraints: { audio: true, video: true },
+      });
+      console.log("JOINED", joined);
       const localParticipant = new LocalParticipant(
         VoxeetSDK.session.participant,
       );
@@ -141,7 +163,7 @@ export class Room extends EventEmitter {
 
   async leave() {
     try {
-      return await VoxeetSDK.conference.leave();
+      return VoxeetSDK.conference.leave();
     } catch (error) {
       console.error(error);
     }
