@@ -37,7 +37,7 @@ import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import Audio from "../components/Audio";
 import Video from "../components/Video";
 
-import { VITE_WEBRTC_PROVIDER_NAME } from "../lib/constants";
+import { VITE_WEBRTC_PROVIDER_NAME, VITE_DOLBY_JWT } from "../lib/constants";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -384,9 +384,7 @@ function Room() {
   };
 
   const joinRoom = async () => {
-    const DolbyJWT =
-      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkb2xieS5pbyIsImlhdCI6MTY4NjE0NTM4NSwic3ViIjoid195UDNYVDJaVy1RbmZ6TXR5V1MwZz09IiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9DVVNUT01FUiJdLCJ0YXJnZXQiOiJzZXNzaW9uIiwib2lkIjoiOTg3MDFkMDctZWEyNi00ODM1LWJhM2ItMTBiMGU4MjkyODcyIiwiYWlkIjoiYjU3NmZhYjctY2JiMC00NWRhLTg1YWQtOGQ5MmZhZWEyNDY5IiwiYmlkIjoiOGEzNjgwZGU4ODJjOTlmNTAxODgyZmUxNGJmMTZiMmIiLCJleHAiOjE2ODYyMzE3ODV9.VjYSVuZ8UiVsBM-xfEEiSROUpHYaMuZa8ZMUclZod1FRonqBar79Cz9IIkrECnYrkK_vBziUmizVVEEGlekkcw";
-
+    const DolbyJWT = VITE_DOLBY_JWT;
     const MuxJWT = await roomJWTprovider(
       roomId,
       currentUser.email,
@@ -426,12 +424,11 @@ function Room() {
 
         setRoom(newRoom);
         roomRef.current = newRoom;
-        const propsTracks = VITE_WEBRTC_PROVIDER_NAME === "MUX" ?
-        {
-          constraints: { video: true, audio: true },
-        } :
-        {
-          constraints: { video: true, audio: false },
+        const propsTracks = {
+          constraints: { 
+            video: true, 
+            audio: VITE_WEBRTC_PROVIDER_NAME === "MUX" 
+          },
         };
         const tracks = await newParticipant.publishTracks(propsTracks);
         const stream = new MediaStream();
