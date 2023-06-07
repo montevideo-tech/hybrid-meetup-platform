@@ -426,9 +426,14 @@ function Room() {
 
         setRoom(newRoom);
         roomRef.current = newRoom;
-        const tracks = await newParticipant.publishTracks({
+        const propsTracks = VITE_WEBRTC_PROVIDER_NAME === "MUX" ?
+        {
+          constraints: { video: true, audio: true },
+        } :
+        {
           constraints: { video: true, audio: false },
-        });
+        };
+        const tracks = await newParticipant.publishTracks(propsTracks);
         const stream = new MediaStream();
         const newLocalTracks = { ...localTracks };
         tracks.forEach((track) => {
