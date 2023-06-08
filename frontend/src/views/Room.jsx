@@ -187,6 +187,7 @@ function Room() {
   };
 
   const RenderParticipantCollection = () => {
+    console.log(remoteStreams)
     return (
       <ParticipantsCollection
         participantsCount={participantsCount}
@@ -275,11 +276,27 @@ function Room() {
     setRemoteStreamsRef(remoteStreamsRef.current);
   };
 
+  const handleTrackUpdated = (remoteParticipant, track) => {
+    console.log(remoteParticipant)
+    console.log(track)
+    let newTrack;
+    let newRemoteStreamsRef = remoteStreamsRef.current; 
+    let newValor = remoteStreamsRef.current.get(remoteParticipant.id);
+    if (track.kind === "video") {
+      newTrack = track.mediaStreamTrack;
+      newTrack.type === "video";
+      newValor.videoStream = newTrack;
+    }
+    newRemoteStreamsRef.set(remoteParticipant.id, newValor);
+    setRemoteStreamsRef(newRemoteStreamsRef);
+  }
+
   const handleTrackStarted = (remoteParticipant, track) => {
     // if there's already a stream for this participant, add the track to it
     // this avoid having two different streams for the audio/video tracks of the
     // same participant.
-    console.log("TRACK", track);
+    console.log("handleTrackStarted=>PARTICIPANT", remoteParticipant);
+    console.log("handleTrackStarted=>TRACK", track);
     if (remoteStreamsRef.current.has(remoteParticipant.id)) {
       const streamData = remoteStreamsRef.current.get(remoteParticipant.id);
       streamData[`${track.provider.kind}Muted`] = track.provider.muted;
@@ -292,14 +309,15 @@ function Room() {
       }
       remoteStreamsRef.current.set(remoteParticipant.id, streamData);
     } else {
-      const audioStream = new MediaStream();
-      const videoStream = new MediaStream();
+      let audioStream //= new MediaStream();
+      let videoStream //= new MediaStream();
       let isSharingScreen = false;
-
+      // console.log("TRack",track.mediaStreamTrack)
       if (track.provider.kind === "audio") {
-        audioStream.addTrack(track.mediaStreamTrack);
+        audioStream = track.mediaStreamTrack;
       } else {
-        videoStream.addTrack(track.mediaStreamTrack);
+        videoStream = track.mediaStreamTrack;
+        videoStream.type = "video";
       }
       if (track.provider.source === "screenshare") {
         isSharingScreen = true;
@@ -311,6 +329,7 @@ function Room() {
           ),
         );
       }
+      console.log("remoteStreamsRef.set",remoteParticipant,audioStream,videoStream)
       remoteStreamsRef.current.set(remoteParticipant.id, {
         audioStream,
         videoStream,
@@ -386,7 +405,7 @@ function Room() {
 
   const joinRoom = async () => {
     const DolbyJWT =
-      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkb2xieS5pbyIsImlhdCI6MTY4NjE1Njk4Niwic3ViIjoid195UDNYVDJaVy1RbmZ6TXR5V1MwZz09IiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9DVVNUT01FUiJdLCJ0YXJnZXQiOiJzZXNzaW9uIiwib2lkIjoiOTg3MDFkMDctZWEyNi00ODM1LWJhM2ItMTBiMGU4MjkyODcyIiwiYWlkIjoiYjU3NmZhYjctY2JiMC00NWRhLTg1YWQtOGQ5MmZhZWEyNDY5IiwiYmlkIjoiOGEzNjgwZGU4ODJjOTlmNTAxODgyZmUxNGJmMTZiMmIiLCJleHAiOjE2ODYyNDMzODZ9.I52A6fiDs9Bj2zQke5uMXqzaxr9vNU-M3Ch8-eEwHVHnFCfk0O6rGUTISLaIpacL6vkuRJnJoo7nl133HzlH_Q";
+      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkb2xieS5pbyIsImlhdCI6MTY4NjIzOTkwOCwic3ViIjoid195UDNYVDJaVy1RbmZ6TXR5V1MwZz09IiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9DVVNUT01FUiJdLCJ0YXJnZXQiOiJzZXNzaW9uIiwib2lkIjoiOTg3MDFkMDctZWEyNi00ODM1LWJhM2ItMTBiMGU4MjkyODcyIiwiYWlkIjoiYjU3NmZhYjctY2JiMC00NWRhLTg1YWQtOGQ5MmZhZWEyNDY5IiwiYmlkIjoiOGEzNjgwZGU4ODJjOTlmNTAxODgyZmUxNGJmMTZiMmIiLCJleHAiOjE2ODYzMjYzMDh9.V8N__CFuLbevpGeAv7lrSov2QqsAJYWRtDGxW4cTwluObRJJ7Zof04rWuFCgSHKT5BIAi8kmX6-zQOB2FQ2Qng";
 
     const MuxJWT = await roomJWTprovider(
       roomId,
@@ -424,6 +443,7 @@ function Room() {
           handleRemoveParticipant(resp, newParticipant),
         );
         newRoom.on("ParticipantTrackSubscribed", handleTrackStarted);
+        newRoom.on("ParticipantTrackUpdated", handleTrackUpdated);
         newRoom.on("ParticipantJoined", handleParticipantJoined);
         newRoom.on("ParticipantLeft", handleParticipantLeft);
 

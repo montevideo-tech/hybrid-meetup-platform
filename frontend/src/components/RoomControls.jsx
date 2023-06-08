@@ -23,7 +23,7 @@ function RoomControls(props) {
   const [muted, setMuted] = useState(false);
 
   const {
-    updateScreenShare,
+    // updateScreenShare,
     isSharingScreen,
     participantSharingScreen,
     localTracks,
@@ -90,7 +90,7 @@ function RoomControls(props) {
   };
 
   const shareScreen = async () => {
-    updateScreenShare();
+    // updateScreenShare();
   };
 
   const blockMuteAllParticipants = () => {
@@ -202,7 +202,7 @@ function RoomControls(props) {
 
 RoomControls.propTypes = {
   localTracks: PropTypes.object,
-  updateScreenShare: PropTypes.func.isRequired,
+  // updateScreenShare: PropTypes.func.isRequired,
   updateLocalTracksMuted: PropTypes.func.isRequired,
   leaveRoom: PropTypes.func.isRequired,
   disabled: PropTypes.bool,

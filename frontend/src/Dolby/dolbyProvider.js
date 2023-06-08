@@ -117,16 +117,27 @@ export class Room extends EventEmitter {
 
     this.provider = VoxeetSDK.session;
     VoxeetSDK.conference.on("streamUpdated", (participant, stream) => {
-      console.log("STREAM UPDATED", participant, stream);
+      console.log("PARTICIPANT UPDATED", participant);
+      console.log("STREAM UPDATED", stream);
+      const tracks =
+      {
+        kind: "video",
+        mediaStreamTrack: stream,
+      };
+    this.emit(
+      "ParticipantTrackUpdated",
+      new RemoteParticipant(participant),
+      new Track(tracks),
+    );
     });
     VoxeetSDK.conference.on("streamAdded", (participant, stream) => {
-      console.log("STREAM ADDED", participant, stream);
-      const tracks = [
+      console.log("PARTICIPANT ADDED", participant);
+      console.log("STREAM ADDED", stream);
+      const tracks =
         {
           kind: "video",
           mediaStreamTrack: stream,
-        },
-      ];
+        };
       this.emit(
         "ParticipantTrackSubscribed",
         new RemoteParticipant(participant),
@@ -145,7 +156,7 @@ export class Room extends EventEmitter {
       const randomName = users[randomIndex];
       await VoxeetSDK.session.open({ name: randomName });
       const conference = await VoxeetSDK.conference.create({
-        alias: "roomName",
+        alias: "roomName2",
       });
       console.log(conference.id);
       const joined = await VoxeetSDK.conference.join(conference, {
