@@ -43,7 +43,7 @@ function Chat(props) {
         flexDirection: "column",
         borderRadius: "15px",
         border: "none",
-        padding: "5%",
+        padding: "15px",
       }}
     >
       <ChatContent>
