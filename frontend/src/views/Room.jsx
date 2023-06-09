@@ -33,7 +33,7 @@ import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
 import Audio from "../components/Audio";
 import Video from "../components/Video";
 import { Button } from "../themes/componentsStyles";
-import chat from "../assets/chat.svg";
+import ChatIcon from "@mui/icons-material/Chat";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -550,9 +550,9 @@ function Room() {
               >
                 <Badge badgeContent={unreadMessages} color="secondary">
                   {chatOpen ? (
-                    <img src={chat} alt="messages" />
+                    <ChatIcon fontSize="small" />
                   ) : (
-                    <ChatOutlinedIcon color="primary" sx={{ fontSize: 17 }} />
+                    <ChatOutlinedIcon color="primary" fontSize="small" />
                   )}
                 </Badge>
               </Button>
