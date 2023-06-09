@@ -1,8 +1,6 @@
 import styled from "styled-components";
 import Link from "@mui/material/Link";
 import Avatar from "@mui/material/Avatar";
-import envelope from "../assets/envelope.svg";
-import lock from "../assets/lock.svg";
 import theme from "./theme";
 
 export const Button = styled.button`
