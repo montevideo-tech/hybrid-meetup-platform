@@ -37,7 +37,7 @@ import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import Audio from "../components/Audio";
 import Video from "../components/Video";
 
-import { VITE_WEBRTC_PROVIDER_NAME } from "../lib/constants";
+import { VITE_WEBRTC_PROVIDER_NAME, VITE_DOLBY_API_KEY } from "../lib/constants";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -404,9 +404,6 @@ function Room() {
   };
 
   const joinRoom = async () => {
-    const DolbyJWT =
-      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkb2xieS5pbyIsImlhdCI6MTY4NjIzOTkwOCwic3ViIjoid195UDNYVDJaVy1RbmZ6TXR5V1MwZz09IiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9DVVNUT01FUiJdLCJ0YXJnZXQiOiJzZXNzaW9uIiwib2lkIjoiOTg3MDFkMDctZWEyNi00ODM1LWJhM2ItMTBiMGU4MjkyODcyIiwiYWlkIjoiYjU3NmZhYjctY2JiMC00NWRhLTg1YWQtOGQ5MmZhZWEyNDY5IiwiYmlkIjoiOGEzNjgwZGU4ODJjOTlmNTAxODgyZmUxNGJmMTZiMmIiLCJleHAiOjE2ODYzMjYzMDh9.V8N__CFuLbevpGeAv7lrSov2QqsAJYWRtDGxW4cTwluObRJJ7Zof04rWuFCgSHKT5BIAi8kmX6-zQOB2FQ2Qng";
-
     const MuxJWT = await roomJWTprovider(
       roomId,
       currentUser.email,
@@ -425,7 +422,7 @@ function Room() {
       const newRoom =
         VITE_WEBRTC_PROVIDER_NAME === "MUX"
           ? new MuxWebRoom(MuxJWT)
-          : new DolbyWebRoom(DolbyJWT);
+          : new DolbyWebRoom(VITE_DOLBY_API_KEY);
       console.log("NEW ROOM ANTES DEL JOIN", newRoom);
       const newParticipant = await newRoom.join();
       setLocalParticipant(newParticipant);
