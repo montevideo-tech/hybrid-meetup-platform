@@ -1,4 +1,3 @@
-// Room
 import { React, useState, useEffect, useRef, forwardRef } from "react";
 import { useLoaderData, Navigate, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -7,7 +6,6 @@ import MuiAlert from "@mui/material/Alert";
 import styled from "styled-components";
 import useUserPermission from "../hooks/useUserPermission";
 import RoomControls from "../components/RoomControls";
-
 import { Room as WebRoom } from "../lib/webrtc";
 import { roomJWTprovider } from "../actions";
 import {
@@ -32,9 +30,10 @@ import {
 import ShareScreen from "../components/ShareScreen";
 import { Colors } from "../themes/colors";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
-import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import Audio from "../components/Audio";
 import Video from "../components/Video";
+import { Button } from "../themes/componentsStyles";
+import ChatIcon from "@mui/icons-material/Chat";
 import participants from "../assets/participants.svg";
 
 export async function roomLoader({ params }) {
@@ -45,7 +44,6 @@ function Room() {
   const [room, setRoom] = useState();
   const [localParticipant, setLocalParticipant] = useState();
   const userRole = useUserPermission();
-  const [localStream, setLocalStream] = useState();
   // this helps keep track of muting/unmuting with RoomControls
   const [localTracks, setLocalTracks] = useState({ video: null, audio: null });
   const [isSharingScreen, setIsSharingScreen] = useState(false);
@@ -103,7 +101,7 @@ function Room() {
 
   useEffect(() => {
     if (localParticipant?.provider?.videoTracks?.entries().next()?.value) {
-      let localVideoStream = new MediaStream();
+      const localVideoStream = new MediaStream();
       localVideoStream.addTrack(
         localParticipant?.provider?.videoTracks?.entries().next()?.value[1]
           .track,
@@ -417,7 +415,6 @@ function Room() {
           stream.addTrack(track.mediaStreamTrack);
           newLocalTracks[track.kind] = track;
         });
-        setLocalStream(stream);
         setLocalTracks(newLocalTracks);
         subscribeToRemoteStreams(newRoom);
         subscribeToRoleChanges(roomId, handleRoleChange);
@@ -557,15 +554,19 @@ function Room() {
                   setLocalTracks={setLocalTracks}
                 />
               </CenteredDiv>
-              <ChatButton onClick={OnClickChatButton}>
+              <Button
+                $secondary
+                $customStyles={{ width: "40px", height: "40px" }}
+                onClick={OnClickChatButton}
+              >
                 <Badge badgeContent={unreadMessages} color="secondary">
                   {chatOpen ? (
-                    <ChatBubbleIcon color="primary" fontSize="large" />
+                    <ChatIcon fontSize="small" />
                   ) : (
-                    <ChatOutlinedIcon color="primary" fontSize="large" />
+                    <ChatOutlinedIcon color="primary" fontSize="small" />
                   )}
                 </Badge>
-              </ChatButton>
+              </Button>
             </>
           </Buttons>
         </Container>
@@ -587,7 +588,7 @@ const Container = styled.div`
   ${({ $chatOpen }) =>
     $chatOpen
       ? `
-    grid-template-columns: 1fr 360px;
+    grid-template-columns: 1fr 250px;
     transition: grid-template-columns 1s ease; 
     `
       : `
@@ -617,12 +618,6 @@ const CenteredDiv = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-`;
-
-const ChatButton = styled.button`
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
 `;
 
 const Buttons = styled.div`

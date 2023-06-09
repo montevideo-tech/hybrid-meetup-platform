@@ -4,13 +4,13 @@ import Video from "./Video";
 import styled from "styled-components";
 
 function ShareScreen(props) {
-  const { children, height } = props;
+  const { children } = props;
 
   return (
     <Container>
       <Video
         style={{
-          height: `calc(100vh - 350px)`,
+          height: "calc(100vh - 350px)",
           margin: "0px auto",
         }}
         stream={children.videoStream}
