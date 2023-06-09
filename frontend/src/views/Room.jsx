@@ -438,8 +438,6 @@ function Room() {
     }
   };
 
-  console.log("currentUser", currentUser);
-
   // initialize room
   useEffect(() => {
     joinRoom();
