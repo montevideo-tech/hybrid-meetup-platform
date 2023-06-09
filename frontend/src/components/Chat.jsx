@@ -60,7 +60,10 @@ function Chat(props) {
                     onDeleteMessage(m.id);
                   }}
                 >
-                  <DeleteOutlineIcon sx={{ ml: "2px", color: Colors.red }} />
+                  <DeleteOutlineIcon
+                    fontSize="small"
+                    sx={{ color: Colors.red }}
+                  />
                 </DeleteButton>
               )}
             </MessageChat>
@@ -68,7 +71,7 @@ function Chat(props) {
         </ChatContentWrapper>
       </ChatContent>
       <StyledChatForm onSubmit={handleSubmit}>
-        <Input
+        <StyledInput
           $customStyles={{
             width: "100%",
             fontWeight: "400",
@@ -112,13 +115,14 @@ const MessageChat = styled.div`
 const DeleteButton = styled.button`
   border: none;
   cursor: pointer;
+  padding: 0;
   background-color: transparent;
 `;
 
 const TextChat = styled.p`
   margin: 8px 0;
   font-family: "Poppins";
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   max-width: 80%;
   word-wrap: break-word;
 `;
@@ -144,6 +148,14 @@ const ChatContent = styled.div`
 
 const ChatContentWrapper = styled.div`
   flex-grow: 1;
+`;
+
+const StyledInput = styled(Input)`
+  :focus-visible {
+    outline: none !important;
+    border: 1px solid ${Colors.purple};
+    box-shadow: 0 0 1px ${Colors.purple};
+  }
 `;
 
 export default Chat;

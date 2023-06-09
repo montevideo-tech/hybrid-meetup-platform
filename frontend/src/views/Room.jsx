@@ -34,6 +34,7 @@ import Audio from "../components/Audio";
 import Video from "../components/Video";
 import { Button } from "../themes/componentsStyles";
 import ChatIcon from "@mui/icons-material/Chat";
+import participants from "../assets/participants.svg";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -526,6 +527,16 @@ function Room() {
           )}
           <Buttons>
             <>
+              <NumberParticipantsContainer>
+                <span>Hybridly Meeting</span>
+                <img
+                  src={participants}
+                  alt="number of participans"
+                  width="19.25px"
+                  height="14px"
+                />
+                <span>{room.remoteParticipants.size + 1}</span>
+              </NumberParticipantsContainer>
               <CenteredDiv>
                 <RoomControls
                   permissionRole={userRole}
@@ -584,6 +595,22 @@ const Container = styled.div`
     grid-template-columns: 1fr 0px;
     transition: grid-template-columns 1s ease;
     `};
+`;
+
+const NumberParticipantsContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin-left: 30px;
+  span {
+    font-family: "Poppins";
+    font-weight: 400;
+    font-size: 0.938rem;
+    line-height: 22px;
+    color: ${Colors.white};
+  }
+  img {
+    margin: 0 3px 0 10px;
+  }
 `;
 
 const CenteredDiv = styled.div`
