@@ -69,7 +69,7 @@ function SignUp() {
 
   return (
     <Container>
-      <Card>
+      <Card $customStyles={{ padding: "2%" }}>
         <motion.div
           variants={formVariants}
           initial="initial"
@@ -231,13 +231,14 @@ const Title = styled.h1`
   font-size: 1.563rem;
   line-height: 38px;
   color: ${Colors.purple};
-  margin: 14px 0 27px 0;
+  padding: 4.5% 0 8% 0;
+  margin: 0;
 `;
 
 const InputContainer = styled.div`
   align-self: center;
   justify-self: center;
-  margin-bottom: 14px;
+  padding-bottom: 4%;
 `;
 
 const StartIcon = styled.img`

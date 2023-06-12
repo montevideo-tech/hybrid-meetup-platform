@@ -30,7 +30,7 @@ export function Header() {
     setAuth(null);
     setAnchorEl(null);
     dispatch(logout());
-    navigate("/signIn");
+    navigate("/");
   };
 
   const handleMenu = (event) => {

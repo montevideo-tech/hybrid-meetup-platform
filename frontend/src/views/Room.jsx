@@ -392,7 +392,7 @@ function Room() {
         dispatch(
           initRoom({
             id: roomId,
-            participants: [{ name: currentUser.email, role: ROLES.GUEST }],
+            participants: [{ name: currentUser.username, role: ROLES.GUEST }],
           }),
         );
 

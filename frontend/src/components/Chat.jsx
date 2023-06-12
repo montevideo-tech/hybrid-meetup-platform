@@ -78,7 +78,7 @@ function Chat(props) {
             fontSize: "0.75rem",
             lineHeight: "1.125rem",
             border: `1px solid ${Colors.purple}`,
-            padding: "0 12px",
+            padding: "0 40px 0 12px",
           }}
           type="text"
           placeholder="Message"

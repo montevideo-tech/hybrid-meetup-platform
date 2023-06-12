@@ -69,6 +69,7 @@ const Headline = styled.div`
 const Title = styled.h1`
   margin: 0 0 23px 0;
   padding: 0;
+  font-family: "Poppins";
   font-size: 3rem;
   font-weight: 600;
   line-height: 60px;
