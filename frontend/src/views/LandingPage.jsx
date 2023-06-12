@@ -23,7 +23,6 @@ function LandingPage() {
           </TitleParts>
         </Title>
         <StyledButton
-          $secondary
           $customStyles={{ width: "14.5rem", height: "2.813rem" }}
           onClick={() => navigate("/signIn")}
         >

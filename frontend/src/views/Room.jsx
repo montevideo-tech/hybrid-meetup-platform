@@ -555,7 +555,6 @@ function Room() {
                 />
               </CenteredDiv>
               <Button
-                $secondary
                 $customStyles={{ width: "40px", height: "40px" }}
                 onClick={OnClickChatButton}
               >
@@ -600,7 +599,6 @@ const Container = styled.div`
 const NumberParticipantsContainer = styled.div`
   display: flex;
   align-items: center;
-  margin-left: 30px;
   span {
     font-family: "Poppins";
     font-weight: 400;
