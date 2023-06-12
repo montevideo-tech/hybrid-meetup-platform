@@ -55,7 +55,6 @@ export function Header() {
                   onClick={handleMenu}
                   aria-controls="menu-appbar"
                   aria-haspopup="true"
-                  $secondary
                   $customStyles={{
                     width: "100px",
                     height: "45px",
@@ -108,7 +107,6 @@ export function Header() {
             ) : (
               <Button
                 onClick={() => navigate("/signIn")}
-                $secondary
                 $customStyles={{
                   width: "100px",
                   height: "45px",

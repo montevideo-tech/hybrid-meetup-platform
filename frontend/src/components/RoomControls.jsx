@@ -2,13 +2,8 @@ import { React, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { ButtonGroup, Button, Tooltip } from "@mui/material";
+import { ButtonGroup, Tooltip } from "@mui/material";
 import {
-  Videocam as VideocamIcon,
-  VideocamOffOutlined as VideocamOffOutlinedIcon,
-  Mic as MicIcon,
-  MicOffOutlined as MicOffOutlinedIcon,
-  Cancel as CancelIcon,
   ScreenShare as ScreenShareIcon,
   StopScreenShare as StopScreenShareIcon,
   HeadsetMic as HeadsetMicIcon,
@@ -17,6 +12,14 @@ import {
 import { LocalParticipant } from "@mux/spaces-web";
 import { ROLES } from "../utils/roles";
 import { setGuestMuted } from "../utils/room";
+import { Button } from "../themes/componentsStyles";
+import camera from "../assets/camera.svg";
+import noCamera from "../assets/no-camera.svg";
+import mic from "../assets/mic.svg";
+import noMic from "../assets/no-mic.svg";
+import noMicRed from "../assets/no-mic-red.svg";
+import close from "../assets/close.svg";
+import { Colors } from "../themes/colors";
 
 function RoomControls(props) {
   const navigate = useNavigate();
@@ -43,12 +46,12 @@ function RoomControls(props) {
     if (isEnableToUnmute || t.kind === "video") {
       if (t.kind === "video") {
         if (muted) {
-          setMuted(false)
+          setMuted(false);
           const tracks = await localParticipant.publishTracks({
             constraints: { video: true, audio: false },
           });
           const newLocalTracks = { ...localTracks };
-            newLocalTracks[tracks[0].kind] = tracks[0];
+          newLocalTracks[tracks[0].kind] = tracks[0];
           setLocalVideoTrack(tracks[0]);
           setLocalTracks(newLocalTracks);
           updateLocalTracksMuted(t.kind, false);
@@ -99,11 +102,7 @@ function RoomControls(props) {
   };
 
   return (
-    <Container
-      variant="contained"
-      size="large"
-      disabled={disabled}
-    >
+    <Container variant="contained" size="large" disabled={disabled}>
       <Tooltip
         title={
           !localTracks.video || localTracks.video.muted
@@ -113,14 +112,20 @@ function RoomControls(props) {
       >
         <StyledDiv>
           <Button
-            size="large"
+            $customStyles={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "40px",
+              height: "40px",
+            }}
             disabled={!localTracks.video}
             onClick={() => toggleMuteTrack(localTracks.video)}
           >
             {!localTracks.video || localTracks.video.muted ? (
-              <VideocamOffOutlinedIcon />
+              <StyledImg src={noCamera} alt="camera off" height="19.4px" />
             ) : (
-              <VideocamIcon />
+              <img src={camera} alt="camera on" />
             )}
           </Button>
         </StyledDiv>
@@ -133,16 +138,26 @@ function RoomControls(props) {
       >
         <StyledDiv>
           <Button
-            size="large"
+            $customStyles={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "40px",
+              height: "40px",
+            }}
             disabled={!localTracks.audio || !isEnableToUnmute}
             onClick={() => toggleMuteTrack(localTracks.audio)}
           >
             {!localTracks.audio ||
             localTracks.audio.muted ||
             !isEnableToUnmute ? (
-              <MicOffOutlinedIcon color={isEnableToUnmute ? "" : "error"} />
+              isEnableToUnmute ? (
+                <img src={noMic} alt="microphone off" height="23px" />
+              ) : (
+                <img src={noMicRed} alt="microphone disabled" height="23px" />
+              )
             ) : (
-              <MicIcon />
+              <StyledImg src={mic} alt="microphone on" height="23.5px" />
             )}
           </Button>
         </StyledDiv>
@@ -165,11 +180,20 @@ function RoomControls(props) {
                 participantSharingScreen &&
                 participantSharingScreen !== localParticipant.displayName
               }
-              size="large"
-              hover="onHoverTest"
+              $customStyles={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "40px",
+                height: "40px",
+              }}
               onClick={() => shareScreen()}
             >
-              {!isSharingScreen ? <ScreenShareIcon /> : <StopScreenShareIcon />}
+              {!isSharingScreen ? (
+                <ScreenShareIcon fontSize="small" />
+              ) : (
+                <StopScreenShareIcon fontSize="small" />
+              )}
             </Button>
           </StyledDiv>
         </Tooltip>
@@ -182,11 +206,23 @@ function RoomControls(props) {
         >
           <StyledDiv>
             <Button
-              size="large"
-              hover="onHoverTest"
+              $customStyles={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "40px",
+                height: "40px",
+              }}
               onClick={() => blockMuteAllParticipants()}
             >
-              {!isBlockedRemotedGuest ? <HeadsetOffIcon /> : <HeadsetMicIcon />}
+              {!isBlockedRemotedGuest ? (
+                <HeadsetMicIcon fontSize="small" />
+              ) : (
+                <HeadsetOffIcon
+                  fontSize="small"
+                  sx={{ marginBottom: "1.4px" }}
+                />
+              )}
             </Button>
           </StyledDiv>
         </Tooltip>
@@ -194,8 +230,18 @@ function RoomControls(props) {
 
       <Tooltip title="Leave room">
         <StyledDiv>
-          <Button size="large" color="error" onClick={endCall}>
-            <CancelIcon />
+          <Button
+            $primary
+            $customStyles={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "40px",
+              height: "40px",
+            }}
+            onClick={endCall}
+          >
+            <img src={close} alt="close" />
           </Button>
         </StyledDiv>
       </Tooltip>
@@ -233,10 +279,14 @@ const Container = styled(ButtonGroup)`
   justify-content: center;
   align-content: center;
   border: transparent !important;
-`
+`;
 
 const StyledDiv = styled.div`
   padding: 2px;
+`;
+
+const StyledImg = styled.img`
+  margin-top: 1.7px;
 `;
 
 export default RoomControls;
