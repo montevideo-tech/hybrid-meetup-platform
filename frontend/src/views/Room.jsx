@@ -311,6 +311,15 @@ function Room() {
       const audioStream = new MediaStream();
       const videoStream = new MediaStream();
       let isSharingScreen = false;
+      try {
+        if (track.kind === "audio") {
+          audioStream.addTrack(track.mediaStreamTrack);
+        } else {
+          videoStream.addTrack(track.mediaStreamTrack);
+        }
+      } catch (error) {
+        console.error(error);
+      }
       if (track.provider.source === "screenshare") {
         isSharingScreen = true;
         setIsSharingScreen(isSharingScreen);
