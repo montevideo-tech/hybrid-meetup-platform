@@ -277,23 +277,18 @@ function Room() {
   };
 
   const handleTrackUpdated = (remoteParticipant, track) => {
-    let newTrack;
-    let newRemoteStreamsRef = remoteStreamsRef.current;
-    let newValor = remoteStreamsRef.current.get(remoteParticipant.id);
+    let currentRemoteStreamsRef = remoteStreamsRef.current;
+    let currentRemoteStream = remoteStreamsRef.current.get(remoteParticipant.id);
     const stream = new MediaStream();
     stream.addTrack(track.mediaStreamTrack);
-    if (newValor) {
+    if (currentRemoteStream) {
       if (track.kind === "video") {
-        newTrack = stream;
-        newTrack.type === "video";
-        newValor.videoStream = newTrack;
+        currentRemoteStream.videoStream = stream;
       } else {
-        newTrack = stream;
-        newTrack.type === "audio";
-        newValor.audioStream = newTrack;
+        currentRemoteStream.audioStream = stream;
       }
-      newRemoteStreamsRef.set(remoteParticipant.id, newValor);
-      setRemoteStreamsRef(newRemoteStreamsRef);
+      currentRemoteStreamsRef.set(remoteParticipant.id, currentRemoteStream);
+      setRemoteStreamsRef(currentRemoteStreamsRef);
     }
   }
 
