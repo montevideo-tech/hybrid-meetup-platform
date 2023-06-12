@@ -90,7 +90,6 @@ function Room() {
   const leaveRoom = async () => {
     if (roomRef.current) {
       // await userParticipant.unpublishAllTracks(); // also stops them
-      console.log(roomRef.current);
       await roomRef.current.leave();
     }
   };
@@ -187,7 +186,6 @@ function Room() {
   };
 
   const RenderParticipantCollection = () => {
-    console.log(remoteStreams)
     return (
       <ParticipantsCollection
         participantsCount={participantsCount}
@@ -250,18 +248,20 @@ function Room() {
 
   const subscribeToRemoteStreams = async (r) => {
     const { remoteParticipants } = r;
-    const rps = Array.from(remoteParticipants.values());
-    // Listen to all the participants that are already on the call
-    rps.map(async (rp) => {
-      rp.on("StartedSpeaking", () => {
-        updateIsSpeakingStatus(rp.connectionId, true);
+    if (remoteParticipants) {
+      const rps = Array.from(remoteParticipants.values());
+      // Listen to all the participants that are already on the call
+      rps.map(async (rp) => {
+        rp.on("StartedSpeaking", () => {
+          updateIsSpeakingStatus(rp.connectionId, true);
+        });
+        rp.on("StoppedSpeaking", () => {
+          updateIsSpeakingStatus(rp.connectionId, false);
+        });
+        await rp.subscribe();
       });
-      rp.on("StoppedSpeaking", () => {
-        updateIsSpeakingStatus(rp.connectionId, false);
-      });
-      await rp.subscribe();
-    });
-    updateParticipantRoles(roomId, dispatch);
+      updateParticipantRoles(roomId, dispatch);
+    }
   };
 
   const handleTrackMuted = (remoteParticipant, track) => {
@@ -277,48 +277,45 @@ function Room() {
   };
 
   const handleTrackUpdated = (remoteParticipant, track) => {
-    console.log(remoteParticipant)
-    console.log(track)
     let newTrack;
-    let newRemoteStreamsRef = remoteStreamsRef.current; 
+    let newRemoteStreamsRef = remoteStreamsRef.current;
     let newValor = remoteStreamsRef.current.get(remoteParticipant.id);
-    if (track.kind === "video") {
-      newTrack = track.mediaStreamTrack;
-      newTrack.type === "video";
-      newValor.videoStream = newTrack;
+    const stream = new MediaStream();
+    stream.addTrack(track.mediaStreamTrack);
+    if (newValor) {
+      if (track.kind === "video") {
+        newTrack = stream;
+        newTrack.type === "video";
+        newValor.videoStream = newTrack;
+      } else {
+        newTrack = stream;
+        newTrack.type === "audio";
+        newValor.audioStream = newTrack;
+      }
+      newRemoteStreamsRef.set(remoteParticipant.id, newValor);
+      setRemoteStreamsRef(newRemoteStreamsRef);
     }
-    newRemoteStreamsRef.set(remoteParticipant.id, newValor);
-    setRemoteStreamsRef(newRemoteStreamsRef);
   }
 
   const handleTrackStarted = (remoteParticipant, track) => {
-    // if there's already a stream for this participant, add the track to it
+    // if there's already   a stream for this participant, add the track to it
     // this avoid having two different streams for the audio/video tracks of the
     // same participant.
-    console.log("handleTrackStarted=>PARTICIPANT", remoteParticipant);
-    console.log("handleTrackStarted=>TRACK", track);
     if (remoteStreamsRef.current.has(remoteParticipant.id)) {
       const streamData = remoteStreamsRef.current.get(remoteParticipant.id);
-      streamData[`${track.provider.kind}Muted`] = track.provider.muted;
+      streamData[`${track.kind}Muted`] = track.muted;
       const stream = new MediaStream();
-      stream.addTrack(track.provider.mediaStreamTrack);
-      if (track.provider.kind === "audio") {
+      stream.addTrack(track.mediaStreamTrack);
+      if (track.kind === "audio") {
         streamData.audioStream = stream;
       } else {
         streamData.videoStream = stream;
       }
       remoteStreamsRef.current.set(remoteParticipant.id, streamData);
     } else {
-      let audioStream //= new MediaStream();
-      let videoStream //= new MediaStream();
+      const audioStream = new MediaStream();
+      const videoStream = new MediaStream();
       let isSharingScreen = false;
-      // console.log("TRack",track.mediaStreamTrack)
-      if (track.provider.kind === "audio") {
-        audioStream = track.mediaStreamTrack;
-      } else {
-        videoStream = track.mediaStreamTrack;
-        videoStream.type = "video";
-      }
       if (track.provider.source === "screenshare") {
         isSharingScreen = true;
         setIsSharingScreen(isSharingScreen);
@@ -329,11 +326,10 @@ function Room() {
           ),
         );
       }
-      console.log("remoteStreamsRef.set",remoteParticipant,audioStream,videoStream)
       remoteStreamsRef.current.set(remoteParticipant.id, {
         audioStream,
         videoStream,
-        [`${track.provider.kind}Muted`]: track.provider.muted,
+        [`${track.kind}Muted`]: track.muted,
         speaking: false,
         name: remoteParticipant.displayName,
         isSharingScreen, // set isSharingScreen for remote participant
@@ -359,7 +355,6 @@ function Room() {
   };
 
   const handleParticipantJoined = (p) => {
-    console.log("escuchamos evento y se ejecuto esta funcion", p);
     p.subscribe();
     p.on("StartedSpeaking", () => {
       updateIsSpeakingStatus(p.id, true);
@@ -423,10 +418,8 @@ function Room() {
         VITE_WEBRTC_PROVIDER_NAME === "MUX"
           ? new MuxWebRoom(MuxJWT)
           : new DolbyWebRoom(VITE_DOLBY_API_KEY);
-      console.log("NEW ROOM ANTES DEL JOIN", newRoom);
       const newParticipant = await newRoom.join();
       setLocalParticipant(newParticipant);
-      console.log("newParticipant", newParticipant);
       if (newParticipant) {
         dispatch(
           initRoom({
@@ -445,7 +438,6 @@ function Room() {
         newRoom.on("ParticipantLeft", handleParticipantLeft);
 
         setRoom(newRoom);
-        console.log("NEW ROOM", newRoom);
         roomRef.current = newRoom;
         const tracks = await newParticipant.publishTracks({
           constraints: { video: true, audio: false },

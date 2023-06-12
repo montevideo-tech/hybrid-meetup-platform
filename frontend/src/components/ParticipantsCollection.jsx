@@ -33,14 +33,13 @@ function ParticipantsCollection(props) {
   const isAlone = currentParticipants.length === 0;
   const oddNumber = !isAlone && currentParticipants.length % 2 === 0; //I check that it is an even number since the local participant is added.
   const twoParticipant = currentParticipants.length === 1;
-  console.log(children);
   return (
     <>
-      {children.map(({ audioStream, name }) => (
+      {children.length!==0 && children.map(({ audioStream, name }) => (
         <Audio key={name} stream={audioStream} />
       ))}
       <Content $colums={colums} $twoParticipant={twoParticipant}>
-        {currentParticipants
+        {children.length!==0 && currentParticipants
           .slice(0, 9)
           .map(({ videoStream, name, audioMuted, videoMuted, speaking }) => (
             <Video
