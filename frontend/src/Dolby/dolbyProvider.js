@@ -10,7 +10,7 @@ export class Track extends EventEmitter {
     this.id = this.provider.id;
     this.muted = this.provider.muted;
     this.kind = this.provider.kind;
-    this.mediaStreamTrack = this.provider.mediaStreamTrack;
+    this.mediaStreamTrack = this.provider;
   }
 
   mute() {
@@ -32,7 +32,6 @@ class Participant extends EventEmitter {
     this.provider = providerParticipant;
     this.id = this.provider.id;
     this.displayName = this.provider.info.name;
-    console.log("PROVIDER PARTICIPANT", providerParticipant);
     this.provider.on("streamAdded", () => this.emit("StartedSpeaking"));
     this.provider.on("streamRemoved", () => this.emit("StoppedSpeaking"));
   }
@@ -57,12 +56,7 @@ export class LocalParticipant extends Participant {
         videoConstraints,
       );
       // Prepare the tracks array to be similar to what your existing code expects
-      const tracks = [
-        {
-          kind: "video",
-          mediaStreamTrack: mediaStreamTrack,
-        },
-      ];
+      const tracks = [mediaStreamTrack];
       // If audio is also enabled, add a dummy audio track (replace with actual audio track if available)
       if (constraints.audio) {
         const audioTrack = VoxeetSDK.audio.local.start();
@@ -117,21 +111,29 @@ export class Room extends EventEmitter {
 
     this.provider = VoxeetSDK.session;
     VoxeetSDK.conference.on("streamUpdated", (participant, stream) => {
-      console.log("STREAM UPDATED", participant, stream);
+      const tracks = stream.getTracks();
+      tracks.map((t) => {
+        const track = new Track(t)
+        const remoteParticipant = new RemoteParticipant(participant);
+        this.emit(
+          "ParticipantTrackUpdated",
+          remoteParticipant,
+          track,
+        );
+      });
+
     });
     VoxeetSDK.conference.on("streamAdded", (participant, stream) => {
-      console.log("STREAM ADDED", participant, stream);
-      const tracks = [
-        {
-          kind: "video",
-          mediaStreamTrack: stream,
-        },
-      ];
-      this.emit(
-        "ParticipantTrackSubscribed",
-        new RemoteParticipant(participant),
-        new Track(tracks),
-      );
+      const tracks = stream.getTracks();
+      tracks.map((t) => {
+        const track = new Track(t)
+        const remoteParticipant = new RemoteParticipant(participant);
+        this.emit(
+          "ParticipantTrackSubscribed",
+          remoteParticipant,
+          track,
+        );
+      });
     });
 
     VoxeetSDK.conference.on("streamRemoved", (p) =>
@@ -145,13 +147,11 @@ export class Room extends EventEmitter {
       const randomName = users[randomIndex];
       await VoxeetSDK.session.open({ name: randomName });
       const conference = await VoxeetSDK.conference.create({
-        alias: "roomName",
+        alias: "roomName2",
       });
-      console.log(conference.id);
-      const joined = await VoxeetSDK.conference.join(conference, {
+      await VoxeetSDK.conference.join(conference, {
         constraints: { audio: true, video: true },
       });
-      console.log("JOINED", joined);
       const localParticipant = new LocalParticipant(
         VoxeetSDK.session.participant,
       );

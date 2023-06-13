@@ -37,7 +37,7 @@ import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import Audio from "../components/Audio";
 import Video from "../components/Video";
 
-import { VITE_WEBRTC_PROVIDER_NAME } from "../lib/constants";
+import { VITE_WEBRTC_PROVIDER_NAME, VITE_DOLBY_API_KEY } from "../lib/constants";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -90,7 +90,6 @@ function Room() {
   const leaveRoom = async () => {
     if (roomRef.current) {
       // await userParticipant.unpublishAllTracks(); // also stops them
-      console.log(roomRef.current);
       await roomRef.current.leave();
     }
   };
@@ -249,18 +248,20 @@ function Room() {
 
   const subscribeToRemoteStreams = async (r) => {
     const { remoteParticipants } = r;
-    const rps = Array.from(remoteParticipants.values());
-    // Listen to all the participants that are already on the call
-    rps.map(async (rp) => {
-      rp.on("StartedSpeaking", () => {
-        updateIsSpeakingStatus(rp.connectionId, true);
+    if (remoteParticipants) {
+      const rps = Array.from(remoteParticipants.values());
+      // Listen to all the participants that are already on the call
+      rps.map(async (rp) => {
+        rp.on("StartedSpeaking", () => {
+          updateIsSpeakingStatus(rp.connectionId, true);
+        });
+        rp.on("StoppedSpeaking", () => {
+          updateIsSpeakingStatus(rp.connectionId, false);
+        });
+        await rp.subscribe();
       });
-      rp.on("StoppedSpeaking", () => {
-        updateIsSpeakingStatus(rp.connectionId, false);
-      });
-      await rp.subscribe();
-    });
-    updateParticipantRoles(roomId, dispatch);
+      updateParticipantRoles(roomId, dispatch);
+    }
   };
 
   const handleTrackMuted = (remoteParticipant, track) => {
@@ -275,17 +276,32 @@ function Room() {
     setRemoteStreamsRef(remoteStreamsRef.current);
   };
 
+  const handleTrackUpdated = (remoteParticipant, track) => {
+    let currentRemoteStreamsRef = remoteStreamsRef.current;
+    let currentRemoteStream = remoteStreamsRef.current.get(remoteParticipant.id);
+    const stream = new MediaStream();
+    stream.addTrack(track.mediaStreamTrack);
+    if (currentRemoteStream) {
+      if (track.kind === "video") {
+        currentRemoteStream.videoStream = stream;
+      } else {
+        currentRemoteStream.audioStream = stream;
+      }
+      currentRemoteStreamsRef.set(remoteParticipant.id, currentRemoteStream);
+      setRemoteStreamsRef(currentRemoteStreamsRef);
+    }
+  }
+
   const handleTrackStarted = (remoteParticipant, track) => {
-    // if there's already a stream for this participant, add the track to it
+    // if there's already   a stream for this participant, add the track to it
     // this avoid having two different streams for the audio/video tracks of the
     // same participant.
-    console.log("TRACK", track);
     if (remoteStreamsRef.current.has(remoteParticipant.id)) {
       const streamData = remoteStreamsRef.current.get(remoteParticipant.id);
-      streamData[`${track.provider.kind}Muted`] = track.provider.muted;
+      streamData[`${track.kind}Muted`] = track.muted;
       const stream = new MediaStream();
-      stream.addTrack(track.provider.mediaStreamTrack);
-      if (track.provider.kind === "audio") {
+      stream.addTrack(track.mediaStreamTrack);
+      if (track.kind === "audio") {
         streamData.audioStream = stream;
       } else {
         streamData.videoStream = stream;
@@ -295,11 +311,14 @@ function Room() {
       const audioStream = new MediaStream();
       const videoStream = new MediaStream();
       let isSharingScreen = false;
-
-      if (track.provider.kind === "audio") {
-        audioStream.addTrack(track.mediaStreamTrack);
-      } else {
-        videoStream.addTrack(track.mediaStreamTrack);
+      try {
+        if (track.kind === "audio") {
+          audioStream.addTrack(track.mediaStreamTrack);
+        } else {
+          videoStream.addTrack(track.mediaStreamTrack);
+        }
+      } catch (error) {
+        console.error(error);
       }
       if (track.provider.source === "screenshare") {
         isSharingScreen = true;
@@ -314,7 +333,7 @@ function Room() {
       remoteStreamsRef.current.set(remoteParticipant.id, {
         audioStream,
         videoStream,
-        [`${track.provider.kind}Muted`]: track.provider.muted,
+        [`${track.kind}Muted`]: track.muted,
         speaking: false,
         name: remoteParticipant.displayName,
         isSharingScreen, // set isSharingScreen for remote participant
@@ -340,7 +359,6 @@ function Room() {
   };
 
   const handleParticipantJoined = (p) => {
-    console.log("escuchamos evento y se ejecuto esta funcion", p);
     p.subscribe();
     p.on("StartedSpeaking", () => {
       updateIsSpeakingStatus(p.id, true);
@@ -385,9 +403,6 @@ function Room() {
   };
 
   const joinRoom = async () => {
-    const DolbyJWT =
-      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkb2xieS5pbyIsImlhdCI6MTY4NjE1Njk4Niwic3ViIjoid195UDNYVDJaVy1RbmZ6TXR5V1MwZz09IiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9DVVNUT01FUiJdLCJ0YXJnZXQiOiJzZXNzaW9uIiwib2lkIjoiOTg3MDFkMDctZWEyNi00ODM1LWJhM2ItMTBiMGU4MjkyODcyIiwiYWlkIjoiYjU3NmZhYjctY2JiMC00NWRhLTg1YWQtOGQ5MmZhZWEyNDY5IiwiYmlkIjoiOGEzNjgwZGU4ODJjOTlmNTAxODgyZmUxNGJmMTZiMmIiLCJleHAiOjE2ODYyNDMzODZ9.I52A6fiDs9Bj2zQke5uMXqzaxr9vNU-M3Ch8-eEwHVHnFCfk0O6rGUTISLaIpacL6vkuRJnJoo7nl133HzlH_Q";
-
     const MuxJWT = await roomJWTprovider(
       roomId,
       currentUser.email,
@@ -406,11 +421,9 @@ function Room() {
       const newRoom =
         VITE_WEBRTC_PROVIDER_NAME === "MUX"
           ? new MuxWebRoom(MuxJWT)
-          : new DolbyWebRoom(DolbyJWT);
-      console.log("NEW ROOM ANTES DEL JOIN", newRoom);
+          : new DolbyWebRoom(VITE_DOLBY_API_KEY);
       const newParticipant = await newRoom.join();
       setLocalParticipant(newParticipant);
-      console.log("newParticipant", newParticipant);
       if (newParticipant) {
         dispatch(
           initRoom({
@@ -424,11 +437,11 @@ function Room() {
           handleRemoveParticipant(resp, newParticipant),
         );
         newRoom.on("ParticipantTrackSubscribed", handleTrackStarted);
+        newRoom.on("ParticipantTrackUpdated", handleTrackUpdated);
         newRoom.on("ParticipantJoined", handleParticipantJoined);
         newRoom.on("ParticipantLeft", handleParticipantLeft);
 
         setRoom(newRoom);
-        console.log("NEW ROOM", newRoom);
         roomRef.current = newRoom;
         const tracks = await newParticipant.publishTracks({
           constraints: { video: true, audio: false },
