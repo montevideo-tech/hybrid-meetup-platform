@@ -19,12 +19,10 @@ import mic from "../assets/mic.svg";
 import noMic from "../assets/no-mic.svg";
 import noMicRed from "../assets/no-mic-red.svg";
 import close from "../assets/close.svg";
-import { Colors } from "../themes/colors";
-
+import videoRecord from "../assets/videoRecord.svg";
 function RoomControls(props) {
   const navigate = useNavigate();
   const [muted, setMuted] = useState(false);
-
   const {
     updateScreenShare,
     isSharingScreen,
@@ -39,6 +37,7 @@ function RoomControls(props) {
     isBlockedRemotedGuest,
     setIsBlockedRemotedGuest,
     setLocalTracks,
+    startRecording,
   } = props;
   const [localVideoTrack, setLocalVideoTrack] = useState(localTracks.video);
 
@@ -103,6 +102,22 @@ function RoomControls(props) {
 
   return (
     <Container variant="contained" size="large" disabled={disabled}>
+      {permissionRole === ROLES.HOST && (
+        <Button
+          $customStyles={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "40px",
+            height: "40px",
+          }}
+          size="large"
+          onClick={startRecording}
+          hover="onHoverTest"
+        >
+          <img src={videoRecord} alt="Stop" />
+        </Button>
+      )}
       <Tooltip
         title={
           !localTracks.video || localTracks.video.muted

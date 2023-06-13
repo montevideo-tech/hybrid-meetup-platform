@@ -35,6 +35,7 @@ import Video from "../components/Video";
 import { Button } from "../themes/componentsStyles";
 import ChatIcon from "@mui/icons-material/Chat";
 import participants from "../assets/participants.svg";
+import VideoRecorder from "../components/VideoRecorder";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -71,7 +72,7 @@ function Room() {
   const [localVideoStream, setLocalVideoStream] = useState(undefined);
   const [localAudioStream, setLocalAudioStream] = useState(undefined);
   const [localName, setLocalName] = useState(undefined);
-
+  const [isRecording, setIsRecording] = useState(false);
   // To add a new criteria to the comparator you need to
   // Decide if it's higher or lower pririoty compared to the already established
   // if it's higher you must add the 'if' before otherwise add it after.
@@ -79,6 +80,14 @@ function Room() {
     remoteStreamsRef.current = data;
     const remoteStreamsSorted = Array.from(data.values()).sort(comparator);
     setRemoteStreams(remoteStreamsSorted);
+  };
+
+  const startRecording = () => {
+    setIsRecording(!isRecording);
+  };
+
+  const stopRecording = () => {
+    setIsRecording(false);
   };
 
   const participantsCount = remoteStreams.length;
@@ -509,6 +518,12 @@ function Room() {
   };
   return (
     <>
+      {isRecording && (
+        <VideoRecorder
+          isRecording={isRecording}
+          stopRecording={stopRecording}
+        />
+      )}
       {roomNotFound && <Navigate to="/rooms/404" />}
       {room ? (
         <Container $chatOpen={chatOpen}>
@@ -539,6 +554,9 @@ function Room() {
               </NumberParticipantsContainer>
               <CenteredDiv>
                 <RoomControls
+                  startRecording={startRecording}
+                  stopRecording={stopRecording}
+                  isRecording={isRecording}
                   permissionRole={userRole}
                   updateScreenShare={updateScreenShare}
                   isSharingScreen={isSharingScreen}
@@ -582,8 +600,10 @@ export default Room;
 
 const Container = styled.div`
   display: grid;
+  position: relative;
   grid-template-rows: 1fr 60px;
-  height: 100%;
+  min-height: ${({ isRecording }) =>
+    isRecording ? "calc(100% - 80px)" : "100%"};
   ${({ $chatOpen }) =>
     $chatOpen
       ? `
