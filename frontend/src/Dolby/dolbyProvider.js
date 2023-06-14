@@ -14,15 +14,23 @@ export class Track extends EventEmitter {
   }
 
   mute() {
-    this.mediaStreamTrack.enabled = false;
-    this.muted = true;
-    this.provider.emit("Muted", this.provider);
+    try {
+      VoxeetSDK.conference.mute(VoxeetSDK.session.participant, true);
+      this.muted = true;
+    } catch (error) {
+      console.error("Error muting audio track:", error);
+    }
+    this.emit("Muted", this.provider);
   }
 
   unmute() {
-    this.mediaStreamTrack.enabled = true;
-    this.muted = false;
-    this.provider.emit("Unmuted", this.provider);
+    try {
+      VoxeetSDK.conference.mute(VoxeetSDK.session.participant, false);
+      this.muted = false;
+    } catch (error) {
+      console.error("Error unmuting audio track:", error);
+    }
+    this.emit("Unmuted", this.provider);
   }
 }
 
@@ -59,12 +67,9 @@ export class LocalParticipant extends Participant {
       const tracks = [mediaStreamTrack];
       // If audio is also enabled, add a dummy audio track (replace with actual audio track if available)
       if (constraints.audio) {
-        const audioTrack = VoxeetSDK.audio.local.start();
-        tracks.push({
-          kind: "audio",
-          // Replace with actual MediaStreamTrack for audio
-          mediaStreamTrack: audioTrack,
-        });
+        const streams = this.provider.streams[0];
+        const audioTrack = streams.getTracks()[0];
+        tracks.push(audioTrack);
       }
       return tracks.map((t) => new Track(t));
     }
@@ -147,7 +152,7 @@ export class Room extends EventEmitter {
       const randomName = users[randomIndex];
       await VoxeetSDK.session.open({ name: randomName });
       const conference = await VoxeetSDK.conference.create({
-        alias: "roomName2",
+        alias: "roomName20",
       });
       await VoxeetSDK.conference.join(conference, {
         constraints: { audio: true, video: true },

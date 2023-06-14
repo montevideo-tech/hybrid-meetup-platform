@@ -446,7 +446,7 @@ function Room() {
         const propsTracks = {
           constraints: { 
             video: true, 
-            audio: VITE_WEBRTC_PROVIDER_NAME === "MUX" 
+            audio: true,
           },
         };
         const tracks = await newParticipant.publishTracks(propsTracks);
