@@ -41,9 +41,9 @@ function RoomTest() {
     try {
       const newRoom = new Room(VITE_MUX_SPACE_JWT);
       const newParticipant = await newRoom.join();
-
+      console.log(newRoom);
       newRoom.on("ParticipantTrackSubscribed", (remoteParticipant, track) => {
-        // console.log(remoteParticipant, track);
+        console.log("Remote Participant", remoteParticipant);
         const stream = new MediaStream();
         stream.addTrack(track.mediaStreamTrack);
         console.log(stream);

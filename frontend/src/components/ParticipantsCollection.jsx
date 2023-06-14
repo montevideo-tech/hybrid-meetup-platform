@@ -35,11 +35,11 @@ function ParticipantsCollection(props) {
   const twoParticipant = currentParticipants.length === 1;
   return (
     <>
-      {children.map(({ audioStream, name }) => (
+      {children.length!==0 && children.map(({ audioStream, name }) => (
         <Audio key={name} stream={audioStream} />
       ))}
       <Content $colums={colums} $twoParticipant={twoParticipant}>
-        {currentParticipants
+        {children.length!==0 && currentParticipants
           .slice(0, 9)
           .map(({ videoStream, name, audioMuted, videoMuted, speaking }) => (
             <Video
