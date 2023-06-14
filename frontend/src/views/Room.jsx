@@ -600,10 +600,8 @@ export default Room;
 
 const Container = styled.div`
   display: grid;
-  position: relative;
   grid-template-rows: 1fr 60px;
-  min-height: ${({ isRecording }) =>
-    isRecording ? "calc(100% - 80px)" : "100%"};
+  height: 100%;
   ${({ $chatOpen }) =>
     $chatOpen
       ? `
