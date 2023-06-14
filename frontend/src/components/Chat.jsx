@@ -39,8 +39,8 @@ function Chat(props) {
     <Card
       $customStyles={{
         width: "calc(100% - 20px)",
-        height: "calc(100% - 20px)",
         maxHeight: "65vh",
+        height: "calc(100% - 20px)",
         flexDirection: "column",
         borderRadius: "15px",
         border: "none",
@@ -96,7 +96,7 @@ function Chat(props) {
           $customStyles={{
             position: "absolute",
             marginTop: "5px",
-            marginLeft: "calc(250px - 100px)",
+            marginLeft: "calc(250px - 60px)",
             border: "none",
             height: "fit-content",
             width: "fit-content",

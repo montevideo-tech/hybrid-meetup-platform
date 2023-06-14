@@ -587,12 +587,10 @@ const Container = styled.div`
   ${({ $chatOpen }) =>
     $chatOpen
       ? `
-    grid-template-columns: 1fr 250px;
-    transition: grid-template-columns 1s ease; 
+    grid-template-columns: 1fr 290px;
     `
       : `
     grid-template-columns: 1fr 0px;
-    transition: grid-template-columns 1s ease;
     `};
 `;
 
