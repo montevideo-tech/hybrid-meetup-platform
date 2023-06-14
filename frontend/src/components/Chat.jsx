@@ -40,10 +40,12 @@ function Chat(props) {
       $customStyles={{
         width: "calc(100% - 20px)",
         height: "calc(100% - 20px)",
+        maxHeight: "65vh",
         flexDirection: "column",
         borderRadius: "15px",
         border: "none",
         padding: "15px",
+        overflowY: "auto",
       }}
     >
       <ChatContent>
@@ -141,6 +143,7 @@ const StyledChatForm = styled.form`
 `;
 
 const ChatContent = styled.div`
+  margin-bottom: 10px;
   width: 100%;
   flex-grow: 1;
   overflow-y: auto;
