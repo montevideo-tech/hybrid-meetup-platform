@@ -17,13 +17,13 @@ import {
 import { LocalParticipant } from "@mux/spaces-web";
 import { ROLES } from "../utils/roles";
 import { setGuestMuted } from "../utils/room";
-
+import { VITE_WEBRTC_PROVIDER_NAME } from "../lib/constants"
 function RoomControls(props) {
   const navigate = useNavigate();
   const [muted, setMuted] = useState(false);
 
   const {
-    updateScreenShare,
+    // updateScreenShare,
     isSharingScreen,
     participantSharingScreen,
     localTracks,
@@ -51,12 +51,18 @@ function RoomControls(props) {
           newLocalTracks[tracks[0].kind] = tracks[0];
           setLocalVideoTrack(tracks[0]);
           setLocalTracks(newLocalTracks);
-          updateLocalTracksMuted(t.kind, false);
+          if (VITE_WEBRTC_PROVIDER_NAME === 'MUX') {
+            updateLocalTracksMuted(t.kind, false);
+          }
         } else {
           setMuted(true);
-          localVideoTrack.mute();
-          localParticipant.unpublishTracks([localVideoTrack]);
-          updateLocalTracksMuted(localVideoTrack.kind, true);
+          if (VITE_WEBRTC_PROVIDER_NAME === 'MUX') {
+            localParticipant.unpublishTracks([localVideoTrack]);
+            updateLocalTracksMuted(localVideoTrack.kind, true);
+            localVideoTrack.mute();
+          } else {
+            localParticipant.unpublishVideoTrack();
+          }
         }
       } else {
         if (t.muted) {
@@ -89,7 +95,7 @@ function RoomControls(props) {
   };
 
   const shareScreen = async () => {
-    updateScreenShare();
+    // updateScreenShare();
   };
 
   const blockMuteAllParticipants = () => {
@@ -201,7 +207,7 @@ function RoomControls(props) {
 
 RoomControls.propTypes = {
   localTracks: PropTypes.object,
-  updateScreenShare: PropTypes.func.isRequired,
+  // updateScreenShare: PropTypes.func.isRequired,
   updateLocalTracksMuted: PropTypes.func.isRequired,
   leaveRoom: PropTypes.func.isRequired,
   disabled: PropTypes.bool,

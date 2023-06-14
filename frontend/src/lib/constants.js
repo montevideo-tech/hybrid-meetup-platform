@@ -6,6 +6,9 @@ export const { VITE_MUX_SPACE_ID } = import.meta.env;
 export const { VITE_MUX_SPACE_JWT } = import.meta.env;
 
 export const { VITE_WEBRTC_PROVIDER_NAME } = import.meta.env;
+export const { VITE_DOLBY_JWT } = import.meta.env;
+
+export const { VITE_DOLBY_API_KEY } = import.meta.env;
 
 export const MAX_PARTICIPANTS_PER_PAGE = 25;
 

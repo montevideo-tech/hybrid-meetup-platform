@@ -37,7 +37,7 @@ import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import Audio from "../components/Audio";
 import Video from "../components/Video";
 
-import { VITE_WEBRTC_PROVIDER_NAME } from "../lib/constants";
+import { VITE_WEBRTC_PROVIDER_NAME, VITE_DOLBY_API_KEY } from "../lib/constants";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -104,23 +104,32 @@ function Room() {
   }, []);
 
   useEffect(() => {
-    if (localParticipant?.provider?.videoTracks?.entries().next()?.value) {
-      const localVideoStream = new MediaStream();
-      localVideoStream.addTrack(
-        localParticipant?.provider?.videoTracks?.entries().next()?.value[1]
-          .track,
-      );
-      setLocalVideoStream(localVideoStream);
+    if (VITE_WEBRTC_PROVIDER_NAME === "MUX") {
+      if (localParticipant?.provider?.videoTracks?.entries().next()?.value) {
+        const localVideoStream = new MediaStream();
+        localVideoStream.addTrack(
+          localParticipant?.provider?.videoTracks?.entries().next()?.value[1]
+            .track,
+        );
+        setLocalVideoStream(localVideoStream);
+      }
+      if (localParticipant?.provider?.audioTracks?.entries().next()?.value) {
+        setLocalAudioStream(
+          localParticipant?.provider?.audioTracks?.entries().next()?.value[1],
+        );
+      }
+      setLocalName(localParticipant?.displayName);
+    } else {
+      if (localTracks.video) {
+        const newlocalVideoStream = new MediaStream();
+        newlocalVideoStream.addTrack(localTracks.video.mediaStreamTrack);
+        setLocalVideoStream(newlocalVideoStream);
+      }
     }
-    if (localParticipant?.provider?.audioTracks?.entries().next()?.value) {
-      setLocalAudioStream(
-        localParticipant?.provider?.audioTracks?.entries().next()?.value[1],
-      );
-    }
-    setLocalName(localParticipant?.displayName);
   }, [
     localParticipant?.provider?.audioTracks?.entries().next().done,
     localParticipant?.provider?.videoTracks?.entries().next().done,
+    localTracks,
   ]);
 
   useEffect(() => {
@@ -177,7 +186,6 @@ function Room() {
   };
 
   const RenderParticipantCollection = () => {
-    console.log("Entra aca");
     return (
       <ParticipantsCollection
         participantsCount={participantsCount}
@@ -240,18 +248,20 @@ function Room() {
 
   const subscribeToRemoteStreams = async (r) => {
     const { remoteParticipants } = r;
-    const rps = Array.from(remoteParticipants.values());
-    // Listen to all the participants that are already on the call
-    rps.map(async (rp) => {
-      rp.on("StartedSpeaking", () => {
-        updateIsSpeakingStatus(rp.connectionId, true);
+    if (remoteParticipants) {
+      const rps = Array.from(remoteParticipants.values());
+      // Listen to all the participants that are already on the call
+      rps.map(async (rp) => {
+        rp.on("StartedSpeaking", () => {
+          updateIsSpeakingStatus(rp.connectionId, true);
+        });
+        rp.on("StoppedSpeaking", () => {
+          updateIsSpeakingStatus(rp.connectionId, false);
+        });
+        await rp.subscribe();
       });
-      rp.on("StoppedSpeaking", () => {
-        updateIsSpeakingStatus(rp.connectionId, false);
-      });
-      await rp.subscribe();
-    });
-    updateParticipantRoles(roomId, dispatch);
+      updateParticipantRoles(roomId, dispatch);
+    }
   };
 
   const handleTrackMuted = (remoteParticipant, track) => {
@@ -266,11 +276,26 @@ function Room() {
     setRemoteStreamsRef(remoteStreamsRef.current);
   };
 
+  const handleTrackUpdated = (remoteParticipant, track) => {
+    let currentRemoteStreamsRef = remoteStreamsRef.current;
+    let currentRemoteStream = remoteStreamsRef.current.get(remoteParticipant.id);
+    const stream = new MediaStream();
+    stream.addTrack(track.mediaStreamTrack);
+    if (currentRemoteStream) {
+      if (track.kind === "video") {
+        currentRemoteStream.videoStream = stream;
+      } else {
+        currentRemoteStream.audioStream = stream;
+      }
+      currentRemoteStreamsRef.set(remoteParticipant.id, currentRemoteStream);
+      setRemoteStreamsRef(currentRemoteStreamsRef);
+    }
+  }
+
   const handleTrackStarted = (remoteParticipant, track) => {
-    // if there's already a stream for this participant, add the track to it
+    // if there's already   a stream for this participant, add the track to it
     // this avoid having two different streams for the audio/video tracks of the
     // same participant.
-
     if (remoteStreamsRef.current.has(remoteParticipant.id)) {
       const streamData = remoteStreamsRef.current.get(remoteParticipant.id);
       streamData[`${track.kind}Muted`] = track.muted;
@@ -286,11 +311,14 @@ function Room() {
       const audioStream = new MediaStream();
       const videoStream = new MediaStream();
       let isSharingScreen = false;
-
-      if (track.kind === "audio") {
-        audioStream.addTrack(track.mediaStreamTrack);
-      } else {
-        videoStream.addTrack(track.mediaStreamTrack);
+      try {
+        if (track.kind === "audio") {
+          audioStream.addTrack(track.mediaStreamTrack);
+        } else {
+          videoStream.addTrack(track.mediaStreamTrack);
+        }
+      } catch (error) {
+        console.error(error);
       }
       if (track.provider.source === "screenshare") {
         isSharingScreen = true;
@@ -375,9 +403,6 @@ function Room() {
   };
 
   const joinRoom = async () => {
-    const DolbyJWT =
-      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkb2xieS5pbyIsImlhdCI6MTY4NjA1Nzc0NCwic3ViIjoid195UDNYVDJaVy1RbmZ6TXR5V1MwZz09IiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9DVVNUT01FUiJdLCJ0YXJnZXQiOiJzZXNzaW9uIiwib2lkIjoiOTg3MDFkMDctZWEyNi00ODM1LWJhM2ItMTBiMGU4MjkyODcyIiwiYWlkIjoiYjU3NmZhYjctY2JiMC00NWRhLTg1YWQtOGQ5MmZhZWEyNDY5IiwiYmlkIjoiOGEzNjgwZGU4ODJjOTlmNTAxODgyZmUxNGJmMTZiMmIiLCJleHAiOjE2ODYxNDQxNDR9.Gx7Neluob3x4unYTWyph9RmQqNO9n_OsTxEo-uLt38gCxqLj5s4ls9zoVYyAX9QTHn7Ho3xM9vXTw3D0dKUzEw";
-
     const MuxJWT = await roomJWTprovider(
       roomId,
       currentUser.email,
@@ -393,11 +418,10 @@ function Room() {
       setIsEnableToUnmute(!guestMuted);
     }
     try {
-      console.log("pROVIDER NAME", VITE_WEBRTC_PROVIDER_NAME);
       const newRoom =
         VITE_WEBRTC_PROVIDER_NAME === "MUX"
           ? new MuxWebRoom(MuxJWT)
-          : new DolbyWebRoom(DolbyJWT);
+          : new DolbyWebRoom(VITE_DOLBY_API_KEY);
       const newParticipant = await newRoom.join();
       setLocalParticipant(newParticipant);
       if (newParticipant) {
@@ -413,15 +437,19 @@ function Room() {
           handleRemoveParticipant(resp, newParticipant),
         );
         newRoom.on("ParticipantTrackSubscribed", handleTrackStarted);
+        newRoom.on("ParticipantTrackUpdated", handleTrackUpdated);
         newRoom.on("ParticipantJoined", handleParticipantJoined);
         newRoom.on("ParticipantLeft", handleParticipantLeft);
 
         setRoom(newRoom);
         roomRef.current = newRoom;
-        const tracks = await newParticipant.publishTracks({
-          constraints: { video: true, audio: true },
-        });
-
+        const propsTracks = {
+          constraints: { 
+            video: true, 
+            audio: true,
+          },
+        };
+        const tracks = await newParticipant.publishTracks(propsTracks);
         const stream = new MediaStream();
         const newLocalTracks = { ...localTracks };
         tracks.forEach((track) => {
@@ -459,62 +487,61 @@ function Room() {
     };
   }, []);
 
-  const updateScreenShare = async () => {
-    if (!isSharingScreen) {
-      const JWT = await roomJWTprovider(
-        roomId,
-        `${currentUser.email}-screen-share`,
-        null,
-        null,
-        () => {
-          setRoomNotFound(true);
-        },
-      );
-      const newScreenRoom = new MuxWebRoom(JWT);
-      const newlocalParticipant = await newScreenRoom.join();
-      setScreenRoom(newScreenRoom);
-      try {
-        const tracks = await newlocalParticipant.startScreenShare();
-        const stream = new MediaStream();
-        const audioStream = new MediaStream();
-        const videoStream = new MediaStream();
-        const newLocalTracks = { ...localTracks };
+  // const updateScreenShare = async () => {
+  //   if (!isSharingScreen) {
+  //     const JWT = await roomJWTprovider(
+  //       roomId,
+  //       `${currentUser.email}-screen-share`,
+  //       null,
+  //       null,
+  //       () => {
+  //         setRoomNotFound(true);
+  //       },
+  //     );
+  //     // const newScreenRoom = new MuxWebRoom(JWT);
+  //     const newlocalParticipant = await newScreenRoom.join();
+  //     setScreenRoom(newScreenRoom);
+  //     try {
+  //       const tracks = await newlocalParticipant.startScreenShare();
+  //       const stream = new MediaStream();
+  //       const audioStream = new MediaStream();
+  //       const videoStream = new MediaStream();
+  //       const newLocalTracks = { ...localTracks };
 
-        tracks.forEach((track) => {
-          if (track.kind === "audio") {
-            audioStream.addTrack(track.mediaStreamTrack);
-          } else {
-            videoStream.addTrack(track.mediaStreamTrack);
-          }
-          stream.addTrack(track.mediaStreamTrack);
-          newLocalTracks[track.kind] = track;
-        });
+  //       tracks.forEach((track) => {
+  //         if (track.kind === "audio") {
+  //           audioStream.addTrack(track.mediaStreamTrack);
+  //         } else {
+  //           videoStream.addTrack(track.mediaStreamTrack);
+  //         }
+  //         stream.addTrack(track.mediaStreamTrack);
+  //         newLocalTracks[track.kind] = track;
+  //       });
 
-        setLocalTracks({ ...localTracks });
-        // add listener on `Stop sharing` browser's button
-        stream.getVideoTracks()[0].addEventListener("ended", () => {
-          newScreenRoom.leave();
-        });
-      } catch {
-        newScreenRoom.leave();
-      }
-    } else {
-      screenRoom.leave();
-    }
-  };
+  //       setLocalTracks({ ...localTracks });
+  //       // add listener on `Stop sharing` browser's button
+  //       stream.getVideoTracks()[0].addEventListener("ended", () => {
+  //         newScreenRoom.leave();
+  //       });
+  //     } catch {
+  //       newScreenRoom.leave();
+  //     }
+  //   } else {
+  //     screenRoom.leave();
+  //   }
+  // };
 
-  useEffect(
-    () => () => {
-      if (isSharingScreen) {
-        updateScreenShare();
-      }
-    },
-    [isSharingScreen],
-  );
+  // useEffect(
+  //   () => () => {
+  //     if (isSharingScreen) {
+  //       updateScreenShare();
+  //     }
+  //   },
+  //   [isSharingScreen],
+  // );
 
   const updateLocalTracksMuted = (kind, muted) => {
     localTracks[kind].muted = muted;
-    console.log(localTracks);
     setLocalTracks({ ...localTracks });
   };
 
@@ -531,7 +558,6 @@ function Room() {
             {isSharingScreen ? (
               <RenderSharingScreen />
             ) : (
-              localAudioStream &&
               localVideoStream && <RenderParticipantCollection />
             )}
           </VideosContainer>
@@ -545,7 +571,7 @@ function Room() {
               <CenteredDiv>
                 <RoomControls
                   permissionRole={userRole}
-                  updateScreenShare={updateScreenShare}
+                  // updateScreenShare={updateScreenShare}
                   isSharingScreen={isSharingScreen}
                   participantSharingScreen={participantSharingScreen}
                   localTracks={localTracks}
