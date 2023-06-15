@@ -38,6 +38,7 @@ function RoomControls(props) {
     setIsBlockedRemotedGuest,
     setLocalTracks,
     startRecording,
+    isRecording,
   } = props;
   const [localVideoTrack, setLocalVideoTrack] = useState(localTracks.video);
 
@@ -103,20 +104,22 @@ function RoomControls(props) {
   return (
     <Container variant="contained" size="large" disabled={disabled}>
       {permissionRole === ROLES.HOST && (
-        <Button
-          $customStyles={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            width: "40px",
-            height: "40px",
-          }}
-          size="large"
-          onClick={startRecording}
-          hover="onHoverTest"
-        >
-          <img src={videoRecord} alt="Stop" />
-        </Button>
+        <Tooltip title={!isRecording ? "Start recording" : "Stop recording"}>
+          <StyledDiv>
+            <Button
+              $customStyles={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "40px",
+                height: "40px",
+              }}
+              onClick={startRecording}
+            >
+              <img src={videoRecord} alt="record" />
+            </Button>
+          </StyledDiv>
+        </Tooltip>
       )}
       <Tooltip
         title={
