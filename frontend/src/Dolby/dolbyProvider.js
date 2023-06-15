@@ -168,7 +168,8 @@ export class Room extends EventEmitter {
 
   async leave() {
     try {
-      return VoxeetSDK.conference.leave();
+      VoxeetSDK.conference.leave();
+      VoxeetSDK.session.close();
     } catch (error) {
       console.error(error);
     }
