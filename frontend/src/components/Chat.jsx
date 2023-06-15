@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { useLoaderData } from "react-router-dom";
 import { onSendMessage, onDeleteMessage } from "../utils/chat";
 import Filter from "bad-words";
 import styled from "styled-components";
-import { Button, TextField } from "@mui/material";
 import { Colors } from "../themes/colors";
 import { DeleteOutline as DeleteOutlineIcon } from "@mui/icons-material";
+import { Card, Input, Button } from "../themes/componentsStyles";
+import send from "../assets/send.svg";
 
 function Chat(props) {
   const [content, setContent] = useState("");
@@ -35,13 +36,23 @@ function Chat(props) {
     setContent("");
   };
   return (
-    <ChatContainer>
+    <Card
+      $customStyles={{
+        width: "calc(100% - 20px)",
+        height: "calc(100% - 20px)",
+        flexDirection: "column",
+        borderRadius: "15px",
+        border: "none",
+        padding: "15px",
+      }}
+    >
       <ChatContent>
         <ChatContentWrapper>
           {messages?.map((m) => (
             <MessageChat key={m.id}>
               <TextChat>
-                <strong>{m.email}:</strong> {m.content}
+                <Email>{m.email}:</Email>
+                <span>{m.content}</span>
               </TextChat>
               {isUserAdmin && (
                 <DeleteButton
@@ -49,7 +60,10 @@ function Chat(props) {
                     onDeleteMessage(m.id);
                   }}
                 >
-                  <DeleteOutlineIcon sx={{ ml: "2px", color: Colors.red }} />
+                  <DeleteOutlineIcon
+                    fontSize="small"
+                    sx={{ color: Colors.red }}
+                  />
                 </DeleteButton>
               )}
             </MessageChat>
@@ -57,7 +71,15 @@ function Chat(props) {
         </ChatContentWrapper>
       </ChatContent>
       <StyledChatForm onSubmit={handleSubmit}>
-        <ChatInput
+        <StyledInput
+          $customStyles={{
+            width: "100%",
+            fontWeight: "400",
+            fontSize: "0.75rem",
+            lineHeight: "1.125rem",
+            border: `1px solid ${Colors.purple}`,
+            padding: "0 40px 0 12px",
+          }}
           type="text"
           placeholder="Message"
           value={content}
@@ -67,68 +89,73 @@ function Chat(props) {
           maxRows={3}
           inputProps={{ maxLength: 150 }}
         />
-        <ChatButton variant="contained" type="submit">
-          Send
-        </ChatButton>
+        <Button
+          type="submit"
+          $customStyles={{
+            position: "absolute",
+            marginTop: "5px",
+            marginLeft: "calc(250px - 100px)",
+            border: "none",
+            height: "fit-content",
+            width: "fit-content",
+          }}
+        >
+          <img src={send} alt="send" />
+        </Button>
       </StyledChatForm>
-    </ChatContainer>
+    </Card>
   );
 }
 
 const MessageChat = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
 `;
 
 const DeleteButton = styled.button`
   border: none;
   cursor: pointer;
+  padding: 0;
   background-color: transparent;
 `;
 
 const TextChat = styled.p`
+  margin: 8px 0;
+  font-family: "Poppins";
+  font-size: 0.8rem;
   max-width: 80%;
   word-wrap: break-word;
 `;
 
+const Email = styled.span`
+  margin-right: 4px;
+  font-weight: 600;
+  color: ${Colors.purple};
+`;
+
 const StyledChatForm = styled.form`
   display: flex;
-  padding: 10px;
-`;
-
-const ChatContainer = styled.div`
-  display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  background-color: ${Colors.white};
-  border-radius: 35px;
-  height: 100%;
   width: 100%;
+`;
 
-  & > .icons-wrapper > .icon {
-    width: 40px;
-    height: 40px;
-    background-color: ${Colors.white};
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: left 0.3s ease;
-  }
-`;
-const ChatInput = styled(TextField)`
-  flex: 4;
-  overflow-y: auto;
-`;
-const ChatButton = styled(Button)`
-  flex: 1;
-`;
 const ChatContent = styled.div`
+  width: 100%;
   flex-grow: 1;
   overflow-y: auto;
 `;
+
 const ChatContentWrapper = styled.div`
   flex-grow: 1;
+`;
+
+const StyledInput = styled(Input)`
+  :focus-visible {
+    outline: none !important;
+    border: 1px solid ${Colors.purple};
+    box-shadow: 0 0 1px ${Colors.purple};
+  }
 `;
 
 export default Chat;

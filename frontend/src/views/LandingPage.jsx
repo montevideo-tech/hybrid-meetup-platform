@@ -23,7 +23,6 @@ function LandingPage() {
           </TitleParts>
         </Title>
         <StyledButton
-          $secondary
           $customStyles={{ width: "14.5rem", height: "2.813rem" }}
           onClick={() => navigate("/signIn")}
         >
@@ -69,6 +68,7 @@ const Headline = styled.div`
 const Title = styled.h1`
   margin: 0 0 23px 0;
   padding: 0;
+  font-family: "Poppins";
   font-size: 3rem;
   font-weight: 600;
   line-height: 60px;

@@ -1,4 +1,3 @@
-// Room
 import { React, useState, useEffect, useRef, forwardRef } from "react";
 import { useLoaderData, Navigate, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -33,10 +32,11 @@ import {
 import ShareScreen from "../components/ShareScreen";
 import { Colors } from "../themes/colors";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
-import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import Audio from "../components/Audio";
 import Video from "../components/Video";
-
+import { Button } from "../themes/componentsStyles";
+import ChatIcon from "@mui/icons-material/Chat";
+import participants from "../assets/participants.svg";
 import {
   VITE_WEBRTC_PROVIDER_NAME,
   VITE_DOLBY_API_KEY,
@@ -50,7 +50,6 @@ function Room() {
   const [room, setRoom] = useState();
   const [localParticipant, setLocalParticipant] = useState();
   const userRole = useUserPermission();
-  const [localStream, setLocalStream] = useState();
   // this helps keep track of muting/unmuting with RoomControls
   const [localTracks, setLocalTracks] = useState({ video: null, audio: null });
   const [isSharingScreen, setIsSharingScreen] = useState(false);
@@ -437,7 +436,7 @@ function Room() {
         dispatch(
           initRoom({
             id: roomId,
-            participants: [{ name: currentUser.email, role: ROLES.GUEST }],
+            participants: [{ name: currentUser.username, role: ROLES.GUEST }],
           }),
         );
 
@@ -465,7 +464,6 @@ function Room() {
           stream.addTrack(track.mediaStreamTrack);
           newLocalTracks[track.kind] = track;
         });
-        setLocalStream(stream);
         setLocalTracks(newLocalTracks);
         subscribeToRemoteStreams(newRoom);
         subscribeToRoleChanges(roomId, handleRoleChange);
@@ -567,6 +565,7 @@ function Room() {
             {isSharingScreen ? (
               <RenderSharingScreen />
             ) : (
+              localAudioStream &&
               localVideoStream && <RenderParticipantCollection />
             )}
           </VideosContainer>
@@ -577,6 +576,16 @@ function Room() {
           )}
           <Buttons>
             <>
+              <NumberParticipantsContainer>
+                <span>Hybridly Meeting</span>
+                <img
+                  src={participants}
+                  alt="number of participans"
+                  width="19.25px"
+                  height="14px"
+                />
+                <span>{room.remoteParticipants.size + 1}</span>
+              </NumberParticipantsContainer>
               <CenteredDiv>
                 <RoomControls
                   permissionRole={userRole}
@@ -594,15 +603,18 @@ function Room() {
                   setLocalTracks={setLocalTracks}
                 />
               </CenteredDiv>
-              <ChatButton onClick={OnClickChatButton}>
+              <Button
+                $customStyles={{ width: "40px", height: "40px" }}
+                onClick={OnClickChatButton}
+              >
                 <Badge badgeContent={unreadMessages} color="secondary">
                   {chatOpen ? (
-                    <ChatBubbleIcon color="primary" fontSize="large" />
+                    <ChatIcon fontSize="small" />
                   ) : (
-                    <ChatOutlinedIcon color="primary" fontSize="large" />
+                    <ChatOutlinedIcon color="primary" fontSize="small" />
                   )}
                 </Badge>
-              </ChatButton>
+              </Button>
             </>
           </Buttons>
         </Container>
@@ -624,13 +636,28 @@ const Container = styled.div`
   ${({ $chatOpen }) =>
     $chatOpen
       ? `
-    grid-template-columns: 1fr 360px;
+    grid-template-columns: 1fr 250px;
     transition: grid-template-columns 1s ease; 
     `
       : `
     grid-template-columns: 1fr 0px;
     transition: grid-template-columns 1s ease;
     `};
+`;
+
+const NumberParticipantsContainer = styled.div`
+  display: flex;
+  align-items: center;
+  span {
+    font-family: "Poppins";
+    font-weight: 400;
+    font-size: 0.938rem;
+    line-height: 22px;
+    color: ${Colors.white};
+  }
+  img {
+    margin: 0 3px 0 10px;
+  }
 `;
 
 const CenteredDiv = styled.div`

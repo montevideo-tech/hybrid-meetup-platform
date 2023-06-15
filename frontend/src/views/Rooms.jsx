@@ -239,7 +239,6 @@ function Rooms() {
       <Button
         onClick={() => setShowNameInput(true)}
         disabled={loadingRooms || creatingRoom}
-        $secondary
         $customStyles={{ margin: "10px 0", width: "190px", height: "45px" }}
       >
         {creatingRoom ? <CircularProgress size={20} /> : "Create new room +"}
