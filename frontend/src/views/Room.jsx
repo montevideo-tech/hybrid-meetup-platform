@@ -565,7 +565,6 @@ function Room() {
             {isSharingScreen ? (
               <RenderSharingScreen />
             ) : (
-              localAudioStream &&
               localVideoStream && <RenderParticipantCollection />
             )}
           </VideosContainer>
