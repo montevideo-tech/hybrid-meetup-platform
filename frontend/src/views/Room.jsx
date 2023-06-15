@@ -258,7 +258,11 @@ function Room() {
         rp.on("StoppedSpeaking", () => {
           updateIsSpeakingStatus(rp.connectionId, false);
         });
-        await rp.subscribe();
+        if (VITE_WEBRTC_PROVIDER_NAME === "MUX") {
+          await rp.subscribe();
+        } else {
+          await r.subscribeRemoteParticipants();
+        }
       });
       updateParticipantRoles(roomId, dispatch);
     }

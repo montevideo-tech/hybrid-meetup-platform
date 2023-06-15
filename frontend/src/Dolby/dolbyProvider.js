@@ -150,19 +150,38 @@ export class Room extends EventEmitter {
     try {
       const randomIndex = Math.floor(Math.random() * users.length);
       const randomName = users[randomIndex];
-      await VoxeetSDK.session.open({ name: randomName });
+      var roomId = window.location.pathname.split('/')[2];
+      await VoxeetSDK.session.open({ name: randomName, mail:`${randomName}@mail.com` });
       const conference = await VoxeetSDK.conference.create({
-        alias: "roomName20",
+        alias: roomId,
       });
       await VoxeetSDK.conference.join(conference, {
         constraints: { audio: true, video: true },
       });
+      this.remoteParticipants = conference.participants;
       const localParticipant = new LocalParticipant(
         VoxeetSDK.session.participant,
       );
       return localParticipant;
     } catch (error) {
       console.error(error);
+    }
+  }
+
+  async subscribeRemoteParticipants() {
+    const localParticipantId = VoxeetSDK.session.participant.id;
+    for (const valor of VoxeetSDK.conference.participants.values()) {
+      if(localParticipantId !== valor.id) {
+        const participant = new RemoteParticipant(valor);
+        valor.streams[0].getTracks().map((e) => {
+          const track = new Track(e);
+          this.emit(
+            "ParticipantTrackSubscribed",
+            participant,
+            track,
+          );
+        })
+      }
     }
   }
 
