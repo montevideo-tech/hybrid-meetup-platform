@@ -301,7 +301,7 @@ function Room() {
   };
 
   const handleTrackStarted = (remoteParticipant, track) => {
-    // if there's already   a stream for this participant, add the track to it
+    // if there's already a stream for this participant, add the track to it
     // this avoid having two different streams for the audio/video tracks of the
     // same participant.
     if (remoteStreamsRef.current.has(remoteParticipant.id)) {

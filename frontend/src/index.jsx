@@ -17,10 +17,8 @@ import RoomNotFound from "./views/RoomNotFound";
 import EditRoom from "./views/EditRoom";
 import { Header } from "./components/Header";
 
-// import RoomTest from './components/RoomTest';
 import AuthRoute from "./components/AuthRoute";
 import LandingPage from "./views/LandingPage";
-// import Dolby from "./Dolby/Dolby";
 
 const router = createBrowserRouter([
   {
@@ -85,14 +83,6 @@ const router = createBrowserRouter([
           </AuthRoute>
         ),
       },
-      // {
-      //   path: '/room-test',
-      //   element: (
-      //     <RequireAuth>
-      //       <RoomTest />
-      //     </RequireAuth>
-      //   ),
-      // },
     ],
   },
 ]);
