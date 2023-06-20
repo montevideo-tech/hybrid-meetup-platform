@@ -183,6 +183,7 @@ function Rooms() {
     getRoomsList();
   }, []);
 
+  // eslint-disable-next-line react/display-name
   const Alert = forwardRef((props, ref) => (
     <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
   ));

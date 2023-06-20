@@ -20,7 +20,7 @@ import noMic from "../assets/no-mic.svg";
 import noMicRed from "../assets/no-mic-red.svg";
 import close from "../assets/close.svg";
 import { Colors } from "../themes/colors";
-
+import { VITE_WEBRTC_PROVIDER_NAME } from "../lib/constants";
 function RoomControls(props) {
   const navigate = useNavigate();
   const [muted, setMuted] = useState(false);
@@ -54,12 +54,18 @@ function RoomControls(props) {
           newLocalTracks[tracks[0].kind] = tracks[0];
           setLocalVideoTrack(tracks[0]);
           setLocalTracks(newLocalTracks);
-          updateLocalTracksMuted(t.kind, false);
+          if (VITE_WEBRTC_PROVIDER_NAME === "MUX") {
+            updateLocalTracksMuted(t.kind, false);
+          }
         } else {
           setMuted(true);
-          localVideoTrack.mute();
-          localParticipant.unpublishTracks([localVideoTrack]);
-          updateLocalTracksMuted(localVideoTrack.kind, true);
+          if (VITE_WEBRTC_PROVIDER_NAME === "MUX") {
+            localParticipant.unpublishTracks([localVideoTrack]);
+            updateLocalTracksMuted(localVideoTrack.kind, true);
+            localVideoTrack.mute();
+          } else {
+            localParticipant.unpublishVideoTrack();
+          }
         }
       } else {
         if (t.muted) {

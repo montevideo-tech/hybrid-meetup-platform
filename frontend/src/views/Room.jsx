@@ -6,7 +6,9 @@ import MuiAlert from "@mui/material/Alert";
 import styled from "styled-components";
 import useUserPermission from "../hooks/useUserPermission";
 import RoomControls from "../components/RoomControls";
-import { Room as WebRoom } from "../lib/webrtc";
+
+import { Room as DolbyWebRoom } from "../Dolby/dolbyProvider";
+import { Room as MuxWebRoom } from "../lib/webrtc";
 import { roomJWTprovider } from "../actions";
 import {
   initRoom,
@@ -35,6 +37,10 @@ import Video from "../components/Video";
 import { Button } from "../themes/componentsStyles";
 import ChatIcon from "@mui/icons-material/Chat";
 import participants from "../assets/participants.svg";
+import {
+  VITE_WEBRTC_PROVIDER_NAME,
+  VITE_DOLBY_API_KEY,
+} from "../lib/constants";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -100,23 +106,32 @@ function Room() {
   }, []);
 
   useEffect(() => {
-    if (localParticipant?.provider?.videoTracks?.entries().next()?.value) {
-      const localVideoStream = new MediaStream();
-      localVideoStream.addTrack(
-        localParticipant?.provider?.videoTracks?.entries().next()?.value[1]
-          .track,
-      );
-      setLocalVideoStream(localVideoStream);
+    if (VITE_WEBRTC_PROVIDER_NAME === "MUX") {
+      if (localParticipant?.provider?.videoTracks?.entries().next()?.value) {
+        const localVideoStream = new MediaStream();
+        localVideoStream.addTrack(
+          localParticipant?.provider?.videoTracks?.entries().next()?.value[1]
+            .track,
+        );
+        setLocalVideoStream(localVideoStream);
+      }
+      if (localParticipant?.provider?.audioTracks?.entries().next()?.value) {
+        setLocalAudioStream(
+          localParticipant?.provider?.audioTracks?.entries().next()?.value[1],
+        );
+      }
+      setLocalName(localParticipant?.displayName);
+    } else {
+      if (localTracks.video) {
+        const newlocalVideoStream = new MediaStream();
+        newlocalVideoStream.addTrack(localTracks.video.mediaStreamTrack);
+        setLocalVideoStream(newlocalVideoStream);
+      }
     }
-    if (localParticipant?.provider?.audioTracks?.entries().next()?.value) {
-      setLocalAudioStream(
-        localParticipant?.provider?.audioTracks?.entries().next()?.value[1],
-      );
-    }
-    setLocalName(localParticipant?.displayName);
   }, [
-    localParticipant?.provider.audioTracks.entries().next().done,
-    localParticipant?.provider.videoTracks.entries().next().done,
+    localParticipant?.provider?.audioTracks?.entries().next().done,
+    localParticipant?.provider?.videoTracks?.entries().next().done,
+    localTracks,
   ]);
 
   useEffect(() => {
@@ -235,18 +250,24 @@ function Room() {
 
   const subscribeToRemoteStreams = async (r) => {
     const { remoteParticipants } = r;
-    const rps = Array.from(remoteParticipants.values());
-    // Listen to all the participants that are already on the call
-    rps.map(async (rp) => {
-      rp.on("StartedSpeaking", () => {
-        updateIsSpeakingStatus(rp.connectionId, true);
+    if (remoteParticipants) {
+      const rps = Array.from(remoteParticipants.values());
+      // Listen to all the participants that are already on the call
+      rps.map(async (rp) => {
+        rp.on("StartedSpeaking", () => {
+          updateIsSpeakingStatus(rp.connectionId, true);
+        });
+        rp.on("StoppedSpeaking", () => {
+          updateIsSpeakingStatus(rp.connectionId, false);
+        });
+        if (VITE_WEBRTC_PROVIDER_NAME === "MUX") {
+          await rp.subscribe();
+        } else {
+          await r.subscribeRemoteParticipants();
+        }
       });
-      rp.on("StoppedSpeaking", () => {
-        updateIsSpeakingStatus(rp.connectionId, false);
-      });
-      await rp.subscribe();
-    });
-    updateParticipantRoles(roomId, dispatch);
+      updateParticipantRoles(roomId, dispatch);
+    }
   };
 
   const handleTrackMuted = (remoteParticipant, track) => {
@@ -261,11 +282,28 @@ function Room() {
     setRemoteStreamsRef(remoteStreamsRef.current);
   };
 
+  const handleTrackUpdated = (remoteParticipant, track) => {
+    const currentRemoteStreamsRef = remoteStreamsRef.current;
+    const currentRemoteStream = remoteStreamsRef.current.get(
+      remoteParticipant.id,
+    );
+    const stream = new MediaStream();
+    stream.addTrack(track.mediaStreamTrack);
+    if (currentRemoteStream) {
+      if (track.kind === "video") {
+        currentRemoteStream.videoStream = stream;
+      } else {
+        currentRemoteStream.audioStream = stream;
+      }
+      currentRemoteStreamsRef.set(remoteParticipant.id, currentRemoteStream);
+      setRemoteStreamsRef(currentRemoteStreamsRef);
+    }
+  };
+
   const handleTrackStarted = (remoteParticipant, track) => {
     // if there's already a stream for this participant, add the track to it
     // this avoid having two different streams for the audio/video tracks of the
     // same participant.
-
     if (remoteStreamsRef.current.has(remoteParticipant.id)) {
       const streamData = remoteStreamsRef.current.get(remoteParticipant.id);
       streamData[`${track.kind}Muted`] = track.muted;
@@ -281,11 +319,14 @@ function Room() {
       const audioStream = new MediaStream();
       const videoStream = new MediaStream();
       let isSharingScreen = false;
-
-      if (track.kind === "audio") {
-        audioStream.addTrack(track.mediaStreamTrack);
-      } else {
-        videoStream.addTrack(track.mediaStreamTrack);
+      try {
+        if (track.kind === "audio") {
+          audioStream.addTrack(track.mediaStreamTrack);
+        } else {
+          videoStream.addTrack(track.mediaStreamTrack);
+        }
+      } catch (error) {
+        console.error(error);
       }
       if (track.provider.source === "screenshare") {
         isSharingScreen = true;
@@ -370,7 +411,7 @@ function Room() {
   };
 
   const joinRoom = async () => {
-    const JWT = await roomJWTprovider(
+    const MuxJWT = await roomJWTprovider(
       roomId,
       currentUser.email,
       null,
@@ -385,7 +426,10 @@ function Room() {
       setIsEnableToUnmute(!guestMuted);
     }
     try {
-      const newRoom = new WebRoom(JWT);
+      const newRoom =
+        VITE_WEBRTC_PROVIDER_NAME === "MUX"
+          ? new MuxWebRoom(MuxJWT)
+          : new DolbyWebRoom(VITE_DOLBY_API_KEY);
       const newParticipant = await newRoom.join();
       setLocalParticipant(newParticipant);
       if (newParticipant) {
@@ -401,14 +445,19 @@ function Room() {
           handleRemoveParticipant(resp, newParticipant),
         );
         newRoom.on("ParticipantTrackSubscribed", handleTrackStarted);
+        newRoom.on("ParticipantTrackUpdated", handleTrackUpdated);
         newRoom.on("ParticipantJoined", handleParticipantJoined);
         newRoom.on("ParticipantLeft", handleParticipantLeft);
 
         setRoom(newRoom);
         roomRef.current = newRoom;
-        const tracks = await newParticipant.publishTracks({
-          constraints: { video: true, audio: true },
-        });
+        const propsTracks = {
+          constraints: {
+            video: true,
+            audio: true,
+          },
+        };
+        const tracks = await newParticipant.publishTracks(propsTracks);
         const stream = new MediaStream();
         const newLocalTracks = { ...localTracks };
         tracks.forEach((track) => {
@@ -456,7 +505,7 @@ function Room() {
           setRoomNotFound(true);
         },
       );
-      const newScreenRoom = new WebRoom(JWT);
+      const newScreenRoom = new MuxWebRoom(JWT);
       const newlocalParticipant = await newScreenRoom.join();
       setScreenRoom(newScreenRoom);
       try {
@@ -516,7 +565,6 @@ function Room() {
             {isSharingScreen ? (
               <RenderSharingScreen />
             ) : (
-              localAudioStream &&
               localVideoStream && <RenderParticipantCollection />
             )}
           </VideosContainer>
@@ -535,7 +583,11 @@ function Room() {
                   width="19.25px"
                   height="14px"
                 />
-                <span>{room.remoteParticipants.size + 1}</span>
+                <span>
+                  {VITE_WEBRTC_PROVIDER_NAME === "MUX"
+                    ? room.remoteParticipants.size + 1
+                    : room.remoteParticipants.size}
+                </span>
               </NumberParticipantsContainer>
               <CenteredDiv>
                 <RoomControls
@@ -614,6 +666,12 @@ const CenteredDiv = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+const ChatButton = styled.button`
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
 `;
 
 const Buttons = styled.div`
