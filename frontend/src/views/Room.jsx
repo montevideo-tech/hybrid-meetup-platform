@@ -584,9 +584,7 @@ function Room() {
                   height="14px"
                 />
                 <span>
-                  {VITE_WEBRTC_PROVIDER_NAME === "MUX"
-                    ? room.remoteParticipants.size + 1
-                    : room.remoteParticipants.size}
+                  {room.getNumberOfParticipants()}
                 </span>
               </NumberParticipantsContainer>
               <CenteredDiv>
