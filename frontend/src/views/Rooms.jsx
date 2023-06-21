@@ -1,16 +1,7 @@
 import React, { useState, useEffect, forwardRef } from "react";
-import { Button } from "../themes/componentsStyles";
-import {
-  CircularProgress,
-  Grid,
-  IconButton,
-  Paper,
-  TextField,
-  Typography,
-  Snackbar,
-} from "@mui/material";
+import { Button, Input } from "../themes/componentsStyles";
+import { CircularProgress, Snackbar } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
-import { Check as CheckIcon, Close as CloseIcon } from "@mui/icons-material";
 
 import { Colors } from "../themes/colors";
 import styled from "styled-components";
@@ -22,6 +13,7 @@ import { ROLES } from "../utils/roles";
 import RoomsList from "../components/RoomsList/RoomsList";
 import RoomsListSkeleton from "../components/RoomsList/RoomsListSkeleton";
 import { store } from "../store";
+import close from "../assets/close.svg";
 
 function Rooms() {
   const [roomsList, setRoomsList] = useState([]);
@@ -200,46 +192,45 @@ function Rooms() {
 
   const renderCreateRoomButton = () =>
     showNameInput ? (
-      <Grid container spacing={1} sx={{ ml: 1, mt: 1, pr: 1 }}>
-        <Grid item xs={10}>
-          <TextField
-            variant="outlined"
-            label="Insert Room Name"
-            sx={{ width: 1 }}
-            value={newRoomName}
-            onChange={(e) => setNewRoomName(e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={1}>
-          <IconButton
-            color="primary"
-            aria-label="create a room"
-            size="large"
-            onClick={onSubmit}
-            disabled={loadingRooms || creatingRoom || !newRoomName}
-          >
-            <CheckIcon />
-          </IconButton>
-        </Grid>
-        <Grid item xs={1}>
-          <IconButton
-            aria-label="discard room name changes"
-            size="large"
-            onClick={() => {
-              setShowNameInput(false);
-              setNewRoomName("");
-            }}
-            disabled={loadingRooms || creatingRoom}
-          >
-            <CloseIcon />
-          </IconButton>
-        </Grid>
-      </Grid>
+      <StyledForm>
+        <StyledInput
+          placeholder="Name of new room"
+          value={newRoomName}
+          onChange={(e) => setNewRoomName(e.target.value)}
+          $customStyles={{ padding: "0 20px", height: "41px", width: "408px" }}
+        />
+        <Button
+          $primary
+          $customStyles={{ width: "100px", height: "45px" }}
+          type="submit"
+          disabled={loadingRooms || creatingRoom || !newRoomName}
+          onClick={onSubmit}
+        >
+          Done
+        </Button>
+        <Button
+          $primary
+          $customStyles={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "45px",
+            height: "45px",
+          }}
+          disabled={loadingRooms || creatingRoom}
+          onClick={() => {
+            setShowNameInput(false);
+            setNewRoomName("");
+          }}
+        >
+          <img src={close} alt="close" />
+        </Button>
+      </StyledForm>
     ) : (
       <Button
         onClick={() => setShowNameInput(true)}
         disabled={loadingRooms || creatingRoom}
-        $customStyles={{ margin: "10px 0", width: "190px", height: "45px" }}
+        $customStyles={{ width: "190px", height: "45px" }}
       >
         {creatingRoom ? <CircularProgress size={20} /> : "Create new room +"}
       </Button>
@@ -288,6 +279,23 @@ const Title = styled.div`
   font-size: 30px;
   line-height: 45px;
   color: ${Colors.blackPurple};
+`;
+
+const StyledForm = styled.form`
+  display: grid;
+  grid-template-columns: 1fr 0.2fr 0.1fr;
+  column-gap: 10px;
+`;
+
+const StyledInput = styled(Input)`
+  ::placeholder {
+    opacity: 100%;
+  }
+
+  :focus-visible {
+    border: 2px solid ${Colors.purple};
+    box-shadow: 0 0 2px ${Colors.purple};
+  }
 `;
 
 export default Rooms;
