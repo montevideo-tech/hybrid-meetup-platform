@@ -17,7 +17,7 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
 ## Select provider
 in the .env file select in the environment variable whether to use Mux or Dolbi.
-in the variable VITE_WEBRTC_PROVIDER_NAME, assign 'MUX' or 'DOLBY'.
+in the variable `VITE_WEBRTC_PROVIDER_NAME`, assign 'MUX' or 'DOLBY'.
 ## Working with MUX Spaces  
 
 Follow the MUX docs [here](https://docs.mux.com/guides/video/build-real-time-video-experiences).
