@@ -114,7 +114,7 @@ export class Room extends EventEmitter {
     VoxeetSDK.initializeToken(jwt, () => Promise.resolve(jwt));
 
     this.provider = VoxeetSDK.session;
-    this.participantId = participant;
+    this.localParticipantId = participant;
     VoxeetSDK.conference.on("streamUpdated", (participant, stream) => {
       //  get the mediaStreamTracks to be compatible with mux
       const tracks = stream.getTracks();
@@ -153,7 +153,7 @@ export class Room extends EventEmitter {
     try {
       // get the room id from the url
       var roomId = window.location.pathname.split('/')[2];
-      await VoxeetSDK.session.open({ name: this.participantId });
+      await VoxeetSDK.session.open({ name: this.localParticipantId });
       const conference = await VoxeetSDK.conference.create({
         alias: roomId,
       });
