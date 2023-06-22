@@ -438,7 +438,7 @@ function Room() {
       const newRoom =
         VITE_WEBRTC_PROVIDER_NAME === "MUX"
           ? new MuxWebRoom(MuxJWT)
-          : new DolbyWebRoom(VITE_DOLBY_API_KEY);
+          : new DolbyWebRoom(VITE_DOLBY_API_KEY, currentUser.email);
       const newParticipant = await newRoom.join();
       setLocalParticipant(newParticipant);
       if (newParticipant) {
@@ -599,9 +599,7 @@ function Room() {
                   height="14px"
                 />
                 <span>
-                  {VITE_WEBRTC_PROVIDER_NAME === "MUX"
-                    ? room.remoteParticipants.size + 1
-                    : room.remoteParticipants.size}
+                  {room.getNumberOfParticipants()}
                 </span>
               </NumberParticipantsContainer>
               <CenteredDiv>
