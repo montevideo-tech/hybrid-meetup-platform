@@ -30,6 +30,9 @@ export const Button = styled.button`
   }
   &:disabled {
     background-color: ${theme.palette.disabled.main};
+    border: none;
+    color: ${theme.palette.disabled.secondary};
+    cursor: auto;
   }
 `;
 
