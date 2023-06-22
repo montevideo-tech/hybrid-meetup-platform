@@ -37,6 +37,7 @@ import Video from "../components/Video";
 import { Button } from "../themes/componentsStyles";
 import ChatIcon from "@mui/icons-material/Chat";
 import participants from "../assets/participants.svg";
+import VideoRecorder from "../components/VideoRecorder";
 import {
   VITE_WEBRTC_PROVIDER_NAME,
   VITE_DOLBY_API_KEY,
@@ -77,7 +78,7 @@ function Room() {
   const [localVideoStream, setLocalVideoStream] = useState(undefined);
   const [localAudioStream, setLocalAudioStream] = useState(undefined);
   const [localName, setLocalName] = useState(undefined);
-
+  const [isRecording, setIsRecording] = useState(false);
   // To add a new criteria to the comparator you need to
   // Decide if it's higher or lower pririoty compared to the already established
   // if it's higher you must add the 'if' before otherwise add it after.
@@ -85,6 +86,14 @@ function Room() {
     remoteStreamsRef.current = data;
     const remoteStreamsSorted = Array.from(data.values()).sort(comparator);
     setRemoteStreams(remoteStreamsSorted);
+  };
+
+  const startRecording = () => {
+    setIsRecording(!isRecording);
+  };
+
+  const stopRecording = () => {
+    setIsRecording(false);
   };
 
   const participantsCount = remoteStreams.length;
@@ -558,6 +567,12 @@ function Room() {
   };
   return (
     <>
+      {isRecording && (
+        <VideoRecorder
+          isRecording={isRecording}
+          stopRecording={stopRecording}
+        />
+      )}
       {roomNotFound && <Navigate to="/rooms/404" />}
       {room ? (
         <Container $chatOpen={chatOpen}>
@@ -591,6 +606,9 @@ function Room() {
               </NumberParticipantsContainer>
               <CenteredDiv>
                 <RoomControls
+                  startRecording={startRecording}
+                  stopRecording={stopRecording}
+                  isRecording={isRecording}
                   permissionRole={userRole}
                   updateScreenShare={updateScreenShare}
                   isSharingScreen={isSharingScreen}
@@ -666,12 +684,6 @@ const CenteredDiv = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-`;
-
-const ChatButton = styled.button`
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
 `;
 
 const Buttons = styled.div`
