@@ -39,11 +39,13 @@ function Chat(props) {
     <Card
       $customStyles={{
         width: "calc(100% - 20px)",
+        maxHeight: "65vh",
         height: "calc(100% - 20px)",
         flexDirection: "column",
         borderRadius: "15px",
         border: "none",
         padding: "15px",
+        overflowY: "auto",
       }}
     >
       <ChatContent>
@@ -94,7 +96,7 @@ function Chat(props) {
           $customStyles={{
             position: "absolute",
             marginTop: "5px",
-            marginLeft: "calc(250px - 100px)",
+            marginLeft: "calc(250px - 60px)",
             border: "none",
             height: "fit-content",
             width: "fit-content",
@@ -141,6 +143,7 @@ const StyledChatForm = styled.form`
 `;
 
 const ChatContent = styled.div`
+  margin-bottom: 10px;
   width: 100%;
   flex-grow: 1;
   overflow-y: auto;

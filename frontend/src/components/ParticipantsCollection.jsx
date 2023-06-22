@@ -17,7 +17,6 @@ function ParticipantsCollection(props) {
     localAudioStream,
     localName,
   } = props;
-
   const currentParticipants = useMemo(() => {
     return children;
   }, [children]);
@@ -36,11 +35,11 @@ function ParticipantsCollection(props) {
   const twoParticipant = currentParticipants.length === 1;
   return (
     <>
-      {children.map(({ audioStream, name }) => (
+      {children.length!==0 && children.map(({ audioStream, name }) => (
         <Audio key={name} stream={audioStream} />
       ))}
       <Content $colums={colums} $twoParticipant={twoParticipant}>
-        {currentParticipants
+        {children.length!==0 && currentParticipants
           .slice(0, 9)
           .map(({ videoStream, name, audioMuted, videoMuted, speaking }) => (
             <Video
@@ -56,12 +55,12 @@ function ParticipantsCollection(props) {
               twoParticipant={twoParticipant}
             />
           ))}
-        {localAudioStream && localVideoStream && (
+        {localVideoStream && (
           <Video
             permissionRole=""
             key={localName}
             stream={localVideoStream}
-            isAudioMuted={localAudioStream.muted || false}
+            isAudioMuted={true}
             isVideoMuted={localVideoStream.muted || false}
             isSpeaking={false}
             name={localName}
