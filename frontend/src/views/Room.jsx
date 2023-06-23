@@ -50,7 +50,6 @@ function Room() {
   const [room, setRoom] = useState();
   const [localParticipant, setLocalParticipant] = useState();
   const userRole = useUserPermission();
-  // this helps keep track of muting/unmuting with RoomControls
   const [localTracks, setLocalTracks] = useState({ video: null, audio: null });
   const [isSharingScreen, setIsSharingScreen] = useState(false);
   const [screenRoom, setScreenRoom] = useState();
@@ -58,7 +57,6 @@ function Room() {
   const [roomNotFound, setRoomNotFound] = useState(false);
   const [errorJoiningRoom, setErrorJoiningRoom] = useState(false);
   const roomId = useLoaderData();
-  // create reference to access room state var in useEffect cleanup func
   const roomRef = useRef();
   const remoteStreamsRef = useRef(new Map());
   const currentUser = useSelector((state) => state.user);
@@ -91,7 +89,6 @@ function Room() {
 
   const leaveRoom = async () => {
     if (roomRef.current) {
-      // await userParticipant.unpublishAllTracks(); // also stops them
       await roomRef.current.leave();
     }
   };
@@ -666,12 +663,6 @@ const CenteredDiv = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-`;
-
-const ChatButton = styled.button`
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
 `;
 
 const Buttons = styled.div`

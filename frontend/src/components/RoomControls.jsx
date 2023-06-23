@@ -19,7 +19,6 @@ import mic from "../assets/mic.svg";
 import noMic from "../assets/no-mic.svg";
 import noMicRed from "../assets/no-mic-red.svg";
 import close from "../assets/close.svg";
-import { Colors } from "../themes/colors";
 import { VITE_WEBRTC_PROVIDER_NAME } from "../lib/constants";
 function RoomControls(props) {
   const navigate = useNavigate();
