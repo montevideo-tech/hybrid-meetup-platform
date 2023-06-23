@@ -91,7 +91,7 @@ function SignUp() {
             </Label>
             <InputContainer>
               <StartIcon src={orangeUser} alt="lock" />
-              <Input
+              <StyledInput
                 id="name"
                 label="Name"
                 name="name"
@@ -100,7 +100,6 @@ function SignUp() {
                 error={!!errors.name}
                 helperText={errors.name?.message}
                 placeholder="name"
-                $customStyles={{ width: "250px" }}
               />
             </InputContainer>
             {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
@@ -112,7 +111,7 @@ function SignUp() {
             </Label>
             <InputContainer>
               <StartIcon src={envelope} alt="lock" />
-              <Input
+              <StyledInput
                 id="email"
                 name="email"
                 autoFocus
@@ -120,7 +119,6 @@ function SignUp() {
                 error={!!errors.email}
                 helperText={errors.email?.message}
                 placeholder="email address"
-                $customStyles={{ width: "250px" }}
               />
             </InputContainer>
             {errors.email && (
@@ -139,7 +137,7 @@ function SignUp() {
                 src={showPassword ? eye : eyeSlash}
                 alt="view password"
               />
-              <Input
+              <StyledInput
                 id="password"
                 name="password"
                 label="Email Address"
@@ -148,7 +146,6 @@ function SignUp() {
                 error={!!errors.password}
                 helperText={errors.password?.message}
                 placeholder="password"
-                $customStyles={{ width: "250px" }}
               />
             </InputContainer>
             {errors.password && (
@@ -167,7 +164,7 @@ function SignUp() {
                 src={showPassword ? eye : eyeSlash}
                 alt="view password"
               />
-              <Input
+              <StyledInput
                 id="confirmPassword"
                 name="confirmPassword"
                 label="Confirm password"
@@ -176,7 +173,6 @@ function SignUp() {
                 error={!!errors.confirmPassword}
                 helperText={errors.confirmPassword?.message}
                 placeholder="password"
-                $customStyles={{ width: "250px" }}
               />
             </InputContainer>
             {errors.confirmPassword && (
@@ -274,4 +270,13 @@ const ErrorMessage = styled.div`
   font-size: 0.75rem;
   color: red;
   margin-top: -10px;
+`;
+
+const StyledInput = styled(Input)`
+  width: 250px;
+  :focus-visible {
+    outline: none !important;
+    border: 2px solid ${Colors.orange};
+    box-shadow: 0 0 2px ${Colors.orange};
+  }
 `;
