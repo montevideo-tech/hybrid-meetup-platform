@@ -61,7 +61,6 @@ function Rooms() {
     setShowNameInput(false);
     setCreatingRoom(true);
     const onSuccess = (res) => {
-      // console.log('Room created', res);
       const {
         data: { data },
       } = res;
@@ -181,7 +180,6 @@ function Rooms() {
     getRoomsList();
   }, []);
 
-  // eslint-disable-next-line react/display-name
   const Alert = forwardRef((props, ref) => (
     <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
   ));

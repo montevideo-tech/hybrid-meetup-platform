@@ -44,6 +44,7 @@ function EditRoom() {
         presenters: [...currentPresenters, email],
       });
     }
+    setEmail("");
   };
 
   const getRoles = () => {
@@ -129,17 +130,17 @@ function EditRoom() {
             $customStyles={{ padding: "0 20px" }}
           />
           <StyledSelect
-            // TODO change select icon
             label="Role"
             value={roleToAdd}
+            defaultValue=""
             onChange={(e) => setRoleToAdd(e.target.value)}
           >
-            <StyledOption value="role">Role</StyledOption>
+            <StyledOption value="" disabled hidden>
+              Role
+            </StyledOption>
             <StyledOption value="presenter">Presenter</StyledOption>
           </StyledSelect>
           <Button
-            // TODO validate email and role (add disabled to this button)
-            // after adding participant, clear input
             onClick={handleAddRole}
             $primary
             $customStyles={{ height: "100%", width: "100%" }}
