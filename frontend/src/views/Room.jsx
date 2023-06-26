@@ -18,7 +18,7 @@ import {
   cleanRoom,
   SnackbarAlert,
 } from "../reducers/roomSlice";
-import subscribeToRoleChanges, { ROLES } from "../utils/roles";
+import {subscribeToRoleChanges, ROLES } from "../utils/roles";
 import ParticipantsCollection from "../components/ParticipantsCollection";
 import Chat from "../components/Chat";
 import { comparator, updateParticipantRoles } from "../utils/helpers";

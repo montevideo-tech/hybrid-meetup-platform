@@ -14,7 +14,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import styled from "styled-components";
 import { giveUserRoleOnRoom } from "../actions";
-import { ROLES } from "../utils/roles";
+import { deleteRole, ROLES } from "../utils/roles";
 import { updateParticipantRoles } from "../utils/helpers";
 
 export async function roomLoader({ params }) {
@@ -65,9 +65,10 @@ function EditRoom() {
     setRoles(rolesCopy);
   };
 
-  const handleDeleteRole = (e, r) => {
+  const handleDeleteRole = async (e, r) => {
     const currentHosts = roles.hosts;
     const currentPresenters = roles.presenters;
+    await deleteRole(e);
     const newRoles = {
       hosts: [...currentHosts],
       presenters: [...currentPresenters],
