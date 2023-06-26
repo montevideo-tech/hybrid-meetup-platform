@@ -48,21 +48,21 @@ function EditRoom() {
       });
     }
   };
+
   const getRoles = () => {
     const rolesCopy = { ...roles };
-    const newPresenters = [];
-    const newHosts = [];
+    const newPresenters = rolesCopy.presenters.slice();
+    const newHosts = rolesCopy.hosts.slice();
 
-    for (let i = 0; i < participants.length; i++) {
-      if (participants[i].role === ROLES.PRESENTER) {
-        newPresenters.push(participants[i].name);
-      } else if (participants[i].role === ROLES.HOST) {
-        newHosts.push(participants[i].name);
+    participants.forEach((participant) => {
+      if (participant.role === ROLES.PRESENTER && !newPresenters.includes(participant.name)) {
+        newPresenters.push(participant.name);
+      } else if (participant.role === ROLES.HOST && !newHosts.includes(participant.name)) {
+        newHosts.push(participant.name);
       }
-    }
-    rolesCopy.hosts = [...rolesCopy.hosts, ...newHosts];
-    rolesCopy.presenters = [...rolesCopy.presenters, ...newPresenters];
-    setRoles(rolesCopy);
+    });
+  
+    setRoles({ hosts: newHosts, presenters: newPresenters });
   };
 
   const handleDeleteRole = (e, r) => {
@@ -84,7 +84,7 @@ function EditRoom() {
 
   useEffect(() => {
     getRoles();
-  }, []);
+  }, [participants.length]);
 
   useEffect(() => {
     updateParticipantRoles(roomId, dispatch);
