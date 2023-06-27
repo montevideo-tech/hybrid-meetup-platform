@@ -16,11 +16,14 @@ import styled from "styled-components";
 import { deleteRoom } from "../../actions";
 import { ROLES } from "../../utils/roles";
 import { onDeleteRoomMessage } from "../../utils/chat";
+import ConfirmationToast from "../ConfirmationToast/ConfirmationToas";
+import { useState } from "react";
 
 export const RoomItem = ({ currentUser, room }) => {
   const { id, name, providerId, createdBy } = room;
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [showToast, setShowToast] = useState(false);
 
   if (!id || !name || !providerId) {
     return null;
@@ -44,59 +47,69 @@ export const RoomItem = ({ currentUser, room }) => {
   }
 
   return (
-    <Grid item xs={12} sm={6} md={4} key={id}>
-      <StyledCard className="custom-card">
-        <CardContent>
-          <Title gutterBottom variant="h5" component="div">
-            {name}
-          </Title>
-          <CreatedBy variant="body2" color="text.secondary">
-            {createdByStr}
-          </CreatedBy>
-        </CardContent>
-        {currentUser?.role === ROLES.USER ? (
-          <StyledCardActions>
-            <Button $primary onClick={() => navigate(`/rooms/${providerId}`)}>
-              Join room
-            </Button>
-          </StyledCardActions>
-        ) : (
-          <StyledCardActions>
-            <Button
-              aria-label="delete"
-              size="medium"
-              component={RouterLink}
-              onClick={handleDeleteRoom}
-              $customStyles={{
-                width: "35px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <DeleteIcon fontSize="medium" />
-            </Button>
-            <Button
-              aria-label="edit"
-              size="medium"
-              component={RouterLink}
-              onClick={() => navigate(`/rooms/${providerId}/edit`)}
-              $customStyles={{
-                width: "35px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <EditIcon fontSize="medium" />
-            </Button>
-            <Button $primary onClick={() => navigate(`/rooms/${providerId}`)}>
-              Join room
-            </Button>
-          </StyledCardActions>
-        )}
-      </StyledCard>
-    </Grid>
+    <>
+      <Grid item xs={12} sm={6} md={4} key={id}>
+        <StyledCard className="custom-card">
+          <CardContent>
+            <Title gutterBottom variant="h5" component="div">
+              {name}
+            </Title>
+            <CreatedBy variant="body2" color="text.secondary">
+              {createdByStr}
+            </CreatedBy>
+          </CardContent>
+          {currentUser?.role === ROLES.USER ? (
+            <StyledCardActions>
+              <Button $primary onClick={() => navigate(`/rooms/${providerId}`)}>
+                Join room
+              </Button>
+            </StyledCardActions>
+          ) : (
+            <StyledCardActions>
+              <Button
+                aria-label="delete"
+                size="medium"
+                component={RouterLink}
+                onClick={() => setShowToast(true)}
+                $customStyles={{
+                  width: "35px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <DeleteIcon fontSize="medium" />
+              </Button>
+              <Button
+                aria-label="edit"
+                size="medium"
+                component={RouterLink}
+                onClick={() => navigate(`/rooms/${providerId}/edit`)}
+                $customStyles={{
+                  width: "35px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <EditIcon fontSize="medium" />
+              </Button>
+              <Button $primary onClick={() => navigate(`/rooms/${providerId}`)}>
+                Join room
+              </Button>
+            </StyledCardActions>
+          )}
+        </StyledCard>
+      </Grid>
+      {showToast && 
+      <ConfirmationToast 
+        text={`Are you sure you want to delete ${name}?`} 
+        confirmationText='Delete' 
+        onCancel={() => setShowToast(false)}
+        onConfirmation={handleDeleteRoom}
+      />}
+    </>
+    
   );
 };
 
