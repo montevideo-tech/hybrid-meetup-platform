@@ -19,11 +19,11 @@ import mic from "../assets/mic.svg";
 import noMic from "../assets/no-mic.svg";
 import noMicRed from "../assets/no-mic-red.svg";
 import close from "../assets/close.svg";
+import videoRecord from "../assets/videoRecord.svg";
 import { VITE_WEBRTC_PROVIDER_NAME } from "../lib/constants";
 function RoomControls(props) {
   const navigate = useNavigate();
   const [muted, setMuted] = useState(false);
-
   const {
     updateScreenShare,
     isSharingScreen,
@@ -38,6 +38,8 @@ function RoomControls(props) {
     isBlockedRemotedGuest,
     setIsBlockedRemotedGuest,
     setLocalTracks,
+    startRecording,
+    isRecording,
   } = props;
   const [localVideoTrack, setLocalVideoTrack] = useState(localTracks.video);
 
@@ -108,6 +110,24 @@ function RoomControls(props) {
 
   return (
     <Container variant="contained" size="large" disabled={disabled}>
+      {permissionRole === ROLES.HOST && (
+        <Tooltip title={!isRecording ? "Start recording" : "Stop recording"}>
+          <StyledDiv>
+            <Button
+              $customStyles={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "40px",
+                height: "40px",
+              }}
+              onClick={startRecording}
+            >
+              <img src={videoRecord} alt="record" />
+            </Button>
+          </StyledDiv>
+        </Tooltip>
+      )}
       <Tooltip
         title={
           !localTracks.video || localTracks.video.muted
