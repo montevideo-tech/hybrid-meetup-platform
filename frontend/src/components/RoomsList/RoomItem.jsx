@@ -3,14 +3,7 @@ import { useDispatch } from "react-redux";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Colors } from "../../themes/colors";
 import { Button } from "../../themes/componentsStyles";
-import {
-  Grid,
-  Card,
-  CardContent,
-  CardActions,
-  Typography,
-  IconButton,
-} from "@mui/material";
+import { Grid, Card, CardContent, CardActions } from "@mui/material";
 import { Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
 import styled from "styled-components";
 import { deleteRoom } from "../../actions";
@@ -112,7 +105,7 @@ const StyledCard = styled(Card)`
 `;
 
 const CreatedBy = styled.div`
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-style: italic;
   font-weight: 500;
   font-size: 12px;
@@ -122,17 +115,17 @@ const CreatedBy = styled.div`
 `;
 
 const Title = styled.div`
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 600;
   font-size: 25px;
   line-height: 38px;
   color: ${Colors.purple};
   border-bottom: solid 2px ${Colors.purple};
-`
+`;
 
 const StyledCardActions = styled(CardActions)`
   justify-content: flex-end;
   padding: 23px !important;
-`
+`;
 
 export default RoomItem;

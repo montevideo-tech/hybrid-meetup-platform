@@ -70,8 +70,8 @@ export const Input = styled.input`
 
   :focus-visible {
     outline: none !important;
-    border: 2px solid ${theme.palette.logo.main};
-    box-shadow: 0 0 2px ${theme.palette.logo.main};
+    border: 2px solid ${theme.palette.primary.main};
+    box-shadow: 0 0 2px ${theme.palette.primary.main};
   }
 
   ${(props) =>

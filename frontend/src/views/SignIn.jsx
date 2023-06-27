@@ -72,7 +72,7 @@ function SignIn() {
             </Label>
             <InputContainer>
               <StartIcon src={envelope} alt="lock" />
-              <Input
+              <StyledInput
                 id="email"
                 name="email"
                 autoFocus
@@ -81,9 +81,6 @@ function SignIn() {
                 error={!!errors.email}
                 helperText={errors.email?.message}
                 placeholder="email address"
-                $customStyles={{
-                  width: "250px",
-                }}
               />
             </InputContainer>
             {errors.email && (
@@ -102,7 +99,7 @@ function SignIn() {
                 src={showPassword ? eye : eyeSlash}
                 alt="view password"
               />
-              <Input
+              <StyledInput
                 name="password"
                 label="Password"
                 placeholder="password"
@@ -112,7 +109,6 @@ function SignIn() {
                 {...register("password")}
                 error={!!errors.password}
                 helperText={errors.password?.message}
-                $customStyles={{ width: "250px" }}
               />
             </InputContainer>
             {errors.password && (
@@ -213,4 +209,13 @@ const EndIcon = styled.img`
   margin: 11px 0 0 297px;
   width: 20px;
   height: 20px;
+`;
+
+const StyledInput = styled(Input)`
+  width: 250px;
+  :focus-visible {
+    outline: none !important;
+    border: 2px solid ${Colors.orange};
+    box-shadow: 0 0 2px ${Colors.orange};
+  }
 `;
