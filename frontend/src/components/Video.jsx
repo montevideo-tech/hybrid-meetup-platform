@@ -6,8 +6,6 @@ import { Box, IconButton } from "@mui/material";
 import {
   KeyboardVoiceRounded as KeyboardVoiceRoundedIcon,
   MicOffOutlined as MicOffOutlinedIcon,
-  PushPinOutlined as PushPinOutlinedIcon,
-  PushPinRounded as PushPinRoundedIcon,
   DeleteRounded as DeleteOutlineIcon,
 } from "@mui/icons-material";
 import ParticipantInfo from "./ParticipantInfo";
@@ -44,8 +42,18 @@ function Video(props) {
       videoRef.current.srcObject = stream;
     }
   }, [stream]);
-  const boxHeight = isSharingScreen ? "150px" : isAlone ? "calc((100vh - 170px))" : "calc((100vh - 204px)/2)";
-  const boxWidth = isScreenShared ? "auto" : isSharingScreen ? "200px" : twoParticipant ? "60vh" : "100%"
+  const boxHeight = isSharingScreen
+    ? "150px"
+    : isAlone
+    ? "calc((100vh - 170px))"
+    : "calc((100vh - 204px)/2)";
+  const boxWidth = isScreenShared
+    ? "auto"
+    : isSharingScreen
+    ? "200px"
+    : twoParticipant
+    ? "60vh"
+    : "100%";
 
   return (
     <Box
@@ -56,7 +64,9 @@ function Video(props) {
         background: `${Colors.darkGrey}`,
         borderRadius: "5px",
         overflow: "hidden",
-        border: `${isSpeaking ? `2px solid ${Colors.red}` : `2px solid ${Colors.black}`}`,
+        border: `${
+          isSpeaking ? `2px solid ${Colors.red}` : `2px solid ${Colors.black}`
+        }`,
         display: "flex",
         alignContent: "center",
         justifyContent: "center",

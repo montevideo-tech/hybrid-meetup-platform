@@ -1,4 +1,4 @@
-import React, { useMemo, useState, ReactNode, useEffect } from "react";
+import React, { useMemo, ReactNode } from "react";
 import { LocalParticipant } from "@mux/spaces-web";
 import PropTypes from "prop-types";
 import { MAX_PARTICIPANTS_PER_PAGE } from "../lib/constants";
@@ -29,38 +29,40 @@ function ParticipantsCollection(props) {
     localParticipant.blockMuteRemoteParticipant(r, isMuted);
   };
 
-  const colums = Math.round((participantsCount + 1 ) /2);
+  const colums = Math.round((participantsCount + 1) / 2);
   const isAlone = currentParticipants.length === 0;
   const oddNumber = !isAlone && currentParticipants.length % 2 === 0; //I check that it is an even number since the local participant is added.
   const twoParticipant = currentParticipants.length === 1;
   return (
     <>
-      {children.length!==0 && children.map(({ audioStream, name }) => (
-        <Audio key={name} stream={audioStream} />
-      ))}
+      {children.length !== 0 &&
+        children.map(({ audioStream, name }) => (
+          <Audio key={name} stream={audioStream} />
+        ))}
       <Content $colums={colums} $twoParticipant={twoParticipant}>
-        {children.length!==0 && currentParticipants
-          .slice(0, 9)
-          .map(({ videoStream, name, audioMuted, videoMuted, speaking }) => (
-            <Video
-              permissionRole={permissionRole}
-              key={name}
-              stream={videoStream}
-              isAudioMuted={audioMuted || false}
-              isVideoMuted={videoMuted || false}
-              isSpeaking={speaking || false}
-              name={name}
-              onClick={() => onClickRemove(name)}
-              onClickMute={() => onClickMute(name, audioMuted)}
-              twoParticipant={twoParticipant}
-            />
-          ))}
+        {children.length !== 0 &&
+          currentParticipants
+            .slice(0, 9)
+            .map(({ videoStream, name, audioMuted, videoMuted, speaking }) => (
+              <Video
+                permissionRole={permissionRole}
+                key={name}
+                stream={videoStream}
+                isAudioMuted={audioMuted || false}
+                isVideoMuted={videoMuted || false}
+                isSpeaking={speaking || false}
+                name={name}
+                onClick={() => onClickRemove(name)}
+                onClickMute={() => onClickMute(name, audioMuted)}
+                twoParticipant={twoParticipant}
+              />
+            ))}
         {localVideoStream && (
           <Video
             permissionRole=""
             key={localName}
             stream={localVideoStream}
-            isAudioMuted={true}
+            isAudioMuted
             isVideoMuted={localVideoStream.muted || false}
             isSpeaking={false}
             name={localName}
