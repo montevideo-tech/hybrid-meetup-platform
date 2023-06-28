@@ -61,11 +61,12 @@ const deleteRole = async (userEmail) => {
   .select('id, userEmail')
   .eq('providerId', roomId);
   const roleToDelete = data.find((element) => element.userEmail === userEmail);
-
-  await supabase
-  .from('rooms-data')
-  .delete()
-  .eq('id', roleToDelete.id);
+  if(roleToDelete) {
+    await supabase
+    .from('rooms-data')
+    .delete()
+    .eq('id', roleToDelete.id);
+  }
 };
 
 export {ROLES, subscribeToRoleChanges, deleteRole}; 
