@@ -82,6 +82,8 @@ function EditRoom() {
       }
       return true; // keep looping
     });
+    const participant = participants.find(object => object.name === e);
+    dispatch(removeRole({ id: participant.id }));
     setRoles(newRoles);
   };
 
