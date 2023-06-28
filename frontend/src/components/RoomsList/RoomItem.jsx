@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Colors } from "../../themes/colors";
@@ -16,8 +16,7 @@ import styled from "styled-components";
 import { deleteRoom } from "../../actions";
 import { ROLES } from "../../utils/roles";
 import { onDeleteRoomMessage } from "../../utils/chat";
-import ConfirmationToast from "../ConfirmationToast/ConfirmationToas";
-import { useState } from "react";
+import ConfirmationToast from "../ConfirmationToast/ConfirmationToast";
 
 export const RoomItem = ({ currentUser, room }) => {
   const { id, name, providerId, createdBy } = room;
