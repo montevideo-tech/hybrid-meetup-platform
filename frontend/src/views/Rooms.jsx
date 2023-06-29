@@ -29,7 +29,6 @@ function Rooms() {
 
   const onRoomCreated = async (data) => {
     const onSuccess = () => {
-      console.log("Room added to DB");
       setCreatingRoom(false);
       setNewRoomName("");
     };
@@ -55,7 +54,6 @@ function Rooms() {
     setShowNameInput(false);
     setCreatingRoom(true);
     const onSuccess = (res) => {
-      // console.log('Room created', res);
       const {
         data: { data },
       } = res;
