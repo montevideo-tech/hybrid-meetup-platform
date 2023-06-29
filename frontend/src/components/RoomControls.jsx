@@ -23,7 +23,7 @@ import videoRecord from "../assets/videoRecord.svg";
 import { VITE_WEBRTC_PROVIDER_NAME } from "../lib/constants";
 function RoomControls(props) {
   const navigate = useNavigate();
-  const [muted, setMuted] = useState(false);
+  const [videoActive, setVideoActive] = useState(true);
   const {
     updateScreenShare,
     isSharingScreen,
@@ -46,8 +46,8 @@ function RoomControls(props) {
   const toggleMuteTrack = async (t) => {
     if (isEnableToUnmute || t.kind === "video") {
       if (t.kind === "video") {
-        if (muted) {
-          setMuted(false);
+        if (!videoActive) {
+          setVideoActive(true);
           const tracks = await localParticipant.publishTracks({
             constraints: { video: true, audio: false },
           });
@@ -59,7 +59,7 @@ function RoomControls(props) {
             updateLocalTracksMuted(t.kind, false);
           }
         } else {
-          setMuted(true);
+          setVideoActive(false);
           if (VITE_WEBRTC_PROVIDER_NAME === "MUX") {
             localParticipant.unpublishTracks([localVideoTrack]);
             updateLocalTracksMuted(localVideoTrack.kind, true);
@@ -130,7 +130,7 @@ function RoomControls(props) {
       )}
       <Tooltip
         title={
-          !localTracks.video || localTracks.video.muted
+          !localTracks.video || !videoActive
             ? "Turn On Camera"
             : "Turn Off Camera"
         }
@@ -147,7 +147,7 @@ function RoomControls(props) {
             disabled={!localTracks.video}
             onClick={() => toggleMuteTrack(localTracks.video)}
           >
-            {!localTracks.video || localTracks.video.muted ? (
+            {!localTracks.video || !videoActive ? (
               <StyledImg src={noCamera} alt="camera off" height="19.4px" />
             ) : (
               <img src={camera} alt="camera on" />
