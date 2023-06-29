@@ -4,13 +4,17 @@ import { useLoaderData, useNavigate } from "react-router-dom";
 import { List, ListItem } from "@mui/material";
 import styled from "styled-components";
 import { giveUserRoleOnRoom } from "../actions";
-import { ROLES } from "../utils/roles";
+import { deleteRole, subscribeToRoleChanges, ROLES } from "../utils/roles";
 import { updateParticipantRoles } from "../utils/helpers";
 import { Card, Button, Input } from "../themes/componentsStyles";
 import { Colors } from "../themes/colors";
 import { supabase } from "../lib/api";
 import edit from "../assets/edit.svg";
 import deleteGray from "../assets/deleteGray.svg";
+import {
+  addUpdateParticipant,
+  removeRole,
+} from "../reducers/roomSlice";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -63,9 +67,10 @@ function EditRoom() {
     setRoles({ hosts: newHosts, presenters: newPresenters });
   };
 
-  const handleDeleteRole = (e, r) => {
+  const handleDeleteRole = async (e, r) => {
     const currentHosts = roles.hosts;
     const currentPresenters = roles.presenters;
+    await deleteRole(e);
     const newRoles = {
       hosts: [...currentHosts],
       presenters: [...currentPresenters],
@@ -77,7 +82,28 @@ function EditRoom() {
       }
       return true; // keep looping
     });
+    const participant = participants.find(object => object.name === e);
+    dispatch(removeRole({ id: participant.id }));
     setRoles(newRoles);
+  };
+
+  const handleRoleChange = (payload) => {
+    if (payload.eventType === "INSERT") {
+      const { id, userEmail } = payload;
+      const permission = payload["rooms-permission"].name;
+      dispatch(
+        addUpdateParticipant({
+          name: userEmail,
+          role: permission,
+          id,
+        }),
+      );
+    }
+    // Supabase realtime only sends the ID that was deleted from the rooms-data table
+    if (payload.eventType === "DELETE") {
+      const { id } = payload.old;
+      dispatch(removeRole({ id }));
+    }
   };
 
   useEffect(() => {
@@ -103,6 +129,7 @@ function EditRoom() {
       }
     };
     getRoomName();
+    subscribeToRoleChanges(roomId, handleRoleChange);
   }, []);
 
   return (
