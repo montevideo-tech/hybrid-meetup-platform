@@ -20,10 +20,11 @@ import noMic from "../assets/no-mic.svg";
 import noMicRed from "../assets/no-mic-red.svg";
 import close from "../assets/close.svg";
 import videoRecord from "../assets/videoRecord.svg";
-import { VITE_WEBRTC_PROVIDER_NAME } from "../lib/constants";
+import { getProvider } from "../utils/environment";
 function RoomControls(props) {
   const navigate = useNavigate();
   const [muted, setMuted] = useState(false);
+  const [providerName, setProviderName] = useState('');
   const {
     updateScreenShare,
     isSharingScreen,
@@ -55,12 +56,12 @@ function RoomControls(props) {
           newLocalTracks[tracks[0].kind] = tracks[0];
           setLocalVideoTrack(tracks[0]);
           setLocalTracks(newLocalTracks);
-          if (VITE_WEBRTC_PROVIDER_NAME === "MUX") {
+          if (providerName === "MUX") {
             updateLocalTracksMuted(t.kind, false);
           }
         } else {
           setMuted(true);
-          if (VITE_WEBRTC_PROVIDER_NAME === "MUX") {
+          if (providerName === "MUX") {
             localParticipant.unpublishTracks([localVideoTrack]);
             updateLocalTracksMuted(localVideoTrack.kind, true);
             localVideoTrack.mute();
@@ -79,6 +80,15 @@ function RoomControls(props) {
       }
     }
   };
+
+  useEffect(() => {
+    async function fetchData() {
+      const provider = await getProvider();
+      setProviderName(provider);
+    }
+  
+    fetchData();
+  }, []);
 
   useEffect(() => {
     if (!isEnableToUnmute && localTracks.audio) {
