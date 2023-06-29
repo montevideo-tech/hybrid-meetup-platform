@@ -22,7 +22,7 @@ function ParticipantLayout(props) {
         gap,
       );
     }
-    return null; // default return value when children is falsy
+    return null;
   }, [children, width, height, gap]);
 
   return (

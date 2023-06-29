@@ -155,7 +155,6 @@ const ChatContentWrapper = styled.div`
 
 const StyledInput = styled(Input)`
   :focus-visible {
-    outline: none !important;
     border: 1px solid ${Colors.purple};
     box-shadow: 0 0 1px ${Colors.purple};
   }

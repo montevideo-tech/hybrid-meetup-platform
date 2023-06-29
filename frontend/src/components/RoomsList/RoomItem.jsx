@@ -1,26 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Colors } from "../../themes/colors";
 import { Button } from "../../themes/componentsStyles";
-import {
-  Grid,
-  Card,
-  CardContent,
-  CardActions,
-  Typography,
-  IconButton,
-} from "@mui/material";
+import { Grid, Card, CardContent, CardActions } from "@mui/material";
 import { Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
 import styled from "styled-components";
 import { deleteRoom } from "../../actions";
 import { ROLES } from "../../utils/roles";
 import { onDeleteRoomMessage } from "../../utils/chat";
+import ConfirmationToast from "../ConfirmationToast/ConfirmationToast";
 
 export const RoomItem = ({ currentUser, room }) => {
   const { id, name, providerId, createdBy } = room;
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [showToast, setShowToast] = useState(false);
 
   if (!id || !name || !providerId) {
     return null;
@@ -44,59 +39,69 @@ export const RoomItem = ({ currentUser, room }) => {
   }
 
   return (
-    <Grid item xs={12} sm={6} md={4} key={id}>
-      <StyledCard className="custom-card">
-        <CardContent>
-          <Title gutterBottom variant="h5" component="div">
-            {name}
-          </Title>
-          <CreatedBy variant="body2" color="text.secondary">
-            {createdByStr}
-          </CreatedBy>
-        </CardContent>
-        {currentUser?.role === ROLES.USER ? (
-          <StyledCardActions>
-            <Button $primary onClick={() => navigate(`/rooms/${providerId}`)}>
-              Join room
-            </Button>
-          </StyledCardActions>
-        ) : (
-          <StyledCardActions>
-            <Button
-              aria-label="delete"
-              size="medium"
-              component={RouterLink}
-              onClick={handleDeleteRoom}
-              $customStyles={{
-                width: "35px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <DeleteIcon fontSize="medium" />
-            </Button>
-            <Button
-              aria-label="edit"
-              size="medium"
-              component={RouterLink}
-              onClick={() => navigate(`/rooms/${providerId}/edit`)}
-              $customStyles={{
-                width: "35px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <EditIcon fontSize="medium" />
-            </Button>
-            <Button $primary onClick={() => navigate(`/rooms/${providerId}`)}>
-              Join room
-            </Button>
-          </StyledCardActions>
-        )}
-      </StyledCard>
-    </Grid>
+    <>
+      <Grid item xs={12} sm={6} md={4} key={id}>
+        <StyledCard className="custom-card">
+          <CardContent>
+            <Title gutterBottom variant="h5" component="div">
+              {name}
+            </Title>
+            <CreatedBy variant="body2" color="text.secondary">
+              {createdByStr}
+            </CreatedBy>
+          </CardContent>
+          {currentUser?.role === ROLES.USER ? (
+            <StyledCardActions>
+              <Button $primary onClick={() => navigate(`/rooms/${providerId}`)}>
+                Join room
+              </Button>
+            </StyledCardActions>
+          ) : (
+            <StyledCardActions>
+              <Button
+                aria-label="delete"
+                size="medium"
+                component={RouterLink}
+                onClick={() => setShowToast(true)}
+                $customStyles={{
+                  width: "35px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <DeleteIcon fontSize="medium" />
+              </Button>
+              <Button
+                aria-label="edit"
+                size="medium"
+                component={RouterLink}
+                onClick={() => navigate(`/rooms/${providerId}/edit`)}
+                $customStyles={{
+                  width: "35px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <EditIcon fontSize="medium" />
+              </Button>
+              <Button $primary onClick={() => navigate(`/rooms/${providerId}`)}>
+                Join room
+              </Button>
+            </StyledCardActions>
+          )}
+        </StyledCard>
+      </Grid>
+      {showToast && 
+      <ConfirmationToast 
+        text={`Are you sure you want to delete ${name}?`} 
+        confirmationText='Delete' 
+        onCancel={() => setShowToast(false)}
+        onConfirmation={handleDeleteRoom}
+      />}
+    </>
+    
   );
 };
 
@@ -112,7 +117,7 @@ const StyledCard = styled(Card)`
 `;
 
 const CreatedBy = styled.div`
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-style: italic;
   font-weight: 500;
   font-size: 12px;
@@ -122,17 +127,17 @@ const CreatedBy = styled.div`
 `;
 
 const Title = styled.div`
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 600;
   font-size: 25px;
   line-height: 38px;
   color: ${Colors.purple};
   border-bottom: solid 2px ${Colors.purple};
-`
+`;
 
 const StyledCardActions = styled(CardActions)`
   justify-content: flex-end;
   padding: 23px !important;
-`
+`;
 
 export default RoomItem;

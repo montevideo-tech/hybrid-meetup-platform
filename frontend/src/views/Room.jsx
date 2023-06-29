@@ -18,7 +18,7 @@ import {
   cleanRoom,
   SnackbarAlert,
 } from "../reducers/roomSlice";
-import subscribeToRoleChanges, { ROLES } from "../utils/roles";
+import {subscribeToRoleChanges, ROLES } from "../utils/roles";
 import ParticipantsCollection from "../components/ParticipantsCollection";
 import Chat from "../components/Chat";
 import { comparator, updateParticipantRoles } from "../utils/helpers";
@@ -38,10 +38,7 @@ import { Button } from "../themes/componentsStyles";
 import ChatIcon from "@mui/icons-material/Chat";
 import participants from "../assets/participants.svg";
 import VideoRecorder from "../components/VideoRecorder";
-import {
-  VITE_WEBRTC_PROVIDER_NAME,
-  VITE_DOLBY_API_KEY,
-} from "../lib/constants";
+import { getDolbyKey, getProvider } from "../utils/environment";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -51,7 +48,6 @@ function Room() {
   const [room, setRoom] = useState();
   const [localParticipant, setLocalParticipant] = useState();
   const userRole = useUserPermission();
-  // this helps keep track of muting/unmuting with RoomControls
   const [localTracks, setLocalTracks] = useState({ video: null, audio: null });
   const [isSharingScreen, setIsSharingScreen] = useState(false);
   const [screenRoom, setScreenRoom] = useState();
@@ -59,7 +55,6 @@ function Room() {
   const [roomNotFound, setRoomNotFound] = useState(false);
   const [errorJoiningRoom, setErrorJoiningRoom] = useState(false);
   const roomId = useLoaderData();
-  // create reference to access room state var in useEffect cleanup func
   const roomRef = useRef();
   const remoteStreamsRef = useRef(new Map());
   const currentUser = useSelector((state) => state.user);
@@ -79,6 +74,7 @@ function Room() {
   const [localAudioStream, setLocalAudioStream] = useState(undefined);
   const [localName, setLocalName] = useState(undefined);
   const [isRecording, setIsRecording] = useState(false);
+  const [providerName , setProviderName] = useState('')
   // To add a new criteria to the comparator you need to
   // Decide if it's higher or lower pririoty compared to the already established
   // if it's higher you must add the 'if' before otherwise add it after.
@@ -100,7 +96,6 @@ function Room() {
 
   const leaveRoom = async () => {
     if (roomRef.current) {
-      // await userParticipant.unpublishAllTracks(); // also stops them
       await roomRef.current.leave();
     }
   };
@@ -115,7 +110,7 @@ function Room() {
   }, []);
 
   useEffect(() => {
-    if (VITE_WEBRTC_PROVIDER_NAME === "MUX") {
+    if (providerName === "MUX") {
       if (localParticipant?.provider?.videoTracks?.entries().next()?.value) {
         const localVideoStream = new MediaStream();
         localVideoStream.addTrack(
@@ -269,7 +264,7 @@ function Room() {
         rp.on("StoppedSpeaking", () => {
           updateIsSpeakingStatus(rp.connectionId, false);
         });
-        if (VITE_WEBRTC_PROVIDER_NAME === "MUX") {
+        if (providerName === "MUX") {
           await rp.subscribe();
         } else {
           await r.subscribeRemoteParticipants();
@@ -420,6 +415,9 @@ function Room() {
   };
 
   const joinRoom = async () => {
+    const provider = await getProvider();
+    const dolbyApiKey = await getDolbyKey();
+    setProviderName(provider)
     const MuxJWT = await roomJWTprovider(
       roomId,
       currentUser.email,
@@ -436,9 +434,9 @@ function Room() {
     }
     try {
       const newRoom =
-        VITE_WEBRTC_PROVIDER_NAME === "MUX"
+      provider === "MUX"
           ? new MuxWebRoom(MuxJWT)
-          : new DolbyWebRoom(VITE_DOLBY_API_KEY, currentUser.email);
+          : new DolbyWebRoom(dolbyApiKey, currentUser.email);
       const newParticipant = await newRoom.join();
       setLocalParticipant(newParticipant);
       if (newParticipant) {
