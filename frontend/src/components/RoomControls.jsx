@@ -23,8 +23,7 @@ import videoRecord from "../assets/videoRecord.svg";
 import { getProvider } from "../utils/environment";
 function RoomControls(props) {
   const navigate = useNavigate();
-  const [muted, setMuted] = useState(false);
-  const [providerName, setProviderName] = useState('');
+  const [videoActive, setVideoActive] = useState(true);
   const {
     updateScreenShare,
     isSharingScreen,
@@ -43,12 +42,13 @@ function RoomControls(props) {
     isRecording,
   } = props;
   const [localVideoTrack, setLocalVideoTrack] = useState(localTracks.video);
+  const [providerName, setProviderName] = useState('');
 
   const toggleMuteTrack = async (t) => {
     if (isEnableToUnmute || t.kind === "video") {
       if (t.kind === "video") {
-        if (muted) {
-          setMuted(false);
+        if (!videoActive) {
+          setVideoActive(true);
           const tracks = await localParticipant.publishTracks({
             constraints: { video: true, audio: false },
           });
@@ -60,7 +60,7 @@ function RoomControls(props) {
             updateLocalTracksMuted(t.kind, false);
           }
         } else {
-          setMuted(true);
+          setVideoActive(false);
           if (providerName === "MUX") {
             localParticipant.unpublishTracks([localVideoTrack]);
             updateLocalTracksMuted(localVideoTrack.kind, true);
@@ -140,7 +140,7 @@ function RoomControls(props) {
       )}
       <Tooltip
         title={
-          !localTracks.video || localTracks.video.muted
+          !localTracks.video || !videoActive
             ? "Turn On Camera"
             : "Turn Off Camera"
         }
@@ -157,7 +157,7 @@ function RoomControls(props) {
             disabled={!localTracks.video}
             onClick={() => toggleMuteTrack(localTracks.video)}
           >
-            {!localTracks.video || localTracks.video.muted ? (
+            {!localTracks.video || !videoActive ? (
               <StyledImg src={noCamera} alt="camera off" height="19.4px" />
             ) : (
               <img src={camera} alt="camera on" />
