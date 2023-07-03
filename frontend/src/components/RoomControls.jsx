@@ -42,6 +42,7 @@ function RoomControls(props) {
     isRecording,
   } = props;
   const [localVideoTrack, setLocalVideoTrack] = useState(localTracks.video);
+  const [providerName, setProviderName] = useState('');
 
   const toggleMuteTrack = async (t) => {
     if (isEnableToUnmute || t.kind === "video") {
