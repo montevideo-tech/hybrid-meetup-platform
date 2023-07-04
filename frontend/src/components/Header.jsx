@@ -4,14 +4,11 @@ import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
-import Menu from "@mui/material/Menu";
 import { logout } from "../reducers/userSlice";
 import { Hybridly } from "../components/hybridly/Hybridly";
 import { Button } from "../themes/componentsStyles";
 import user from "../assets/user.svg";
 import arrow from "../assets/arrow.svg";
-import { Colors } from "../themes/colors";
-import { MenuItem } from "@mui/material";
 import { DropdownMenu } from "./DropdownMenu";
 
 export function Header() {
