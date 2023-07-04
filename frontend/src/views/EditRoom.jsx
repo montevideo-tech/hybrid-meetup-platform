@@ -11,8 +11,10 @@ import { Colors } from "../themes/colors";
 import { supabase } from "../lib/api";
 import edit from "../assets/edit.svg";
 import deleteGray from "../assets/deleteGray.svg";
-import deletePurple from "../assets/deletePurple.svg";
-import { addUpdateParticipant, removeRole } from "../reducers/roomSlice";
+import {
+  addUpdateParticipant,
+  removeRole,
+} from "../reducers/roomSlice";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -26,47 +28,28 @@ function EditRoom() {
   const [roomName, setRoomName] = useState("");
   const [email, setEmail] = useState("");
   const [roleToAdd, setRoleToAdd] = useState("");
-  const [recentlyAddedPresenter, setRecentlyAddedPresenter] = useState("");
   // TODO:
   // get actual hosts/presenters from db
   const [roles, setRoles] = useState({ hosts: [], presenters: [] });
 
-  useEffect(() => {
-    const handleAddRole = async () => {
-      const currentHosts = roles.hosts;
-      const currentPresenters = roles.presenters;
-      await giveUserRoleOnRoom(email, roomId, roleToAdd);
-
-      if (roleToAdd === "host") {
-        if (recentlyAddedPresenter === email) {
-          setRoles({
-            hosts: [email, ...currentHosts],
-            presenters: [...currentPresenters],
-          });
-        } else {
-          setRoles({
-            hosts: [...currentHosts, email],
-            presenters: [...currentPresenters],
-          });
-        }
-      }
-      if (roleToAdd === "presenter") {
-        if (recentlyAddedPresenter === email) {
-          setRoles({
-            hosts: [...currentHosts],
-            presenters: [email, ...currentPresenters],
-          });
-        } else {
-          setRoles({
-            hosts: [...currentHosts],
-            presenters: [...currentPresenters, email],
-          });
-        }
-      }
-      setEmail("");
-    };
-    handleAddRole();
-  }, [recentlyAddedPresenter]);
+  const handleAddRole = async () => {
+    const currentHosts = roles.hosts;
+    const currentPresenters = roles.presenters;
+    await giveUserRoleOnRoom(email, roomId, roleToAdd);
+    if (roleToAdd === "host") {
+      setRoles({
+        hosts: [...currentHosts, email],
+        presenters: [...currentPresenters],
+      });
+    }
+    if (roleToAdd === "presenter") {
+      setRoles({
+        hosts: [...currentHosts],
+        presenters: [...currentPresenters, email],
+      });
+    }
+    setEmail("");
+  };
 
   const getRoles = () => {
     const rolesCopy = { ...roles };
@@ -74,19 +57,13 @@ function EditRoom() {
     const newHosts = rolesCopy.hosts.slice();
 
     participants.forEach((participant) => {
-      if (
-        participant.role === ROLES.PRESENTER &&
-        !newPresenters.includes(participant.name)
-      ) {
+      if (participant.role === ROLES.PRESENTER && !newPresenters.includes(participant.name)) {
         newPresenters.push(participant.name);
-      } else if (
-        participant.role === ROLES.HOST &&
-        !newHosts.includes(participant.name)
-      ) {
+      } else if (participant.role === ROLES.HOST && !newHosts.includes(participant.name)) {
         newHosts.push(participant.name);
       }
     });
-
+  
     setRoles({ hosts: newHosts, presenters: newPresenters });
   };
 
@@ -105,7 +82,7 @@ function EditRoom() {
       }
       return true; // keep looping
     });
-    const participant = participants.find((object) => object.name === e);
+    const participant = participants.find(object => object.name === e);
     dispatch(removeRole({ id: participant.id }));
     setRoles(newRoles);
   };
@@ -181,6 +158,7 @@ function EditRoom() {
           <StyledSelect
             label="Role"
             value={roleToAdd}
+            defaultValue=""
             onChange={(e) => setRoleToAdd(e.target.value)}
           >
             <StyledOption value="" disabled hidden>
@@ -189,8 +167,7 @@ function EditRoom() {
             <StyledOption value="presenter">Presenter</StyledOption>
           </StyledSelect>
           <Button
-            onClick={() => setRecentlyAddedPresenter(email)}
-            disabled={roleToAdd === ""}
+            onClick={handleAddRole}
             $primary
             $customStyles={{ height: "100%", width: "100%" }}
           >
@@ -237,43 +214,22 @@ function EditRoom() {
             <List>
               {roles.presenters.map((e) => {
                 return (
-                  <>
-                    {recentlyAddedPresenter === e ? (
-                      <ListItem
-                        key={e}
-                        secondaryAction={
-                          <img
-                            width="17px"
-                            src={deletePurple}
-                            alt="delete"
-                            onClick={() => {
-                              handleDeleteRole(e, "presenters");
-                            }}
-                          />
-                        }
-                        sx={{ padding: "8px 0" }}
-                      >
-                        <Email $isRecentlyAdded>{e}</Email>
-                      </ListItem>
-                    ) : (
-                      <ListItem
-                        key={e}
-                        secondaryAction={
-                          <img
-                            width="17px"
-                            src={deleteGray}
-                            alt="delete"
-                            onClick={() => {
-                              handleDeleteRole(e, "presenters");
-                            }}
-                          />
-                        }
-                        sx={{ padding: "8px 0" }}
-                      >
-                        <Email>{e}</Email>
-                      </ListItem>
-                    )}
-                  </>
+                  <ListItem
+                    key={e}
+                    secondaryAction={
+                      <img
+                        width="17px"
+                        src={deleteGray}
+                        alt="delete"
+                        onClick={() => {
+                          handleDeleteRole(e, "presenters");
+                        }}
+                      />
+                    }
+                    sx={{ padding: "8px 0" }}
+                  >
+                    <Email>{e}</Email>
+                  </ListItem>
                 );
               })}
             </List>
@@ -374,8 +330,7 @@ const ListContainer = styled.div`
 `;
 
 const Email = styled.p`
-  color: ${(props) =>
-    props.$isRecentlyAdded ? Colors.purple : Colors.davyGray};
   margin: 0 15px 0 0;
+  color: ${Colors.davyGray};
   font-size: 1rem;
 `;
