@@ -74,7 +74,14 @@ This stage isn't completed but what we planned was to follow the following table
 | Kick participant            | ✅   | ❌        | ❌          | ❌          |
 | Mute a specific participant | ✅   | ❌        | ❌          | ❌          |
 
+# AWS Deployment
+
+We have a deployment on AWS in the Qualabs account with a domain created using Certificate Manager. Currently, it is disabled as the project is not active. If you want to enable it again, you need to access the CloudFront service, enable the distributions, and also activate the CodePipeline service, which is also disabled.
+To ask for access and permissions to the Qualabs AWS account, you can reach out to Maxi Pollinger, who can provide you with the necessary details.
+
+
 ## Extra documentation
 
 - [Onboarding Hybridly](https://docs.google.com/document/d/1xAtQFdGuxCulLFVWubGiTnqwpwXmdHmXZupWRrKS2AI/edit?usp=sharing) here you'll find everything you need to know about Hybridly and how to get started.
 - [Minutas CleanCode](https://docs.google.com/document/d/1vry3s-TRHS9hC-U8DJGXtwaDB242HV-wucDEU7fknrI/edit?usp=sharing) here you'll find a summary of some chapters of Robert C Martin's Book Clean Code, this was read during the development of this project. The notes were taken in spanish since all of the developers in this project are spanish-speaking devs.
+
