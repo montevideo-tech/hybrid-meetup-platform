@@ -4,15 +4,12 @@ import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
-import Menu from "@mui/material/Menu";
 import { logout } from "../reducers/userSlice";
 import { Hybridly } from "../components/hybridly/Hybridly";
 import { Button } from "../themes/componentsStyles";
 import user from "../assets/user.svg";
 import arrow from "../assets/arrow.svg";
-import line from "../assets/line.svg";
-import { Colors } from "../themes/colors";
-import { MenuItem } from "@mui/material";
+import { DropdownMenu } from "./DropdownMenu";
 
 export function Header() {
   const [auth, setAuth] = useState(null);
@@ -40,6 +37,7 @@ export function Header() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
   return (
     <RootContainer>
       <AppbarContainer>
@@ -67,42 +65,28 @@ export function Header() {
                   <img alt="user" src={user} />
                   <img alt="arrow" src={arrow} />
                 </Button>
-                <StyledMenu
-                  id="menu-appbar"
-                  anchorEl={anchorEl}
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "right",
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  open={Boolean(anchorEl)}
-                  onClose={handleClose}
-                >
-                  <EmailContainer>
-                    <span>{currentUser.email}</span>
-                    <img alt="line" src={line} />
-                  </EmailContainer>
-                  <MenuItem>
-                    <Button
-                      onClick={handleSignOut}
-                      $primary
-                      $customStyles={{
-                        width: "100%",
-                        height: "25px",
-                        fontWeight: "600",
-                        fontSize: "0.65rem",
-                        lineHeight: "12px",
-                        textTransform: "uppercase",
-                      }}
-                    >
-                      Log out
-                    </Button>
-                  </MenuItem>
-                </StyledMenu>
+                <DropdownMenu 
+                    handleSignOut={handleSignOut}
+                    handleClose={handleClose}
+                    anchorEl={anchorEl}
+                    currentUser={currentUser}
+                    buttonStyles={{
+                      width: "100%",
+                      height: "25px",
+                      fontWeight: "600",
+                      fontSize: "0.65rem",
+                      lineHeight: "12px",
+                      textTransform: "uppercase",
+                    }}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "right",
+                    }}
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                />
               </>
             ) : (
               <Button
@@ -142,39 +126,4 @@ const AppbarContainer = styled.div`
 
 const OutletContainer = styled.div`
   height: calc(100vh - 4rem);
-`;
-
-const StyledMenu = styled(Menu)`
-  .MuiPopover-paper {
-    background-color: ${Colors.lightPurple};
-    border-radius: 15px;
-  }
-  .MuiMenu-list {
-    padding: 0;
-  }
-  .MuiMenuItem-root {
-    padding: 6px 14px 12px 14px;
-    :hover {
-      background-color: transparent;
-    }
-  }
-`;
-
-const EmailContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 12px 14px 0 14px;
-  img {
-    width: 100%;
-    height: 2px;
-    object-fit: cover;
-  }
-  span {
-    color: ${Colors.blackPurple};
-    font-weight: 500;
-    font-size: 0.8rem;
-    line-height: 0.938rem;
-    margin-bottom: 6px;
-  }
 `;
