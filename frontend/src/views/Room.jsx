@@ -18,7 +18,7 @@ import {
   cleanRoom,
   SnackbarAlert,
 } from "../reducers/roomSlice";
-import {subscribeToRoleChanges, ROLES } from "../utils/roles";
+import { subscribeToRoleChanges, ROLES } from "../utils/roles";
 import ParticipantsCollection from "../components/ParticipantsCollection";
 import Chat from "../components/Chat";
 import { comparator, updateParticipantRoles } from "../utils/helpers";
@@ -74,7 +74,7 @@ function Room() {
   const [localAudioStream, setLocalAudioStream] = useState(undefined);
   const [localName, setLocalName] = useState(undefined);
   const [isRecording, setIsRecording] = useState(false);
-  const [providerName , setProviderName] = useState('')
+  const [providerName, setProviderName] = useState("");
   // To add a new criteria to the comparator you need to
   // Decide if it's higher or lower pririoty compared to the already established
   // if it's higher you must add the 'if' before otherwise add it after.
@@ -417,7 +417,7 @@ function Room() {
   const joinRoom = async () => {
     const provider = await getProvider();
     const dolbyApiKey = await getDolbyKey();
-    setProviderName(provider)
+    setProviderName(provider);
     const MuxJWT = await roomJWTprovider(
       roomId,
       currentUser.email,
@@ -434,7 +434,7 @@ function Room() {
     }
     try {
       const newRoom =
-      provider === "MUX"
+        provider === "MUX"
           ? new MuxWebRoom(MuxJWT)
           : new DolbyWebRoom(dolbyApiKey, currentUser.email);
       const newParticipant = await newRoom.join();
@@ -596,9 +596,7 @@ function Room() {
                   width="19.25px"
                   height="14px"
                 />
-                <span>
-                  {room.getNumberOfParticipants()}
-                </span>
+                <span>{room.getNumberOfParticipants()}</span>
               </NumberParticipantsContainer>
               <CenteredDiv>
                 <RoomControls
