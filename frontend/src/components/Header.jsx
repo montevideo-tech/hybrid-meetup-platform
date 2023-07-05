@@ -7,13 +7,14 @@ import Toolbar from "@mui/material/Toolbar";
 import { logout } from "../reducers/userSlice";
 import { Hybridly } from "../components/hybridly/Hybridly";
 import { Button } from "../themes/componentsStyles";
-import user from "../assets/user.svg";
-import arrow from "../assets/arrow.svg";
 import { DropdownMenu } from "./DropdownMenu";
+import { MenuItem } from "@mui/material";
+import { Colors } from "../themes/colors";
+import line from "../assets/line.svg";
+import user from "../assets/user.svg";
 
 export function Header() {
   const [auth, setAuth] = useState(null);
-  const [anchorEl, setAnchorEl] = useState(null);
   const currentUser = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -25,17 +26,8 @@ export function Header() {
   const handleSignOut = () => {
     // TODO: invalidate token
     setAuth(null);
-    setAnchorEl(null);
     dispatch(logout());
     navigate("/");
-  };
-
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
   };
 
   return (
@@ -48,29 +40,26 @@ export function Header() {
           <Toolbar sx={{ justifyContent: "space-between" }}>
             <Hybridly />
             {auth?.email && auth?.token ? (
-              <>
-                <Button
-                  onClick={handleMenu}
-                  aria-controls="menu-appbar"
-                  aria-haspopup="true"
-                  $customStyles={{
-                    width: "100px",
-                    height: "45px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    padding: "0 16px",
-                  }}
-                >
-                  <img alt="user" src={user} />
-                  <img alt="arrow" src={arrow} />
-                </Button>
-                <DropdownMenu 
-                    handleSignOut={handleSignOut}
-                    handleClose={handleClose}
-                    anchorEl={anchorEl}
-                    currentUser={currentUser}
-                    buttonStyles={{
+              <DropdownMenu
+                label={<img alt="user" src={user} />}
+                buttonStyles={{
+                  width: "100px",
+                  height: "45px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "0 16px",
+                }}
+              >
+                <EmailContainer>
+                  <span>{currentUser.email}</span>
+                  <img alt="line" src={line} />
+                </EmailContainer>
+                <MenuItem>
+                  <Button
+                    onClick={handleSignOut}
+                    $primary
+                    $customStyles={{
                       width: "100%",
                       height: "25px",
                       fontWeight: "600",
@@ -78,16 +67,11 @@ export function Header() {
                       lineHeight: "12px",
                       textTransform: "uppercase",
                     }}
-                    anchorOrigin={{
-                      vertical: "bottom",
-                      horizontal: "right",
-                    }}
-                    transformOrigin={{
-                      vertical: "top",
-                      horizontal: "right",
-                    }}
-                />
-              </>
+                  >
+                    Log out
+                  </Button>
+                </MenuItem>
+              </DropdownMenu>
             ) : (
               <Button
                 onClick={() => navigate("/signIn")}
@@ -126,4 +110,23 @@ const AppbarContainer = styled.div`
 
 const OutletContainer = styled.div`
   height: calc(100vh - 4rem);
+`;
+
+const EmailContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 14px 0 14px;
+  img {
+    width: 100%;
+    height: 2px;
+    object-fit: cover;
+  }
+  span {
+    color: ${Colors.blackPurple};
+    font-weight: 500;
+    font-size: 0.8rem;
+    line-height: 0.938rem;
+    margin-bottom: 6px;
+  }
 `;

@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useLoaderData, useNavigate } from "react-router-dom";
-import { List, ListItem } from "@mui/material";
+import { List, ListItem, MenuItem } from "@mui/material";
 import styled from "styled-components";
 import { giveUserRoleOnRoom } from "../actions";
 import { deleteRole, subscribeToRoleChanges, ROLES } from "../utils/roles";
@@ -13,6 +13,7 @@ import edit from "../assets/edit.svg";
 import deleteGray from "../assets/deleteGray.svg";
 import deletePurple from "../assets/deletePurple.svg";
 import { addUpdateParticipant, removeRole } from "../reducers/roomSlice";
+import { DropdownMenu } from "../components/DropdownMenu";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -25,7 +26,7 @@ function EditRoom() {
   const navigate = useNavigate();
   const [roomName, setRoomName] = useState("");
   const [email, setEmail] = useState("");
-  const [roleToAdd, setRoleToAdd] = useState("");
+  const [roleToAdd, setRoleToAdd] = useState("Role");
   const [recentlyAddedHost, setRecentlyAddedHost] = useState("");
   const [recentlyAddedPresenter, setRecentlyAddedPresenter] = useState("");
   // TODO:
@@ -179,17 +180,23 @@ function EditRoom() {
             onChange={(e) => setEmail(e.target.value)}
             $customStyles={{ padding: "0 20px" }}
           />
-          <StyledSelect
-            label="Role"
-            value={roleToAdd}
-            defaultValue=""
-            onChange={(e) => setRoleToAdd(e.target.value)}
+          <DropdownMenu
+            label={roleToAdd}
+            iconWidth="20px"
+            buttonStyles={{
+              minWidth: "max-content",
+              height: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              justifySelf: "center",
+              padding: "0 16px",
+            }}
           >
-            <StyledOption value="" disabled hidden>
-              Role
-            </StyledOption>
-            <StyledOption value="presenter">Presenter</StyledOption>
-          </StyledSelect>
+            <MenuItem onClick={() => setRoleToAdd("presenter")}>
+              Presenter
+            </MenuItem>
+          </DropdownMenu>
           <Button
             onClick={() =>
               roleToAdd === "presenter"
@@ -343,8 +350,8 @@ const Subtitle = styled.h2`
 
 const StyledContainer = styled.div`
   display: grid;
-  column-gap: 13px;
-  grid-template-columns: auto 125px 100px 150px;
+  column-gap: 15px;
+  grid-template-columns: 400px auto 100px 150px;
   height: 40px;
   width: 100%;
 `;
@@ -353,27 +360,6 @@ const StyledInput = styled(Input)`
   ::placeholder {
     opacity: 100%;
   }
-`;
-
-const StyledSelect = styled.select`
-  border: 2px solid ${Colors.purple};
-  background-color: ${Colors.lightPurple};
-  border-radius: 34px;
-  padding: 0 10px;
-  color: ${Colors.davyGray};
-  font-size: 1rem;
-  font-family: "Poppins";
-  font-weight: 500;
-  :focus-visible {
-    outline: none !important;
-    box-shadow: 0 0 2px ${Colors.purple};
-  }
-`;
-
-const StyledOption = styled.option`
-  font-size: 1rem;
-  font-family: "Poppins";
-  font-weight: 500;
 `;
 
 const ListsContainer = styled.div`
