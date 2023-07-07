@@ -1,48 +1,61 @@
-import React from "react";
+import { useState } from "react";
 import styled from "styled-components";
-import { MenuItem } from "@mui/material";
-import { Button } from "../themes/componentsStyles";
 import Menu from "@mui/material/Menu";
+import { Button } from "../themes/componentsStyles";
 import { Colors } from "../themes/colors";
-import line from "../assets/line.svg";
+import arrow from "../assets/arrow.svg";
 
 export function DropdownMenu(props) {
-  const {
-    handleSignOut,
-    handleClose,
-    anchorEl,
-    currentUser,
-    buttonStyles,
-    anchorOrigin,
-    transformOrigin,
-  } = props;
+  const { label, iconWidth, children, buttonStyles } = props;
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
   return (
-    <StyledMenu
-      id="menu-appbar"
-      anchorEl={anchorEl}
-      anchorOrigin={anchorOrigin}
-      keepMounted
-      transformOrigin={transformOrigin}
-      open={Boolean(anchorEl)}
-      onClose={handleClose}
-  >
-    <EmailContainer>
-      <span>{currentUser.email}</span>
-      <img alt="line" src={line} />
-    </EmailContainer>
-    <MenuItem>
-      <Button
-        onClick={handleSignOut}
-        $primary
+    <>
+      <StyledButton
+        onClick={handleMenu}
+        aria-controls="menu-appbar"
+        aria-haspopup="true"
         $customStyles={buttonStyles}
       >
-        Log out
-      </Button>
-    </MenuItem>
-  </StyledMenu>
-  )
+        {label}
+        <img alt="arrow" width={iconWidth} src={arrow} />
+      </StyledButton>
+      <StyledMenu
+        id="menu-appbar"
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        {children}
+      </StyledMenu>
+    </>
+  );
 }
+
+const StyledButton = styled(Button)`
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  column-gap: 5px;
+  color: ${Colors.davyGray};
+  text-transform: capitalize;
+`;
 
 const StyledMenu = styled(Menu)`
   .MuiPopover-paper {
@@ -57,24 +70,5 @@ const StyledMenu = styled(Menu)`
     :hover {
       background-color: transparent;
     }
-  }
-`;
-
-const EmailContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 12px 14px 0 14px;
-  img {
-    width: 100%;
-    height: 2px;
-    object-fit: cover;
-  }
-  span {
-    color: ${Colors.blackPurple};
-    font-weight: 500;
-    font-size: 0.8rem;
-    line-height: 0.938rem;
-    margin-bottom: 6px;
   }
 `;
