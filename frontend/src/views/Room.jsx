@@ -415,9 +415,7 @@ function Room() {
   };
 
   const joinRoom = async () => {
-    const provider = await getProvider();
     const dolbyApiKey = await getDolbyKey();
-    setProviderName(provider);
     const MuxJWT = await roomJWTprovider(
       roomId,
       currentUser.email,
@@ -432,74 +430,85 @@ function Room() {
     if (currentUser.role !== ROLES.ADMIN) {
       setIsEnableToUnmute(!guestMuted);
     }
-    try {
-      const newRoom =
-        provider === "MUX"
-          ? new MuxWebRoom(MuxJWT)
-          : new DolbyWebRoom(dolbyApiKey, currentUser.email);
-      const newParticipant = await newRoom.join();
-      setLocalParticipant(newParticipant);
-      if (newParticipant) {
-        dispatch(
-          initRoom({
-            id: roomId,
-            participants: [{ name: currentUser.username, role: ROLES.GUEST }],
-          }),
-        );
+    if (providerName !== "") {
+      try {
+        const newRoom =
+          providerName === "MUX"
+            ? new MuxWebRoom(MuxJWT)
+            : new DolbyWebRoom(dolbyApiKey, currentUser.email);
+        const newParticipant = await newRoom.join();
+        setLocalParticipant(newParticipant);
+        if (newParticipant) {
+          dispatch(
+            initRoom({
+              id: roomId,
+              participants: [{ name: currentUser.username, role: ROLES.GUEST }],
+            }),
+          );
 
-        // add event handler for TrackStarted event
-        newRoom.on("RemoveRemoteParticipant", (resp) =>
-          handleRemoveParticipant(resp, newParticipant),
-        );
-        newRoom.on("ParticipantTrackSubscribed", handleTrackStarted);
-        newRoom.on("ParticipantTrackUpdated", handleTrackUpdated);
-        newRoom.on("ParticipantJoined", handleParticipantJoined);
-        newRoom.on("ParticipantLeft", handleParticipantLeft);
+          // add event handler for TrackStarted event
+          newRoom.on("RemoveRemoteParticipant", (resp) =>
+            handleRemoveParticipant(resp, newParticipant),
+          );
+          newRoom.on("ParticipantTrackSubscribed", handleTrackStarted);
+          newRoom.on("ParticipantTrackUpdated", handleTrackUpdated);
+          newRoom.on("ParticipantJoined", handleParticipantJoined);
+          newRoom.on("ParticipantLeft", handleParticipantLeft);
 
-        setRoom(newRoom);
-        roomRef.current = newRoom;
-        const propsTracks = {
-          constraints: {
-            video: true,
-            audio: true,
-          },
-        };
-        const tracks = await newParticipant.publishTracks(propsTracks);
-        const stream = new MediaStream();
-        const newLocalTracks = { ...localTracks };
-        tracks.forEach((track) => {
-          stream.addTrack(track.mediaStreamTrack);
-          newLocalTracks[track.kind] = track;
-        });
-        setLocalTracks(newLocalTracks);
-        subscribeToRemoteStreams(newRoom);
-        subscribeToRoleChanges(roomId, handleRoleChange);
+          setRoom(newRoom);
+          roomRef.current = newRoom;
+          const propsTracks = {
+            constraints: {
+              video: true,
+              audio: true,
+            },
+          };
+          const tracks = await newParticipant.publishTracks(propsTracks);
+          const stream = new MediaStream();
+          const newLocalTracks = { ...localTracks };
+          tracks.forEach((track) => {
+            stream.addTrack(track.mediaStreamTrack);
+            newLocalTracks[track.kind] = track;
+          });
+          setLocalTracks(newLocalTracks);
+          subscribeToRemoteStreams(newRoom);
+          subscribeToRoleChanges(roomId, handleRoleChange);
 
-        newRoom.on("BlockMuteRemoteParticipant", (resp) =>
-          handleBlockMuteRemote(resp, newParticipant, newLocalTracks),
-        );
-        newRoom.on("BlockMuteAllRemoteParticipants", (resp) =>
-          handleBlockMuteAllGuests(resp, newLocalTracks),
-        );
-      } else {
-        const error = "A duplicate session has been detected";
-        dispatch(SnackbarAlert({ error }));
-        navigate("/rooms");
-        setErrorJoiningRoom(true);
+          newRoom.on("BlockMuteRemoteParticipant", (resp) =>
+            handleBlockMuteRemote(resp, newParticipant, newLocalTracks),
+          );
+          newRoom.on("BlockMuteAllRemoteParticipants", (resp) =>
+            handleBlockMuteAllGuests(resp, newLocalTracks),
+          );
+        } else {
+          const error = "A duplicate session has been detected";
+          dispatch(SnackbarAlert({ error }));
+          navigate("/rooms");
+          setErrorJoiningRoom(true);
+        }
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
     }
+  };
+
+  const setProvider = async () => {
+    const provider = await getProvider();
+    setProviderName(provider);
   };
 
   // initialize room
   useEffect(() => {
-    joinRoom();
+    setProvider();
     return () => {
       dispatch(cleanRoom());
       leaveRoom();
     };
   }, []);
+
+  useEffect(() => {
+    joinRoom();
+  }, [providerName]);
 
   const updateScreenShare = async () => {
     if (!isSharingScreen) {
