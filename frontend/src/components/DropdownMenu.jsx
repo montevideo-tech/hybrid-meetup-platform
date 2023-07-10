@@ -55,6 +55,9 @@ const StyledButton = styled(Button)`
   column-gap: 5px;
   color: ${Colors.davyGray};
   text-transform: capitalize;
+  :hover {
+    opacity: 100%;
+  }
 `;
 
 const StyledMenu = styled(Menu)`

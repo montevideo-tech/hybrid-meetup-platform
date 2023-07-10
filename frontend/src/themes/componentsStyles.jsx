@@ -23,10 +23,14 @@ export const Button = styled.button`
   ${(props) =>
     props.$customStyles} // these styles override all the above ones, leave them here
   &:hover {
-    background-color: ${(props) =>
+    ${(props) =>
       props.$primary
-        ? theme.palette.primary.dark
-        : theme.palette.secondary.main};
+        ? `
+        background-color: ${theme.palette.primary.dark}
+        `
+        : `
+        opacity: 80%
+        `};
   }
   &:disabled {
     background-color: ${theme.palette.disabled.main};
