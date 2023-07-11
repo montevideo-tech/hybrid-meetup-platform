@@ -93,15 +93,15 @@ export const RoomItem = ({ currentUser, room }) => {
           )}
         </StyledCard>
       </Grid>
-      {showToast && 
-      <ConfirmationToast 
-        text={`Are you sure you want to delete ${name}?`} 
-        confirmationText='Delete' 
-        onCancel={() => setShowToast(false)}
-        onConfirmation={handleDeleteRoom}
-      />}
+      {showToast && (
+        <ConfirmationToast
+          text={`Are you sure you want to delete ${name}?`}
+          confirmationText="Delete"
+          onCancel={() => setShowToast(false)}
+          onConfirmation={handleDeleteRoom}
+        />
+      )}
     </>
-    
   );
 };
 

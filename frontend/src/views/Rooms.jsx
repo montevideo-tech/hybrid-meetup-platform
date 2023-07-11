@@ -143,7 +143,7 @@ function Rooms() {
           roomsQuery.data.map((room) => {
             const { id, providerId, name } = room;
             const createdBy = usersQuery.data.find(
-              (u) => u.user_id === room.creatorId,
+              (u) => u.email === room.creatorEmail,
             );
 
             return {
