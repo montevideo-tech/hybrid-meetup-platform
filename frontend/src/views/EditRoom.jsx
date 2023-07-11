@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useLoaderData, useNavigate } from "react-router-dom";
-import { List, ListItem, MenuItem } from "@mui/material";
+import { List, ListItem, MenuItem, CircularProgress } from "@mui/material";
 import styled from "styled-components";
 import { giveUserRoleOnRoom } from "../actions";
 import { deleteRole, subscribeToRoleChanges, ROLES } from "../utils/roles";
@@ -14,6 +14,7 @@ import deleteGray from "../assets/deleteGray.svg";
 import deletePurple from "../assets/deletePurple.svg";
 import { addUpdateParticipant, removeRole } from "../reducers/roomSlice";
 import { DropdownMenu } from "../components/DropdownMenu";
+import Snackbar from "../components/SnackbarComponent";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -29,6 +30,10 @@ function EditRoom() {
   const [roleToAdd, setRoleToAdd] = useState("Role");
   const [recentlyAddedHost, setRecentlyAddedHost] = useState("");
   const [recentlyAddedPresenter, setRecentlyAddedPresenter] = useState("");
+  const [isValidEmail, setIsValidEmail] = useState(false);
+  const [isValidUser, setIsValidUser] = useState(true);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
   // TODO:
   // get actual hosts/presenters from db
   const [roles, setRoles] = useState({ hosts: [], presenters: [] });
@@ -131,12 +136,55 @@ function EditRoom() {
     }
   };
 
+  const fetchUsers = async () => {
+    try {
+      const users = await supabase.from("users-data").select("email");
+      if (users.error) {
+        throw users.error;
+      }
+      setUsers(
+        users.data.map((user) => {
+          return user.email;
+        }),
+      );
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
+  const onClickAdd = () => {
+    setLoading(true);
+    if (!users.includes(email)) {
+      setIsValidUser(false);
+      setEmail("");
+      setLoading(false);
+    } else {
+      roleToAdd === "presenter"
+        ? setRecentlyAddedPresenter(email)
+        : setRecentlyAddedHost(email);
+    }
+  };
+
+  useEffect(() => {
+    const validateEmail = () => {
+      const validRegex =
+        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+      if (roleToAdd !== "Role" && email.match(validRegex)) {
+        setIsValidEmail(true);
+      } else {
+        setIsValidEmail(false);
+      }
+    };
+    validateEmail();
+  }, [email, roleToAdd]);
+
   useEffect(() => {
     getRoles();
   }, [participants.length]);
 
   useEffect(() => {
     updateParticipantRoles(roomId, dispatch);
+    setLoading(false);
   }, [roles]);
 
   useEffect(() => {
@@ -155,6 +203,7 @@ function EditRoom() {
     };
     getRoomName();
     subscribeToRoleChanges(roomId, handleRoleChange);
+    fetchUsers();
   }, []);
 
   return (
@@ -198,17 +247,26 @@ function EditRoom() {
             </MenuItem>
           </DropdownMenu>
           <Button
-            onClick={() =>
-              roleToAdd === "presenter"
-                ? setRecentlyAddedPresenter(email)
-                : setRecentlyAddedHost(email)
-            }
-            disabled={roleToAdd === ""}
+            onClick={onClickAdd}
+            disabled={!isValidEmail}
             $primary
-            $customStyles={{ height: "100%", width: "100%" }}
+            $customStyles={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+              width: "100%",
+            }}
           >
-            Add
+            {loading ? <CircularProgress color="secondary" size={20} /> : "Add"}
           </Button>
+          {!isValidUser && (
+            <Snackbar
+              onClose={() => setIsValidUser(true)}
+              message="The user does not exist"
+              severity="warning"
+            />
+          )}
           <Button
             $primary
             onClick={() => navigate(`/rooms/${roomId}`)}
