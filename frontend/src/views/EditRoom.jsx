@@ -26,6 +26,7 @@ function EditRoom() {
   const roomId = useLoaderData();
   const navigate = useNavigate();
   const [roomName, setRoomName] = useState("");
+  const [editingRoomName, setEditingRoomName] = useState(false);
   const [email, setEmail] = useState("");
   const [roleToAdd, setRoleToAdd] = useState("Role");
   const [recentlyAddedHost, setRecentlyAddedHost] = useState("");
@@ -34,9 +35,28 @@ function EditRoom() {
   const [isValidUser, setIsValidUser] = useState(true);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
-  // TODO:
-  // get actual hosts/presenters from db
   const [roles, setRoles] = useState({ hosts: [], presenters: [] });
+
+  const handleEditRoomName = () => {
+    setEditingRoomName(true);
+  };
+
+  const handleSaveRoomName = async () => {
+    try {
+      const { error } = await supabase
+        .from("rooms")
+        .update({ name: roomName })
+        .match({ providerId: roomId });
+
+      if (error) {
+        throw error;
+      }
+
+      setEditingRoomName(false);
+    } catch (err) {
+      console.error(`Error updating room name: ${err.message}`);
+    }
+  };
 
   useEffect(() => {
     const handleAddRole = async () => {
@@ -218,8 +238,27 @@ function EditRoom() {
       >
         <Title>Edit room</Title>
         <TitleRoomContainer>
-          <Subtitle>{roomName}</Subtitle>
-          <img width="17px" height="17px" src={edit} alt="edit title room" />
+          {editingRoomName ? (
+            <>
+              <Input
+                value={roomName}
+                onChange={(e) => setRoomName(e.target.value)}
+                autoFocus
+              />
+              <Button onClick={handleSaveRoomName}>Save</Button>
+            </>
+          ) : (
+            <>
+              <Subtitle>{roomName}</Subtitle>
+              <img
+                width="17px"
+                height="17px"
+                src={edit}
+                alt="edit title room"
+                onClick={handleEditRoomName}
+              />
+            </>
+          )}
         </TitleRoomContainer>
         <StyledContainer>
           <StyledInput
