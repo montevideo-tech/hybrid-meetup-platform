@@ -42,7 +42,7 @@ function RoomControls(props) {
     isRecording,
   } = props;
   const [localVideoTrack, setLocalVideoTrack] = useState(localTracks.video);
-  const [providerName, setProviderName] = useState('');
+  const [providerName, setProviderName] = useState("");
 
   const toggleMuteTrack = async (t) => {
     if (isEnableToUnmute || t.kind === "video") {
@@ -86,7 +86,7 @@ function RoomControls(props) {
       const provider = await getProvider();
       setProviderName(provider);
     }
-  
+
     fetchData();
   }, []);
 
@@ -128,12 +128,12 @@ function RoomControls(props) {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                width: "40px",
-                height: "40px",
+                width: "50px",
+                height: "50px",
               }}
               onClick={startRecording}
             >
-              <img src={videoRecord} alt="record" />
+              <img src={videoRecord} alt="record" width="27px" height="27px" />
             </Button>
           </StyledDiv>
         </Tooltip>
@@ -151,16 +151,21 @@ function RoomControls(props) {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              width: "40px",
-              height: "40px",
+              width: "50px",
+              height: "50px",
             }}
             disabled={!localTracks.video}
             onClick={() => toggleMuteTrack(localTracks.video)}
           >
             {!localTracks.video || !videoActive ? (
-              <StyledImg src={noCamera} alt="camera off" height="19.4px" />
+              <StyledImg
+                src={noCamera}
+                alt="camera off"
+                width="26px"
+                height="26px"
+              />
             ) : (
-              <img src={camera} alt="camera on" />
+              <img src={camera} alt="camera on" width="23.2px" height="24px" />
             )}
           </Button>
         </StyledDiv>
@@ -177,8 +182,8 @@ function RoomControls(props) {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              width: "40px",
-              height: "40px",
+              width: "50px",
+              height: "50px",
             }}
             disabled={!localTracks.audio || !isEnableToUnmute}
             onClick={() => toggleMuteTrack(localTracks.audio)}
@@ -187,12 +192,27 @@ function RoomControls(props) {
             localTracks.audio.muted ||
             !isEnableToUnmute ? (
               isEnableToUnmute ? (
-                <img src={noMic} alt="microphone off" height="23px" />
+                <img
+                  src={noMic}
+                  alt="microphone off"
+                  height="26px"
+                  width="26px"
+                />
               ) : (
-                <img src={noMicRed} alt="microphone disabled" height="23px" />
+                <img
+                  src={noMicRed}
+                  alt="microphone disabled"
+                  height="26px"
+                  width="26px"
+                />
               )
             ) : (
-              <StyledImg src={mic} alt="microphone on" height="23.5px" />
+              <StyledImg
+                src={mic}
+                alt="microphone on"
+                height="28px"
+                width="28px"
+              />
             )}
           </Button>
         </StyledDiv>
@@ -219,16 +239,12 @@ function RoomControls(props) {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                width: "40px",
-                height: "40px",
+                width: "50px",
+                height: "50px",
               }}
               onClick={() => shareScreen()}
             >
-              {!isSharingScreen ? (
-                <ScreenShareIcon fontSize="small" />
-              ) : (
-                <StopScreenShareIcon fontSize="small" />
-              )}
+              {!isSharingScreen ? <ScreenShareIcon /> : <StopScreenShareIcon />}
             </Button>
           </StyledDiv>
         </Tooltip>
@@ -245,18 +261,15 @@ function RoomControls(props) {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                width: "40px",
-                height: "40px",
+                width: "50px",
+                height: "50px",
               }}
               onClick={() => blockMuteAllParticipants()}
             >
               {!isBlockedRemotedGuest ? (
-                <HeadsetMicIcon fontSize="small" />
+                <HeadsetMicIcon />
               ) : (
-                <HeadsetOffIcon
-                  fontSize="small"
-                  sx={{ marginBottom: "1.4px" }}
-                />
+                <HeadsetOffIcon sx={{ marginBottom: "1.4px" }} />
               )}
             </Button>
           </StyledDiv>
@@ -271,12 +284,12 @@ function RoomControls(props) {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              width: "40px",
-              height: "40px",
+              width: "50px",
+              height: "50px",
             }}
             onClick={endCall}
           >
-            <img src={close} alt="close" />
+            <img src={close} alt="close" height="25px" width="25px" />
           </Button>
         </StyledDiv>
       </Tooltip>
@@ -317,7 +330,7 @@ const Container = styled(ButtonGroup)`
 `;
 
 const StyledDiv = styled.div`
-  padding: 2px;
+  padding: 5px;
 `;
 
 const StyledImg = styled.img`
