@@ -7,8 +7,8 @@ import styled from "styled-components";
 import useUserPermission from "../hooks/useUserPermission";
 import RoomControls from "../components/RoomControls";
 
-import { Room as DolbyWebRoom } from "../Dolby/dolbyProvider";
-import { Room as MuxWebRoom } from "../lib/webrtc";
+import { Room as DolbyWebRoom } from "../lib/providers/dolby";
+import { Room as MuxWebRoom } from "../lib/providers/mux";
 import { roomJWTprovider } from "../actions";
 import {
   initRoom,
