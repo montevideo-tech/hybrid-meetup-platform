@@ -602,8 +602,8 @@ function Room() {
                 <img
                   src={participants}
                   alt="number of participans"
-                  width="19.25px"
-                  height="14px"
+                  width="21.25px"
+                  height="16px"
                 />
                 <span>{room.getNumberOfParticipants()}</span>
               </NumberParticipantsContainer>
@@ -628,14 +628,14 @@ function Room() {
                 />
               </CenteredDiv>
               <Button
-                $customStyles={{ width: "40px", height: "40px" }}
+                $customStyles={{ width: "50px", height: "50px" }}
                 onClick={OnClickChatButton}
               >
                 <Badge badgeContent={unreadMessages} color="secondary">
                   {chatOpen ? (
-                    <ChatIcon fontSize="small" />
+                    <ChatIcon />
                   ) : (
-                    <ChatOutlinedIcon color="primary" fontSize="small" />
+                    <ChatOutlinedIcon color="primary" />
                   )}
                 </Badge>
               </Button>
@@ -673,7 +673,7 @@ const NumberParticipantsContainer = styled.div`
   span {
     font-family: "Poppins";
     font-weight: 400;
-    font-size: 0.938rem;
+    font-size: 1rem;
     line-height: 22px;
     color: ${Colors.white};
   }

@@ -2,15 +2,14 @@ import React, { useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { Colors } from "../themes/colors";
-import { Box, IconButton } from "@mui/material";
-import {
-  KeyboardVoiceRounded as KeyboardVoiceRoundedIcon,
-  MicOffOutlined as MicOffOutlinedIcon,
-  DeleteRounded as DeleteOutlineIcon,
-} from "@mui/icons-material";
+import { Box } from "@mui/material";
 import ParticipantInfo from "./ParticipantInfo";
 import logo from "../assets/MVDTSC.png";
 import { ROLES } from "../utils/roles";
+import { Button } from "../themes/componentsStyles";
+import mic from "../assets/mic.svg";
+import noMic from "../assets/no-mic.svg";
+import deletePurple from "../assets/deletePurple.svg";
 
 function Video(props) {
   const videoRef = useRef();
@@ -92,44 +91,36 @@ function Video(props) {
         <track kind="captions" />
       </StyledVideo>
       {name && <ParticipantInfo name={name} parentHeight={boxHeight} />}
-      {(isAudioMuted || permissionRole === ROLES.HOST) && (
-        <IconButton
-          disabled={!(permissionRole === ROLES.HOST)}
-          onClick={() => onClickMute(name, isAudioMuted)}
-          disableRipple
-          sx={{
-            position: "absolute",
-            top: 10,
-            right: 10,
-            color: `${Colors.white} !important`,
-            bgcolor: `${Colors.midnightBlue}`,
-            border: "2px solid",
-            background: "transparent",
-          }}
-        >
-          {isAudioMuted ? (
-            <MicOffOutlinedIcon sx={{ ml: "2px" }} />
-          ) : (
-            <KeyboardVoiceRoundedIcon sx={{ ml: "2px" }} />
-          )}
-        </IconButton>
-      )}
       {permissionRole === ROLES.HOST && (
-        <IconButton
+        <Button
           onClick={() => onClick(name)}
-          disableRipple
-          sx={{
+          $customStyles={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
             position: "absolute",
             top: 10,
             right: 70,
-            color: Colors.white,
-            bgcolor: `${Colors.midnightBlue}`,
-            border: "2px solid",
-            background: "transparent",
+            width: "40px",
+            height: "40px",
+            border: `2px solid ${Colors.lightPurple}`,
+            backgroundColor: "transparent",
           }}
         >
-          <DeleteOutlineIcon sx={{ ml: "2px" }} />
-        </IconButton>
+          <img src={deletePurple} alt="delete" width="18px" height="18px" />
+        </Button>
+      )}
+      {(isAudioMuted || permissionRole === ROLES.HOST) && (
+        <StyledButton
+          onClick={() => onClickMute(name, isAudioMuted)}
+          disabled={permissionRole !== ROLES.HOST}
+        >
+          {isAudioMuted ? (
+            <img src={noMic} alt="disable microphone" />
+          ) : (
+            <img src={mic} alt="microphone" />
+          )}
+        </StyledButton>
       )}
     </Box>
   );
@@ -163,6 +154,8 @@ Video.defaultProps = {
   permissionRole: ROLES.GUEST,
 };
 
+export default Video;
+
 const StyledImg = styled.img`
   width: ${(props) => props.$size};
   position: absolute;
@@ -177,4 +170,19 @@ const StyledVideo = styled.video`
   border-radius: 5px;
 `;
 
-export default Video;
+const StyledButton = styled(Button)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 40px;
+  height: 40px;
+  border: 2px solid ${Colors.lightPurple};
+  background-color: transparent;
+  :disabled {
+    border: 2px solid ${Colors.lightPurple};
+    background-color: transparent;
+  }
+`;
