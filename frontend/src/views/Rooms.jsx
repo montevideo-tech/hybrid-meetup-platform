@@ -1,19 +1,17 @@
-import React, { useState, useEffect, forwardRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Input } from "../themes/componentsStyles";
-import { CircularProgress, Snackbar } from "@mui/material";
-import MuiAlert from "@mui/material/Alert";
-
+import { CircularProgress } from "@mui/material";
 import { Colors } from "../themes/colors";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { supabase } from "../lib/api";
 import { createRoom, addRoomToDb, giveUserRoleOnRoom } from "../actions";
-import { SnackbarAlert } from "../reducers/roomSlice";
 import { ROLES } from "../utils/roles";
 import RoomsList from "../components/RoomsList/RoomsList";
 import RoomsListSkeleton from "../components/RoomsList/RoomsListSkeleton";
 import { store } from "../store";
 import close from "../assets/close.svg";
+import Snackbar from "../components/SnackbarComponent";
 
 function Rooms() {
   const [roomsList, setRoomsList] = useState([]);
@@ -24,7 +22,6 @@ function Rooms() {
   const [user, setUser] = useState(null);
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.user);
-  const [open, setOpen] = useState(true);
   const errorState = store.getState().room?.snackbarAlert;
 
   const onRoomCreated = async (data) => {
@@ -173,20 +170,6 @@ function Rooms() {
     getRoomsList();
   }, []);
 
-  const Alert = forwardRef((props, ref) => (
-    <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
-  ));
-
-  Alert.displayName = "SnackbarAlert";
-
-  const closeSnackbar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    dispatch(SnackbarAlert({ error: undefined }));
-    setOpen(false);
-  };
-
   const renderCreateRoomButton = () =>
     showNameInput ? (
       <StyledForm>
@@ -242,17 +225,7 @@ function Rooms() {
       </ContainerWithTitleAndButton>
 
       {loadingRooms ? <RoomsListSkeleton /> : <RoomsList list={roomsList} />}
-      {errorState && (
-        <Snackbar open={open} onClose={closeSnackbar}>
-          <Alert
-            onClose={closeSnackbar}
-            severity="error"
-            sx={{ width: "100%" }}
-          >
-            {errorState}
-          </Alert>
-        </Snackbar>
-      )}
+      {errorState && <Snackbar message={errorState} />}
     </Container>
   );
 }
