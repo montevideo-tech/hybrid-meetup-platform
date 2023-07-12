@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Button, Input } from "../themes/componentsStyles";
-import { CircularProgress } from "@mui/material";
 import { Colors } from "../themes/colors";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,6 +11,7 @@ import RoomsListSkeleton from "../components/RoomsList/RoomsListSkeleton";
 import { store } from "../store";
 import close from "../assets/close.svg";
 import Snackbar from "../components/SnackbarComponent";
+import Spinner from "../components/Spinner";
 
 function Rooms() {
   const [roomsList, setRoomsList] = useState([]);
@@ -212,7 +212,7 @@ function Rooms() {
         disabled={loadingRooms || creatingRoom}
         $customStyles={{ width: "190px", height: "45px" }}
       >
-        {creatingRoom ? <CircularProgress size={20} /> : "Create new room +"}
+        {creatingRoom ? <Spinner size={20} /> : "Create new room +"}
       </Button>
     );
 

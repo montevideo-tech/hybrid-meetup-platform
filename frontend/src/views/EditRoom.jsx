@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useLoaderData, useNavigate } from "react-router-dom";
-import { List, ListItem, MenuItem, CircularProgress } from "@mui/material";
+import { List, ListItem, MenuItem } from "@mui/material";
 import styled from "styled-components";
 import { giveUserRoleOnRoom } from "../actions";
 import { deleteRole, subscribeToRoleChanges, ROLES } from "../utils/roles";
@@ -15,6 +15,7 @@ import deletePurple from "../assets/deletePurple.svg";
 import { addUpdateParticipant, removeRole } from "../reducers/roomSlice";
 import { DropdownMenu } from "../components/DropdownMenu";
 import Snackbar from "../components/SnackbarComponent";
+import Spinner from "../components/Spinner";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -297,7 +298,7 @@ function EditRoom() {
               width: "100%",
             }}
           >
-            {loading ? <CircularProgress color="secondary" size={20} /> : "Add"}
+            {loading ? <Spinner color="secondary" size={20} /> : "Add"}
           </Button>
           {!isValidUser && (
             <Snackbar
