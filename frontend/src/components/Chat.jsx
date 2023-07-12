@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { useLoaderData } from "react-router-dom";
-import { onSendMessage, onDeleteMessage } from "../utils/chat";
+import { onSendMessage, onDeleteMessage } from "../utils/supabaseSDK/chat";
 import Filter from "bad-words";
 import styled from "styled-components";
 import { Colors } from "../themes/colors";

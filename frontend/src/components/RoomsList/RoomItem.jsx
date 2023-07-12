@@ -7,8 +7,8 @@ import { Grid, Card, CardContent, CardActions } from "@mui/material";
 import { Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
 import styled from "styled-components";
 import { deleteRoom } from "../../actions";
-import { ROLES } from "../../utils/roles";
-import { onDeleteRoomMessage } from "../../utils/chat";
+import { ROLES } from "../../utils/supabaseSDK/roles";
+import { onDeleteRoomMessage } from "../../utils/supabaseSDK/chat";
 import ConfirmationToast from "../ConfirmationToast/ConfirmationToast";
 
 export const RoomItem = ({ currentUser, room }) => {

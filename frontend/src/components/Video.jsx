@@ -5,7 +5,7 @@ import { Colors } from "../themes/colors";
 import { Box } from "@mui/material";
 import ParticipantInfo from "./ParticipantInfo";
 import logo from "../assets/MVDTSC.png";
-import { ROLES } from "../utils/roles";
+import { ROLES } from "../utils/supabaseSDK/roles";
 import { Button } from "../themes/componentsStyles";
 import mic from "../assets/mic.svg";
 import noMic from "../assets/no-mic.svg";
