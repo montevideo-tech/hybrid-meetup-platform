@@ -1,4 +1,4 @@
-import { supabase } from "../lib/api";
+import { supabase } from "../../lib/api";
 
 export async function onSendMessage(message) {
   const { error } = await supabase.from("message-chat").insert([message]);
