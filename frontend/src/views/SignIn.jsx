@@ -23,6 +23,7 @@ import envelope from "../assets/envelope.svg";
 import lock from "../assets/lock.svg";
 import eye from "../assets/eye.svg";
 import eyeSlash from "../assets/eyeSlash.svg";
+import CircularProgress from "@mui/material/CircularProgress";
 
 function SignIn() {
   const navigate = useNavigate();
@@ -40,11 +41,16 @@ function SignIn() {
   });
   const [alert, setAlert] = useState({ type: "success", message: null });
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const onSubmit = async (data) => {
+    setLoading(true);
     const onSuccess = () => {
+      setLoading(false);
       navigate("/rooms");
     };
     const onError = (error) => {
+      setLoading(false);
       setAlert({
         type: "error",
         message: `An error occurred while signing in: ${error}`,
@@ -118,9 +124,19 @@ function SignIn() {
               $primary
               type="submit"
               disabled={Object.keys(errors).length > 0}
-              $customStyles={{ margin: "25px 0", alignSelf: "end" }}
+              $customStyles={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                margin: "25px 0",
+                alignSelf: "end",
+              }}
             >
-              Log In
+              {loading ? (
+                <CircularProgress color="inherit" size={20} />
+              ) : (
+                "Log in"
+              )}
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
