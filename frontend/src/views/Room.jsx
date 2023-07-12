@@ -15,20 +15,14 @@ import {
   addUpdateParticipant,
   removeParticipant,
   removeRole,
-  cleanRoom,
   SnackbarAlert,
 } from "../reducers/roomSlice";
 import { subscribeToRoleChanges, ROLES } from "../utils/roles";
 import ParticipantsCollection from "../components/ParticipantsCollection";
 import Chat from "../components/Chat";
 import { comparator, updateParticipantRoles } from "../utils/helpers";
-import { getGuestMuted } from "../utils/room";
+import { getGuestMuted, setRemoteStreamsRef } from "../utils/room";
 import { epochToISO8601 } from "../utils/time";
-import {
-  subscribeToNewMessages,
-  subscribeToDeleteMessages,
-  fetchMessages,
-} from "../utils/chat";
 import ShareScreen from "../components/ShareScreen";
 import { Colors } from "../themes/colors";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
@@ -39,6 +33,8 @@ import ChatIcon from "@mui/icons-material/Chat";
 import participants from "../assets/participants.svg";
 import VideoRecorder from "../components/VideoRecorder";
 import { getDolbyKey, getProvider } from "../utils/environment";
+import useRoomSetup from "../hooks/useRoomSetup";
+import useChat from "../hooks/useChat";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -75,14 +71,6 @@ function Room() {
   const [localName, setLocalName] = useState(undefined);
   const [isRecording, setIsRecording] = useState(false);
   const [providerName, setProviderName] = useState("");
-  // To add a new criteria to the comparator you need to
-  // Decide if it's higher or lower pririoty compared to the already established
-  // if it's higher you must add the 'if' before otherwise add it after.
-  const setRemoteStreamsRef = (data) => {
-    remoteStreamsRef.current = data;
-    const remoteStreamsSorted = Array.from(data.values()).sort(comparator);
-    setRemoteStreams(remoteStreamsSorted);
-  };
 
   const startRecording = () => {
     setIsRecording(!isRecording);
@@ -94,57 +82,32 @@ function Room() {
 
   const participantsCount = remoteStreams.length;
 
-  const leaveRoom = async () => {
-    if (roomRef.current) {
-      await roomRef.current.leave();
+  const leaveRoom = async (room) => {
+    if (room.current) {
+      await room.current.leave();
     }
   };
 
-  useEffect(() => {
-    subscribeToNewMessages(() =>
-      fetchMessages(roomId, dateTimeJoined, setMessages),
-    );
-    subscribeToDeleteMessages(() =>
-      fetchMessages(roomId, dateTimeJoined, setMessages),
-    );
-  }, []);
+  useChat(
+    roomId,
+    dateTimeJoined,
+    setMessages,
+    chatOpen,
+    setUnreadMessages,
+    messages,
+  );
 
-  useEffect(() => {
-    if (providerName === "MUX") {
-      if (localParticipant?.provider?.videoTracks?.entries().next()?.value) {
-        const localVideoStream = new MediaStream();
-        localVideoStream.addTrack(
-          localParticipant?.provider?.videoTracks?.entries().next()?.value[1]
-            .track,
-        );
-        setLocalVideoStream(localVideoStream);
-      }
-      if (localParticipant?.provider?.audioTracks?.entries().next()?.value) {
-        setLocalAudioStream(
-          localParticipant?.provider?.audioTracks?.entries().next()?.value[1],
-        );
-      }
-      setLocalName(localParticipant?.displayName);
-    } else {
-      if (localTracks.video) {
-        const newlocalVideoStream = new MediaStream();
-        newlocalVideoStream.addTrack(localTracks.video.mediaStreamTrack);
-        setLocalVideoStream(newlocalVideoStream);
-      }
-    }
-  }, [
-    localParticipant?.provider?.audioTracks?.entries().next().done,
-    localParticipant?.provider?.videoTracks?.entries().next().done,
+  useRoomSetup(
+    providerName,
+    localParticipant,
     localTracks,
-  ]);
-
-  useEffect(() => {
-    if (!chatOpen) {
-      setUnreadMessages((prevUnreadMessages) => prevUnreadMessages + 1);
-    } else {
-      setUnreadMessages(0);
-    }
-  }, [messages]);
+    setLocalVideoStream,
+    setLocalAudioStream,
+    setLocalName,
+    setProviderName,
+    leaveRoom,
+    dispatch,
+  );
 
   const divRef = useRef(null);
   useEffect(() => {
@@ -180,7 +143,11 @@ function Room() {
     if (newStatus) {
       streamData.lastSpokenTime = Date.now();
     }
-    setRemoteStreamsRef(remoteStreamsRef.current);
+    setRemoteStreamsRef(
+      remoteStreamsRef,
+      setRemoteStreams,
+      remoteStreamsRef.current,
+    );
   };
 
   const onClickRemove = (r) => {
@@ -253,6 +220,7 @@ function Room() {
   };
 
   const subscribeToRemoteStreams = async (r) => {
+    // mejorable
     const { remoteParticipants } = r;
     if (remoteParticipants) {
       const rps = Array.from(remoteParticipants.values());
@@ -277,13 +245,21 @@ function Room() {
   const handleTrackMuted = (remoteParticipant, track) => {
     const streamData = remoteStreamsRef.current.get(remoteParticipant.id);
     streamData[`${track.kind}Muted`] = true;
-    setRemoteStreamsRef(remoteStreamsRef.current);
+    setRemoteStreamsRef(
+      remoteStreamsRef,
+      setRemoteStreams,
+      remoteStreamsRef.current,
+    );
   };
 
   const handleTrackUnmuted = (remoteParticipant, track) => {
     const streamData = remoteStreamsRef.current.get(remoteParticipant.id);
     streamData[`${track.kind}Muted`] = false;
-    setRemoteStreamsRef(remoteStreamsRef.current);
+    setRemoteStreamsRef(
+      remoteStreamsRef,
+      setRemoteStreams,
+      remoteStreamsRef.current,
+    );
   };
 
   const handleTrackUpdated = (remoteParticipant, track) => {
@@ -300,7 +276,11 @@ function Room() {
         currentRemoteStream.audioStream = stream;
       }
       currentRemoteStreamsRef.set(remoteParticipant.id, currentRemoteStream);
-      setRemoteStreamsRef(currentRemoteStreamsRef);
+      setRemoteStreamsRef(
+        remoteStreamsRef,
+        setRemoteStreams,
+        currentRemoteStreamsRef,
+      );
     }
   };
 
@@ -308,6 +288,8 @@ function Room() {
     // if there's already a stream for this participant, add the track to it
     // this avoid having two different streams for the audio/video tracks of the
     // same participant.
+
+    // mejorable
     if (remoteStreamsRef.current.has(remoteParticipant.id)) {
       const streamData = remoteStreamsRef.current.get(remoteParticipant.id);
       streamData[`${track.kind}Muted`] = track.muted;
@@ -352,7 +334,11 @@ function Room() {
         lastSpokenTime: 0,
       });
     }
-    setRemoteStreamsRef(remoteStreamsRef.current);
+    setRemoteStreamsRef(
+      remoteStreamsRef,
+      setRemoteStreams,
+      remoteStreamsRef.current,
+    );
 
     // add event handler for Muted/Unmuted events
     track.on("Muted", () => handleTrackMuted(remoteParticipant, track));
@@ -366,7 +352,11 @@ function Room() {
       setParticipantSharingScreen(null);
     }
     remoteStreamsRef.current.delete(p.id);
-    setRemoteStreamsRef(remoteStreamsRef.current);
+    setRemoteStreamsRef(
+      remoteStreamsRef,
+      setRemoteStreams,
+      remoteStreamsRef.current,
+    );
     dispatch(removeParticipant({ name: p.displayName }));
   };
 
@@ -415,6 +405,7 @@ function Room() {
   };
 
   const joinRoom = async () => {
+    // mejorable
     const dolbyApiKey = await getDolbyKey();
     const MuxJWT = await roomJWTprovider(
       roomId,
@@ -492,25 +483,12 @@ function Room() {
     }
   };
 
-  const setProvider = async () => {
-    const provider = await getProvider();
-    setProviderName(provider);
-  };
-
-  // initialize room
-  useEffect(() => {
-    setProvider();
-    return () => {
-      dispatch(cleanRoom());
-      leaveRoom();
-    };
-  }, []);
-
   useEffect(() => {
     joinRoom();
   }, [providerName]);
 
   const updateScreenShare = async () => {
+    // Mejorable
     if (!isSharingScreen) {
       const JWT = await roomJWTprovider(
         roomId,
@@ -653,6 +631,7 @@ function Room() {
 
 export default Room;
 
+// Mejorable
 const Container = styled.div`
   display: grid;
   grid-template-rows: 1fr 60px;
