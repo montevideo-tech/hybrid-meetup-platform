@@ -1,5 +1,4 @@
-import { supabase } from "../lib/api";
-import { comparator } from "./helpers";
+import { supabase } from "../../lib/api";
 
 export async function getGuestMuted() {
   const urlParams = window.location.pathname;

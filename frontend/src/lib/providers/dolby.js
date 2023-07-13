@@ -1,7 +1,6 @@
 import EventEmitter from "events";
 import VoxeetSDK from "@voxeet/voxeet-web-sdk";
 
-
 export class Track extends EventEmitter {
   constructor(providerTrack) {
     super();
@@ -119,27 +118,18 @@ export class Room extends EventEmitter {
       //  get the mediaStreamTracks to be compatible with mux
       const tracks = stream.getTracks();
       tracks.map((t) => {
-        const track = new Track(t)
+        const track = new Track(t);
         const remoteParticipant = new RemoteParticipant(participant);
-        this.emit(
-          "ParticipantTrackUpdated",
-          remoteParticipant,
-          track,
-        );
+        this.emit("ParticipantTrackUpdated", remoteParticipant, track);
       });
-
     });
     VoxeetSDK.conference.on("streamAdded", (participant, stream) => {
       //  get the mediaStreamTracks to be compatible with mux
       const tracks = stream.getTracks();
       tracks.map((t) => {
-        const track = new Track(t)
+        const track = new Track(t);
         const remoteParticipant = new RemoteParticipant(participant);
-        this.emit(
-          "ParticipantTrackSubscribed",
-          remoteParticipant,
-          track,
-        );
+        this.emit("ParticipantTrackSubscribed", remoteParticipant, track);
       });
     });
 
@@ -152,7 +142,7 @@ export class Room extends EventEmitter {
   async join() {
     try {
       // get the room id from the url
-      var roomId = window.location.pathname.split('/')[2];
+      const roomId = window.location.pathname.split("/")[2];
       await VoxeetSDK.session.open({ name: this.localParticipantId });
       const conference = await VoxeetSDK.conference.create({
         alias: roomId,
@@ -172,24 +162,23 @@ export class Room extends EventEmitter {
   }
 
   async subscribeRemoteParticipants() {
-    // Emit ParticipantTrackSubscribed, 
-    // for each track of each remote participant already in the call, 
+    // Emit ParticipantTrackSubscribed,
+    // for each track of each remote participant already in the call,
     // to be subscribed in the same way as it does with mux
     const localParticipantId = VoxeetSDK.session.participant.id;
     const remoteParticipants = await VoxeetSDK.conference.participants.values();
     for (const participantRemote of remoteParticipants) {
-      if(localParticipantId !== participantRemote.id) {
-        if( participantRemote.streams.length > 0 && participantRemote.status !== "Left") {
+      if (localParticipantId !== participantRemote.id) {
+        if (
+          participantRemote.streams.length > 0 &&
+          participantRemote.status !== "Left"
+        ) {
           const participant = new RemoteParticipant(participantRemote);
           //  get the mediaStreamTracks to be compatible with mux
           participantRemote.streams[0].getTracks().map((e) => {
             const track = new Track(e);
-            this.emit(
-              "ParticipantTrackSubscribed",
-              participant,
-              track,
-            );
-          })
+            this.emit("ParticipantTrackSubscribed", participant, track);
+          });
         }
       }
     }
@@ -199,7 +188,10 @@ export class Room extends EventEmitter {
     let res = 0;
     const remoteParticipants = this.remoteParticipants;
     for (const participantRemote of remoteParticipants.values()) {
-      if( participantRemote.streams.length > 0 && participantRemote.status !== "Left") {
+      if (
+        participantRemote.streams.length > 0 &&
+        participantRemote.status !== "Left"
+      ) {
         res++;
       }
     }

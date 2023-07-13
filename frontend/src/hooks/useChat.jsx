@@ -4,7 +4,7 @@ import {
   subscribeToNewMessages,
   subscribeToDeleteMessages,
   fetchMessages,
-} from "../utils/chat";
+} from "../utils/supabaseSDK/chat";
 
 const useChat = (
   roomId,

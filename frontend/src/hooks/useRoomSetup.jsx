@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { getProvider } from "../utils/environment";
+import { getProvider } from "../utils/supabaseSDK/environment";
 import { cleanRoom } from "../reducers/roomSlice";
 
 const useRoomSetup = (

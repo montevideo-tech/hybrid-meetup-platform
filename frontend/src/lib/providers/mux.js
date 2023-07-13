@@ -262,7 +262,7 @@ export class Room extends EventEmitter {
   }
 
   getNumberOfParticipants() {
-    return this.remoteParticipants.size +1;
+    return this.remoteParticipants.size + 1;
   }
 
   /**
