@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { ROLES } from "../utils/roles";
+import { ROLES } from "../utils/supabaseSDK/roles";
 
 export const roomSlice = createSlice({
   name: "currentRoom",

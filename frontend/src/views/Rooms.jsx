@@ -6,12 +6,13 @@ import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { supabase } from "../lib/api";
 import { createRoom, addRoomToDb, giveUserRoleOnRoom } from "../actions";
-import { ROLES } from "../utils/roles";
+import { ROLES } from "../utils/supabaseSDK/roles";
 import RoomsList from "../components/RoomsList/RoomsList";
 import RoomsListSkeleton from "../components/RoomsList/RoomsListSkeleton";
 import { store } from "../store";
 import close from "../assets/close.svg";
 import Snackbar from "../components/SnackbarComponent";
+import { getRoomsData, getUsersData } from "../utils/supabaseSDK/shared";
 
 function Rooms() {
   const [roomsList, setRoomsList] = useState([]);
@@ -126,12 +127,12 @@ function Rooms() {
       setLoadingRooms(true);
 
       try {
-        const roomsQuery = await supabase.from("rooms").select();
+        const roomsQuery = await getRoomsData();
         if (roomsQuery.error) {
           throw roomsQuery.error;
         }
 
-        const usersQuery = await supabase.from("users-data").select();
+        const usersQuery = await getUsersData();
         if (usersQuery.error) {
           throw usersQuery.error;
         }
@@ -225,7 +226,7 @@ function Rooms() {
       </ContainerWithTitleAndButton>
 
       {loadingRooms ? <RoomsListSkeleton /> : <RoomsList list={roomsList} />}
-      {errorState && <Snackbar message={errorState} />}
+      {errorState && <Snackbar message={errorState} severity="error" />}
     </Container>
   );
 }

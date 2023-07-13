@@ -17,12 +17,15 @@ import {
   removeRole,
   SnackbarAlert,
 } from "../reducers/roomSlice";
-import { subscribeToRoleChanges, ROLES } from "../utils/roles";
+import { subscribeToRoleChanges, ROLES } from "../utils/supabaseSDK/roles";
 import ParticipantsCollection from "../components/ParticipantsCollection";
 import Chat from "../components/Chat";
-import { comparator, updateParticipantRoles } from "../utils/helpers";
-import { getGuestMuted, setRemoteStreamsRef } from "../utils/room";
+import { updateParticipantRoles } from "../utils/helpers";
+// import setRemoteStreamsRef from "../utils/room";
 import { epochToISO8601 } from "../utils/time";
+import { getGuestMuted } from "../utils/supabaseSDK/room";
+import useChat from "../hooks/useChat";
+import useRoomSetup from "../hooks/useRoomSetup";
 import ShareScreen from "../components/ShareScreen";
 import { Colors } from "../themes/colors";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
@@ -32,9 +35,8 @@ import { Button } from "../themes/componentsStyles";
 import ChatIcon from "@mui/icons-material/Chat";
 import participants from "../assets/participants.svg";
 import VideoRecorder from "../components/VideoRecorder";
-import { getDolbyKey, getProvider } from "../utils/environment";
-import useRoomSetup from "../hooks/useRoomSetup";
-import useChat from "../hooks/useChat";
+import { getDolbyKey } from "../utils/supabaseSDK/environment";
+import { comparator } from "../utils/helpers";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -72,6 +74,12 @@ function Room() {
   const [isRecording, setIsRecording] = useState(false);
   const [providerName, setProviderName] = useState("");
 
+  const setRemoteStreamsRef = (data) => {
+    remoteStreamsRef.current = data;
+    const remoteStreamsSorted = Array.from(data.values()).sort(comparator);
+    setRemoteStreams(remoteStreamsSorted);
+  };
+
   const startRecording = () => {
     setIsRecording(!isRecording);
   };
@@ -82,9 +90,9 @@ function Room() {
 
   const participantsCount = remoteStreams.length;
 
-  const leaveRoom = async (room) => {
-    if (room.current) {
-      await room.current.leave();
+  const leaveRoom = async () => {
+    if (roomRef.current) {
+      await roomRef.current.leave();
     }
   };
 
@@ -423,6 +431,7 @@ function Room() {
     }
     if (providerName !== "") {
       try {
+        console.log("Provider name" + providerName);
         const newRoom =
           providerName === "MUX"
             ? new MuxWebRoom(MuxJWT)
