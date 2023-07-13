@@ -10,8 +10,8 @@ import {
   HeadsetOff as HeadsetOffIcon,
 } from "@mui/icons-material";
 import { LocalParticipant } from "@mux/spaces-web";
-import { ROLES } from "../utils/roles";
-import { setGuestMuted } from "../utils/room";
+import { ROLES } from "../utils/supabaseSDK/roles";
+import { setGuestMuted } from "../utils/supabaseSDK/room";
 import { Button } from "../themes/componentsStyles";
 import camera from "../assets/camera.svg";
 import noCamera from "../assets/no-camera.svg";
@@ -20,7 +20,7 @@ import noMic from "../assets/no-mic.svg";
 import noMicRed from "../assets/no-mic-red.svg";
 import close from "../assets/close.svg";
 import videoRecord from "../assets/videoRecord.svg";
-import { getProvider } from "../utils/environment";
+import { getProvider } from "../utils/supabaseSDK/environment";
 function RoomControls(props) {
   const navigate = useNavigate();
   const [videoActive, setVideoActive] = useState(true);
