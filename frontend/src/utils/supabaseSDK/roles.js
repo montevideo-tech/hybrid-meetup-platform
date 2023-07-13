@@ -1,4 +1,4 @@
-import { supabase } from "../lib/api";
+import { supabase } from "../../lib/api";
 
 const ROLES = {
   // app roles
@@ -56,17 +56,14 @@ const deleteRole = async (userEmail) => {
   const parts = urlParams.split("/");
   const roomId = parts[2];
 
-  let { data } = await supabase
-  .from('rooms-data')
-  .select('id, userEmail')
-  .eq('providerId', roomId);
+  const { data } = await supabase
+    .from("rooms-data")
+    .select("id, userEmail")
+    .eq("providerId", roomId);
   const roleToDelete = data.find((element) => element.userEmail === userEmail);
-  if(roleToDelete) {
-    await supabase
-    .from('rooms-data')
-    .delete()
-    .eq('id', roleToDelete.id);
+  if (roleToDelete) {
+    await supabase.from("rooms-data").delete().eq("id", roleToDelete.id);
   }
 };
 
-export {ROLES, subscribeToRoleChanges, deleteRole}; 
+export { ROLES, subscribeToRoleChanges, deleteRole };

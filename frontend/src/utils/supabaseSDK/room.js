@@ -1,4 +1,4 @@
-import { supabase } from "../lib/api";
+import { supabase } from "../../lib/api";
 
 export async function getGuestMuted() {
   const urlParams = window.location.pathname;
@@ -30,3 +30,24 @@ export function setGuestMuted(guestMutedStatus) {
       console.error(error);
     });
 }
+
+export const handleSaveRoomName = async (
+  setEditingRoomName,
+  roomName,
+  roomId,
+) => {
+  try {
+    const { error } = await supabase
+      .from("rooms")
+      .update({ name: roomName })
+      .match({ providerId: roomId });
+
+    if (error) {
+      throw error;
+    }
+
+    setEditingRoomName(false);
+  } catch (err) {
+    console.error(`Error updating room name: ${err.message}`);
+  }
+};
