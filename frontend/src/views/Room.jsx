@@ -17,17 +17,17 @@ import {
   cleanRoom,
   SnackbarAlert,
 } from "../reducers/roomSlice";
-import { subscribeToRoleChanges, ROLES } from "../utils/roles";
+import { subscribeToRoleChanges, ROLES } from "../utils/supabaseSDK/roles";
 import ParticipantsCollection from "../components/ParticipantsCollection";
 import Chat from "../components/Chat";
 import { comparator, updateParticipantRoles } from "../utils/helpers";
-import { getGuestMuted } from "../utils/room";
+import { getGuestMuted } from "../utils/supabaseSDK/room";
 import { epochToISO8601 } from "../utils/time";
 import {
   subscribeToNewMessages,
   subscribeToDeleteMessages,
   fetchMessages,
-} from "../utils/chat";
+} from "../utils/supabaseSDK/chat";
 import ShareScreen from "../components/ShareScreen";
 import { Colors } from "../themes/colors";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
@@ -37,7 +37,7 @@ import { Button } from "../themes/componentsStyles";
 import ChatIcon from "@mui/icons-material/Chat";
 import participants from "../assets/participants.svg";
 import VideoRecorder from "../components/VideoRecorder";
-import { getDolbyKey, getProvider } from "../utils/environment";
+import { getDolbyKey, getProvider } from "../utils/supabaseSDK/environment";
 import Spinner from "../components/Spinner";
 
 export async function roomLoader({ params }) {

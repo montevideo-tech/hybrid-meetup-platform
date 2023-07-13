@@ -4,11 +4,16 @@ import { useLoaderData, useNavigate } from "react-router-dom";
 import { List, ListItem, MenuItem } from "@mui/material";
 import styled from "styled-components";
 import { giveUserRoleOnRoom } from "../actions";
-import { deleteRole, subscribeToRoleChanges, ROLES } from "../utils/roles";
+import {
+  deleteRole,
+  subscribeToRoleChanges,
+  ROLES,
+} from "../utils/supabaseSDK/roles";
+import { fetchUsers, getRoomName } from "../utils/supabaseSDK/editRoom";
 import { updateParticipantRoles } from "../utils/helpers";
+import { handleSaveRoomName } from "../utils/supabaseSDK/room";
 import { Card, Button, Input } from "../themes/componentsStyles";
 import { Colors } from "../themes/colors";
-import { supabase } from "../lib/api";
 import edit from "../assets/edit.svg";
 import deleteGray from "../assets/deleteGray.svg";
 import deletePurple from "../assets/deletePurple.svg";
@@ -40,23 +45,6 @@ function EditRoom() {
 
   const handleEditRoomName = () => {
     setEditingRoomName(true);
-  };
-
-  const handleSaveRoomName = async () => {
-    try {
-      const { error } = await supabase
-        .from("rooms")
-        .update({ name: roomName })
-        .match({ providerId: roomId });
-
-      if (error) {
-        throw error;
-      }
-
-      setEditingRoomName(false);
-    } catch (err) {
-      console.error(`Error updating room name: ${err.message}`);
-    }
   };
 
   useEffect(() => {
@@ -157,22 +145,6 @@ function EditRoom() {
     }
   };
 
-  const fetchUsers = async () => {
-    try {
-      const users = await supabase.from("users-data").select("email");
-      if (users.error) {
-        throw users.error;
-      }
-      setUsers(
-        users.data.map((user) => {
-          return user.email;
-        }),
-      );
-    } catch (error) {
-      console.error(error.message);
-    }
-  };
-
   const onClickAdd = () => {
     setLoading(true);
     if (!users.includes(email)) {
@@ -209,22 +181,9 @@ function EditRoom() {
   }, [roles]);
 
   useEffect(() => {
-    const getRoomName = async () => {
-      try {
-        const roomsQuery = await supabase.from("rooms").select();
-        if (roomsQuery.error) {
-          throw roomsQuery.error;
-        }
-        setRoomName(
-          roomsQuery.data.filter((room) => room.providerId === roomId)[0].name,
-        );
-      } catch (err) {
-        console.error(`Error getting room name: ${err.message}`);
-      }
-    };
-    getRoomName();
+    getRoomName(setRoomName, roomId);
     subscribeToRoleChanges(roomId, handleRoleChange);
-    fetchUsers();
+    fetchUsers(setUsers);
   }, []);
 
   return (
@@ -246,7 +205,13 @@ function EditRoom() {
                 onChange={(e) => setRoomName(e.target.value)}
                 autoFocus
               />
-              <Button onClick={handleSaveRoomName}>Save</Button>
+              <Button
+                onClick={() =>
+                  handleSaveRoomName(setEditingRoomName, roomName, roomId)
+                }
+              >
+                Save
+              </Button>
             </>
           ) : (
             <>

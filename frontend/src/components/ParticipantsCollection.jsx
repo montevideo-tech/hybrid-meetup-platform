@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { MAX_PARTICIPANTS_PER_PAGE } from "../lib/constants";
 import Audio from "./Audio";
 import Video from "./Video";
-import { ROLES } from "../utils/roles";
+import { ROLES } from "../utils/supabaseSDK/roles";
 import styled from "styled-components";
 
 function ParticipantsCollection(props) {
