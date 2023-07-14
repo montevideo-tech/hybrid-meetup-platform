@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Button, Input } from "../themes/componentsStyles";
+import { Input } from "../themes/componentsStyles";
+import Button from "../components/Button";
 import { CircularProgress } from "@mui/material";
 import { Colors } from "../themes/colors";
 import styled from "styled-components";
@@ -181,27 +182,27 @@ function Rooms() {
           $customStyles={{ padding: "0 20px", height: "41px", width: "408px" }}
         />
         <Button
-          $primary
-          $customStyles={{ width: "100px", height: "45px" }}
-          type="submit"
-          disabled={loadingRooms || creatingRoom || !newRoomName}
           onClick={onSubmit}
+          disabled={loadingRooms || creatingRoom || !newRoomName}
+          type="submit"
+          primary
+          width="100px"
+          height="45px"
         >
           Done
         </Button>
         <Button
-          $primary
-          $customStyles={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            width: "45px",
-            height: "45px",
-          }}
-          disabled={loadingRooms || creatingRoom}
           onClick={() => {
             setShowNameInput(false);
             setNewRoomName("");
+          }}
+          primary
+          width="45px"
+          height="45px"
+          customStyles={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
           <img src={close} alt="close" />
@@ -211,7 +212,9 @@ function Rooms() {
       <Button
         onClick={() => setShowNameInput(true)}
         disabled={loadingRooms || creatingRoom}
-        $customStyles={{ width: "190px", height: "45px" }}
+        secondary
+        width="190px"
+        height="45px"
       >
         {creatingRoom ? <CircularProgress size={20} /> : "Create new room +"}
       </Button>
@@ -221,10 +224,8 @@ function Rooms() {
     <Container>
       <ContainerWithTitleAndButton>
         <Title>Choose your room</Title>
-
         {user?.role === "admin" && renderCreateRoomButton()}
       </ContainerWithTitleAndButton>
-
       {loadingRooms ? <RoomsListSkeleton /> : <RoomsList list={roomsList} />}
       {errorState && <Snackbar message={errorState} severity="error" />}
     </Container>
