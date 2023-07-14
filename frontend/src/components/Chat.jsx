@@ -6,7 +6,8 @@ import Filter from "bad-words";
 import styled from "styled-components";
 import { Colors } from "../themes/colors";
 import { DeleteOutline as DeleteOutlineIcon } from "@mui/icons-material";
-import { Card, Input, Button } from "../themes/componentsStyles";
+import { Input, Button } from "../themes/componentsStyles";
+import Card from "../components/Card";
 import send from "../assets/send.svg";
 
 function Chat(props) {
@@ -37,10 +38,10 @@ function Chat(props) {
   };
   return (
     <Card
-      $customStyles={{
-        width: "calc(100% - 20px)",
+      width="calc(100% - 20px)"
+      height="calc(100% - 20px)"
+      customStyles={{
         maxHeight: "65vh",
-        height: "calc(100% - 20px)",
         flexDirection: "column",
         borderRadius: "15px",
         border: "none",

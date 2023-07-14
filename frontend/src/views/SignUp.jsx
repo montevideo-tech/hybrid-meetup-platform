@@ -9,12 +9,12 @@ import styled from "styled-components";
 import Alert from "@mui/material/Alert";
 import {
   Button,
-  Card,
   Input,
   Label,
   StyledLink,
   formVariants,
 } from "../themes/componentsStyles";
+import Card from "../components/Card";
 import { signUp } from "../actions";
 import { Colors } from "../themes/colors";
 import logo2 from "../assets/logo2.svg";
@@ -69,7 +69,7 @@ function SignUp() {
 
   return (
     <Container>
-      <Card $customStyles={{ padding: "2%" }}>
+      <Card customStyles={{ padding: "2%" }}>
         <motion.div
           variants={formVariants}
           initial="initial"

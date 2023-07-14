@@ -12,10 +12,10 @@ import {
   Button,
   StyledLink,
   formVariants,
-  Card,
   Input,
   Label,
 } from "../themes/componentsStyles";
+import Card from "../components/Card";
 import { signInWithEmail } from "../actions";
 import { Colors } from "../themes/colors";
 import Logo from "../assets/logo2.svg";
@@ -54,7 +54,7 @@ function SignIn() {
   };
   return (
     <Container>
-      <Card $customStyles={{ padding: "2%" }}>
+      <Card customStyles={{ padding: "2%" }}>
         <motion.div
           variants={formVariants}
           initial="initial"
