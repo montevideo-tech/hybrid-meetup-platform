@@ -226,7 +226,7 @@ function Rooms() {
       </ContainerWithTitleAndButton>
 
       {loadingRooms ? <RoomsListSkeleton /> : <RoomsList list={roomsList} />}
-      {errorState && <Snackbar message={errorState} />}
+      {errorState && <Snackbar message={errorState} severity="error" />}
     </Container>
   );
 }
