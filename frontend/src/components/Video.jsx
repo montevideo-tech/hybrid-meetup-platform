@@ -6,7 +6,7 @@ import { Box } from "@mui/material";
 import ParticipantInfo from "./ParticipantInfo";
 import logo from "../assets/MVDTSC.png";
 import { ROLES } from "../utils/supabaseSDK/roles";
-import { Button } from "../themes/componentsStyles";
+import Button from "../components/Button";
 import mic from "../assets/mic.svg";
 import noMic from "../assets/no-mic.svg";
 import deletePurple from "../assets/deletePurple.svg";
@@ -94,33 +94,47 @@ function Video(props) {
       {permissionRole === ROLES.HOST && (
         <Button
           onClick={() => onClick(name)}
-          $customStyles={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+          width="40px"
+          height="40px"
+          customStyles={{
             position: "absolute",
             top: 10,
             right: 70,
-            width: "40px",
-            height: "40px",
             border: `2px solid ${Colors.lightPurple}`,
-            backgroundColor: "transparent",
           }}
         >
-          <img src={deletePurple} alt="delete" width="18px" height="18px" />
+          <img
+            src={deletePurple}
+            alt="remove participant"
+            width="18px"
+            height="18px"
+          />
         </Button>
       )}
       {(isAudioMuted || permissionRole === ROLES.HOST) && (
-        <StyledButton
+        <Button
           onClick={() => onClickMute(name, isAudioMuted)}
           disabled={permissionRole !== ROLES.HOST}
+          width="40px"
+          height="40px"
+          customStyles={{
+            position: "absolute",
+            top: "10px",
+            right: "10px",
+            border: `2px solid ${Colors.lightPurple}`,
+          }}
+          onDisabled={
+            (`border: 2px solid ${Colors.lightPurple}`,
+            "backgroundColor: transparent",
+            "cursor: auto")
+          }
         >
           {isAudioMuted ? (
             <img src={noMic} alt="disable microphone" />
           ) : (
             <img src={mic} alt="microphone" />
           )}
-        </StyledButton>
+        </Button>
       )}
     </Box>
   );
@@ -168,21 +182,4 @@ const StyledVideo = styled.video`
   height: 100%;
   object-fit: cover;
   border-radius: 5px;
-`;
-
-const StyledButton = styled(Button)`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 40px;
-  height: 40px;
-  border: 2px solid ${Colors.lightPurple};
-  background-color: transparent;
-  :disabled {
-    border: 2px solid ${Colors.lightPurple};
-    background-color: transparent;
-  }
 `;

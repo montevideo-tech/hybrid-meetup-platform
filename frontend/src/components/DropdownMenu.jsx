@@ -1,9 +1,9 @@
 import { useState } from "react";
 import styled from "styled-components";
 import Menu from "@mui/material/Menu";
-import { Button } from "../themes/componentsStyles";
 import { Colors } from "../themes/colors";
 import arrow from "../assets/arrow.svg";
+import Button from "../components/Button";
 
 export function DropdownMenu(props) {
   const { label, iconWidth, children, buttonStyles } = props;
@@ -19,15 +19,26 @@ export function DropdownMenu(props) {
 
   return (
     <>
-      <StyledButton
+      <Button
         onClick={handleMenu}
         aria-controls="menu-appbar"
         aria-haspopup="true"
-        $customStyles={buttonStyles}
+        secondary
+        onHover="opacity: 100%"
+        customStyles={
+          ({
+            display: "grid",
+            gridTemplateColumns: "repeat(2, auto)",
+            columnGap: "5px",
+            color: `${Colors.davyGray}`,
+            textTransform: "capitalize",
+          },
+          { ...buttonStyles })
+        }
       >
         {label}
         <img alt="arrow" width={iconWidth} src={arrow} />
-      </StyledButton>
+      </Button>
       <StyledMenu
         id="menu-appbar"
         anchorEl={anchorEl}
@@ -48,17 +59,6 @@ export function DropdownMenu(props) {
     </>
   );
 }
-
-const StyledButton = styled(Button)`
-  display: grid;
-  grid-template-columns: repeat(2, auto);
-  column-gap: 5px;
-  color: ${Colors.davyGray};
-  text-transform: capitalize;
-  :hover {
-    opacity: 100%;
-  }
-`;
 
 const StyledMenu = styled(Menu)`
   .MuiPopover-paper {

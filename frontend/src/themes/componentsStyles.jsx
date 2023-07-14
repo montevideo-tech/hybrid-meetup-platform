@@ -3,43 +3,6 @@ import Link from "@mui/material/Link";
 import Avatar from "@mui/material/Avatar";
 import theme from "./theme";
 
-export const Button = styled.button`
-  cursor: pointer;
-  width: 136px;
-  height: 35px;
-  border-radius: 35px;
-  font-family: "Poppins";
-  font-weight: 500;
-  transition: 0.4s;
-  background-color: ${(props) =>
-    props.$primary ? theme.palette.primary.main : theme.palette.secondary.main};
-  color: ${(props) =>
-    props.$primary ? theme.palette.common.white : theme.palette.primary.main};
-  border: ${(props) =>
-    props.$primary ? "none" : `2px solid ${theme.palette.primary.main}`};
-  font-size: ${(props) => (props.$primary ? "0.875rem" : "1rem")};
-  line-height: ${(props) => (props.$primary ? "21px" : "24px")};
-
-  ${(props) =>
-    props.$customStyles} // these styles override all the above ones, leave them here
-  &:hover {
-    ${(props) =>
-      props.$primary
-        ? `
-        background-color: ${theme.palette.primary.dark}
-        `
-        : `
-        opacity: 80%
-        `};
-  }
-  &:disabled {
-    background-color: ${theme.palette.disabled.main};
-    border: none;
-    color: ${theme.palette.disabled.secondary};
-    cursor: auto;
-  }
-`;
-
 export const Card = styled.div`
   display: flex;
   justify-content: center;
