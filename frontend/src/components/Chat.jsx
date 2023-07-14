@@ -6,7 +6,8 @@ import Filter from "bad-words";
 import styled from "styled-components";
 import { Colors } from "../themes/colors";
 import { DeleteOutline as DeleteOutlineIcon } from "@mui/icons-material";
-import { Card, Input, Button } from "../themes/componentsStyles";
+import { Card, Input } from "../themes/componentsStyles";
+import Button from "../components/Button";
 import send from "../assets/send.svg";
 
 function Chat(props) {
@@ -57,7 +58,7 @@ function Chat(props) {
                 <span>{m.content}</span>
               </TextChat>
               {isUserAdmin && (
-                <DeleteButton
+                <Button
                   onClick={() => {
                     onDeleteMessage(m.id);
                   }}
@@ -66,7 +67,7 @@ function Chat(props) {
                     fontSize="small"
                     sx={{ color: Colors.red }}
                   />
-                </DeleteButton>
+                </Button>
               )}
             </MessageChat>
           ))}
@@ -93,13 +94,14 @@ function Chat(props) {
         />
         <Button
           type="submit"
-          $customStyles={{
+          secondary
+          width="fit-content"
+          height="fit-content"
+          customStyles={{
             position: "absolute",
             marginTop: "5px",
             marginLeft: "calc(250px - 60px)",
             border: "none",
-            height: "fit-content",
-            width: "fit-content",
           }}
         >
           <img src={send} alt="send" />
@@ -112,13 +114,7 @@ function Chat(props) {
 const MessageChat = styled.div`
   display: flex;
   justify-content: space-around;
-`;
-
-const DeleteButton = styled.button`
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  background-color: transparent;
+  align-items: center;
 `;
 
 const TextChat = styled.p`
