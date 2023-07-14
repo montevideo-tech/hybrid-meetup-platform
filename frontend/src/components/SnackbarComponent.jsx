@@ -19,14 +19,18 @@ function SnackbarComponent(props) {
     if (reason === "clickaway") {
       return;
     }
-    onClose();
+    onClose && onClose();
     dispatch(SnackbarAlert({ error: undefined }));
     setOpen(false);
   };
 
   return (
     <Snackbar open={open} onClose={closeSnackbar}>
-      <Alert onClose={closeSnackbar} severity={severity} sx={{ width: "100%" }}>
+      <Alert
+        onClose={closeSnackbar}
+        severity={severity ? severity : "error"}
+        sx={{ width: "100%" }}
+      >
         {message}
       </Alert>
     </Snackbar>
