@@ -1,11 +1,12 @@
+import { comparator } from "./helpers";
+
 const setRemoteStreamsRef = (
   remoteStreamsRef,
-  comparator,
   setRemoteStreams,
   data,
 ) => {
   remoteStreamsRef.current = data;
-  const remoteStreamsSorted = Array.from(data.values).sort(comparator);
+  const remoteStreamsSorted = Array.from(data.values()).sort(comparator);
   setRemoteStreams(remoteStreamsSorted);
 };
 

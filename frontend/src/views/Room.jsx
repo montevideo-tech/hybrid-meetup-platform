@@ -21,7 +21,7 @@ import { subscribeToRoleChanges, ROLES } from "../utils/supabaseSDK/roles";
 import ParticipantsCollection from "../components/ParticipantsCollection";
 import Chat from "../components/Chat";
 import { updateParticipantRoles } from "../utils/helpers";
-// import setRemoteStreamsRef from "../utils/room";
+import setRemoteStreamsRef from "../utils/room";
 import { epochToISO8601 } from "../utils/time";
 import { getGuestMuted } from "../utils/supabaseSDK/room";
 import useChat from "../hooks/useChat";
@@ -36,7 +36,6 @@ import ChatIcon from "@mui/icons-material/Chat";
 import participants from "../assets/participants.svg";
 import VideoRecorder from "../components/VideoRecorder";
 import { getDolbyKey } from "../utils/supabaseSDK/environment";
-import { comparator } from "../utils/helpers";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -73,12 +72,6 @@ function Room() {
   const [localName, setLocalName] = useState(undefined);
   const [isRecording, setIsRecording] = useState(false);
   const [providerName, setProviderName] = useState("");
-
-  const setRemoteStreamsRef = (data) => {
-    remoteStreamsRef.current = data;
-    const remoteStreamsSorted = Array.from(data.values()).sort(comparator);
-    setRemoteStreams(remoteStreamsSorted);
-  };
 
   const startRecording = () => {
     setIsRecording(!isRecording);
