@@ -1,12 +1,11 @@
 import { React, useState, useEffect, useRef, forwardRef } from "react";
 import { useLoaderData, Navigate, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { CircularProgress, Badge } from "@mui/material";
+import { Badge } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import styled from "styled-components";
 import useUserPermission from "../hooks/useUserPermission";
 import RoomControls from "../components/RoomControls";
-
 import { Room as DolbyWebRoom } from "../lib/providers/dolby";
 import { Room as MuxWebRoom } from "../lib/providers/mux";
 import { roomJWTprovider } from "../actions";
@@ -36,6 +35,7 @@ import ChatIcon from "@mui/icons-material/Chat";
 import participants from "../assets/participants.svg";
 import VideoRecorder from "../components/VideoRecorder";
 import { getDolbyKey } from "../utils/supabaseSDK/environment";
+import Spinner from "../components/Spinner";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -629,9 +629,7 @@ function Room() {
           </Buttons>
         </Container>
       ) : (
-        <StyledContainer>
-          {!errorJoiningRoom && <CircularProgress />}
-        </StyledContainer>
+        <StyledContainer>{!errorJoiningRoom && <Spinner />}</StyledContainer>
       )}
     </>
   );
