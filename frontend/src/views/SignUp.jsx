@@ -23,9 +23,11 @@ import envelope from "../assets/envelope.svg";
 import lock from "../assets/lock.svg";
 import eye from "../assets/eye.svg";
 import eyeSlash from "../assets/eyeSlash.svg";
+import CircularProgress from "@mui/material/CircularProgress";
 
 function SignUp() {
   const navigate = useNavigate();
+
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Name is required"),
     email: Yup.string().required("Email is required").email("Email is invalid"),
@@ -48,17 +50,21 @@ function SignUp() {
 
   const [alert, setAlert] = useState({ type: "success", message: null });
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
 
   const onSubmit = (data) => {
+    setLoading(true);
     const onSuccess = () => {
+      setLoading(false);
       setAlert({ type: "success", message: "Please verify your email" });
       setTimeout(() => {
         navigate("/signIn");
       }, 3000);
     };
     const onError = (error) => {
+      setLoading(false);
       setAlert({
         type: "error",
         message: `An error occurred: ${error.response.data.error} `,
@@ -184,7 +190,11 @@ function SignUp() {
               type="submit"
               disabled={Object.keys(errors).length > 0}
             >
-              Sign up
+              {loading ? (
+                <CircularProgress color="inherit" size={20} />
+              ) : (
+                "Sign up"
+              )}
             </Button>
             <LoginContainer>
               <span>Already have an account?</span>
