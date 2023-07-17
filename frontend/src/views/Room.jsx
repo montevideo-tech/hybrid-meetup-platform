@@ -30,7 +30,7 @@ import { Colors } from "../themes/colors";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
 import Audio from "../components/Audio";
 import Video from "../components/Video";
-import { Button } from "../themes/componentsStyles";
+import Button from "../components/Button";
 import ChatIcon from "@mui/icons-material/Chat";
 import participants from "../assets/participants.svg";
 import VideoRecorder from "../components/VideoRecorder";
@@ -608,8 +608,14 @@ function Room() {
                 />
               </CenteredDiv>
               <Button
-                $customStyles={{ width: "50px", height: "50px" }}
+                width="50px"
+                height="50px"
                 onClick={OnClickChatButton}
+                customStyles={{
+                  backgroundColor: Colors.lightPurple,
+                  border: `2px solid ${Colors.purple}`,
+                  color: Colors.purple,
+                }}
               >
                 <Badge badgeContent={unreadMessages} color="secondary">
                   {chatOpen ? (

@@ -12,7 +12,8 @@ import {
 import { fetchUsers, getRoomName } from "../utils/supabaseSDK/editRoom";
 import { updateParticipantRoles } from "../utils/helpers";
 import { handleSaveRoomName } from "../utils/supabaseSDK/room";
-import { Card, Button, Input } from "../themes/componentsStyles";
+import { Card, Input } from "../themes/componentsStyles";
+import Button from "../components/Button";
 import { Colors } from "../themes/colors";
 import edit from "../assets/edit.svg";
 import deleteGray from "../assets/deleteGray.svg";
@@ -206,6 +207,7 @@ function EditRoom() {
                 autoFocus
               />
               <Button
+                primary
                 onClick={() =>
                   handleSaveRoomName(setEditingRoomName, roomName, roomId)
                 }
@@ -216,13 +218,18 @@ function EditRoom() {
           ) : (
             <>
               <Subtitle>{roomName}</Subtitle>
-              <img
-                width="17px"
-                height="17px"
-                src={edit}
-                alt="edit title room"
+              <Button
                 onClick={handleEditRoomName}
-              />
+                width="fit-content"
+                height="fit-content"
+              >
+                <img
+                  width="17px"
+                  height="17px"
+                  src={edit}
+                  alt="edit title room"
+                />
+              </Button>
             </>
           )}
         </TitleRoomContainer>
@@ -238,13 +245,15 @@ function EditRoom() {
             label={roleToAdd}
             iconWidth="20px"
             buttonStyles={{
+              padding: "0 16px",
               minWidth: "max-content",
               height: "100%",
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
               justifySelf: "center",
-              padding: "0 16px",
+              color: Colors.davyGray,
+              textTransform: "capitalize",
             }}
           >
             <MenuItem onClick={() => setRoleToAdd("presenter")}>
@@ -254,13 +263,13 @@ function EditRoom() {
           <Button
             onClick={onClickAdd}
             disabled={!isValidEmail}
-            $primary
-            $customStyles={{
+            primary
+            height="100%"
+            width="100%"
+            customStyles={{
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              height: "100%",
-              width: "100%",
             }}
           >
             {loading ? <Spinner color="secondary" size={20} /> : "Add"}
@@ -273,9 +282,10 @@ function EditRoom() {
             />
           )}
           <Button
-            $primary
+            primary
             onClick={() => navigate(`/rooms/${roomId}`)}
-            $customStyles={{ height: "100%", width: "100%" }}
+            height="100%"
+            width="100%"
           >
             Go to Room
           </Button>

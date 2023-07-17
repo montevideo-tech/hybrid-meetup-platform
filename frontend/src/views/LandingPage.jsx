@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Colors } from "../themes/colors";
 import meeting from "../assets/meeting.png";
 import { useNavigate } from "react-router-dom";
-import { Button } from "../themes/componentsStyles";
+import Button from "../components/Button";
 
 function LandingPage() {
   const navigate = useNavigate();
@@ -22,12 +22,14 @@ function LandingPage() {
             adaptable WebRTC providers
           </TitleParts>
         </Title>
-        <StyledButton
-          $customStyles={{ width: "14.5rem", height: "2.813rem" }}
+        <Button
+          width="14.5rem"
+          height="2.813rem"
+          secondary
           onClick={() => navigate("/signIn")}
         >
           Check available rooms
-        </StyledButton>
+        </Button>
       </Headline>
       <Image src={meeting} alt="hybridly meeting" />
     </Container>
@@ -95,13 +97,5 @@ const Image = styled.img`
     width: 500px;
     height: 342.97px;
     margin-top: 20px;
-  }
-`;
-
-const StyledButton = styled(Button)`
-  @media (max-width: 1025px) {
-    width: 11.165rem;
-    height: 2.166rem;
-    font-size: 0.8rem;
   }
 `;

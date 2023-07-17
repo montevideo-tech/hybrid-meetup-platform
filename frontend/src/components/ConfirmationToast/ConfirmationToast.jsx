@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { Colors } from "../../themes/colors";
-import { Button } from "../../themes/componentsStyles";
 import Spinner from "../Spinner";
+import Button from "../Button";
 
 export default function ConfirmationToast(props) {
   const { text, confirmationText, onConfirmation, onCancel } = props;
@@ -23,17 +23,19 @@ export default function ConfirmationToast(props) {
         <Text>{text}</Text>
         <ButtonsContainer>
           <Button
-            $customStyles={{
+            onClick={onClick}
+            primary
+            customStyles={{
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
             }}
-            $primary
-            onClick={onClick}
           >
             {loading ? <Spinner color="inherit" size={20} /> : confirmationText}
           </Button>
-          <Button onClick={onCancel}>Cancel</Button>
+          <Button secondary onClick={onCancel}>
+            Cancel
+          </Button>
         </ButtonsContainer>
       </Toast>
     </Container>
