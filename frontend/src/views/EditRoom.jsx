@@ -12,7 +12,8 @@ import {
 import { fetchUsers, getRoomName } from "../utils/supabaseSDK/editRoom";
 import { updateParticipantRoles } from "../utils/helpers";
 import { handleSaveRoomName } from "../utils/supabaseSDK/room";
-import { Card, Input } from "../themes/componentsStyles";
+import { Input } from "../themes/componentsStyles";
+import Card from "../components/Card";
 import Button from "../components/Button";
 import { Colors } from "../themes/colors";
 import edit from "../assets/edit.svg";
@@ -190,10 +191,10 @@ function EditRoom() {
   return (
     <Container>
       <Card
-        $customStyles={{
+        width="70%"
+        customStyles={{
           flexDirection: "column",
           alignItems: "start",
-          width: "70%",
           padding: "40px",
         }}
       >

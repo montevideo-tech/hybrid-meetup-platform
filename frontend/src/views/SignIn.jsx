@@ -11,10 +11,10 @@ import Alert from "@mui/material/Alert";
 import {
   StyledLink,
   formVariants,
-  Card,
   Input,
   Label,
 } from "../themes/componentsStyles";
+import Card from "../components/Card";
 import Button from "../components/Button";
 import { signInWithEmail } from "../actions";
 import { Colors } from "../themes/colors";
@@ -60,7 +60,7 @@ function SignIn() {
   };
   return (
     <Container>
-      <Card $customStyles={{ padding: "2%" }}>
+      <Card customStyles={{ padding: "2%" }}>
         <motion.div
           variants={formVariants}
           initial="initial"

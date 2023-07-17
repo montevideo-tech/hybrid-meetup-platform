@@ -8,12 +8,12 @@ import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import Alert from "@mui/material/Alert";
 import {
-  Card,
   Input,
   Label,
   StyledLink,
   formVariants,
 } from "../themes/componentsStyles";
+import Card from "../components/Card";
 import Button from "../components/Button";
 import { signUp } from "../actions";
 import { Colors } from "../themes/colors";
@@ -75,7 +75,7 @@ function SignUp() {
 
   return (
     <Container>
-      <Card $customStyles={{ padding: "2%" }}>
+      <Card customStyles={{ padding: "2%" }}>
         <motion.div
           variants={formVariants}
           initial="initial"

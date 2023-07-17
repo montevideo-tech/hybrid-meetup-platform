@@ -3,21 +3,6 @@ import Link from "@mui/material/Link";
 import Avatar from "@mui/material/Avatar";
 import theme from "./theme";
 
-export const Card = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 370px;
-  background-color: ${theme.palette.secondary.main};
-  border: 2px solid ${theme.palette.primary.main};
-  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1);
-  border-radius: 30px;
-  padding: 30px;
-
-  ${(props) =>
-    props.$customStyles}// these styles override all the above ones, leave them here
-`;
-
 export const Input = styled.input`
   height: 37px;
   border: 2px solid ${theme.palette.primary.main};
