@@ -2,7 +2,7 @@ import React from "react";
 import pauseRecord from "../assets/Pause.svg";
 import closePurple from "../assets/closePurple.svg";
 import styled from "styled-components";
-import { Button } from "../themes/componentsStyles";
+import Button from "../components/Button";
 import videoRecordRed from "../assets/videoRecordRed.svg";
 import theme from "../themes/theme";
 import { Colors } from "../themes/colors";
@@ -13,16 +13,13 @@ function VideoRecorder({ isRecording, stopRecording }) {
       {isRecording && (
         <Div>
           <Button
-            $customStyles={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "30px",
-              height: "30px",
+            onClick={stopRecording}
+            width="30px"
+            height="30px"
+            customStyles={{
               marginRight: "4px",
               border: "2px solid red",
             }}
-            onClick={stopRecording}
           >
             <img
               width="15px"
@@ -32,31 +29,25 @@ function VideoRecorder({ isRecording, stopRecording }) {
             />
           </Button>
           <Button
-            $customStyles={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "30px",
-              width: "max-content",
+            width="max-content"
+            height="30px"
+            customStyles={{
               border: "2px solid rgba(101, 46, 173, 0.18)",
+              padding: "5px",
             }}
-            onClick={() => {}}
           >
             <img width="18px" height="18px" src={pauseRecord} alt="Pause" />
             <StyledText>Stop recording</StyledText>
           </Button>
           <StyledTimer>00:00</StyledTimer>
           <Button
-            $customStyles={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "30px",
-              height: "30px",
+            onClick={stopRecording}
+            width="30px"
+            height="30px"
+            customStyles={{
+              border: `2px solid ${Colors.purple}`,
               marginLeft: "5px",
             }}
-            alt="Stop"
-            onClick={stopRecording}
           >
             <img
               width="15px"

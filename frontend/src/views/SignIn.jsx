@@ -9,13 +9,13 @@ import styled from "styled-components";
 import Grid from "@mui/material/Grid";
 import Alert from "@mui/material/Alert";
 import {
-  Button,
   StyledLink,
   formVariants,
   Card,
   Input,
   Label,
 } from "../themes/componentsStyles";
+import Button from "../components/Button";
 import { signInWithEmail } from "../actions";
 import { Colors } from "../themes/colors";
 import Logo from "../assets/logo2.svg";
@@ -121,16 +121,10 @@ function SignIn() {
               <ErrorMessage>{errors.password.message}</ErrorMessage>
             )}
             <Button
-              $primary
+              primary
+              customStyles={{ margin: "25px 0", alignSelf: "end" }}
               type="submit"
               disabled={Object.keys(errors).length > 0}
-              $customStyles={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                margin: "25px 0",
-                alignSelf: "end",
-              }}
             >
               {loading ? (
                 <CircularProgress color="inherit" size={20} />

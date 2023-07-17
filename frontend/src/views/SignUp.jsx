@@ -8,13 +8,13 @@ import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import Alert from "@mui/material/Alert";
 import {
-  Button,
   Card,
   Input,
   Label,
   StyledLink,
   formVariants,
 } from "../themes/componentsStyles";
+import Button from "../components/Button";
 import { signUp } from "../actions";
 import { Colors } from "../themes/colors";
 import logo2 from "../assets/logo2.svg";
@@ -185,14 +185,8 @@ function SignUp() {
               <ErrorMessage>{errors.confirmPassword.message}</ErrorMessage>
             )}
             <Button
-              $primary
-              $customStyles={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                margin: "25px 0",
-                alignSelf: "end",
-              }}
+              primary
+              customStyles={{ margin: "25px 0", alignSelf: "end" }}
               type="submit"
               disabled={Object.keys(errors).length > 0}
             >
