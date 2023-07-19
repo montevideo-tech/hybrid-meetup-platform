@@ -4,38 +4,38 @@ import { useSelector, useDispatch } from "react-redux";
 import { Badge } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import styled from "styled-components";
-import useUserPermission from "../hooks/useUserPermission";
-import RoomControls from "../components/RoomControls";
-import { Room as DolbyWebRoom } from "../lib/providers/dolby";
-import { Room as MuxWebRoom } from "../lib/providers/mux";
-import { roomJWTprovider } from "../actions";
+import useUserPermission from "../../hooks/useUserPermission";
+import RoomControls from "../../components/RoomControls";
+import { Room as DolbyWebRoom } from "../../lib/providers/dolby";
+import { Room as MuxWebRoom } from "../../lib/providers/mux";
+import { roomJWTprovider } from "../../actions";
 import {
   initRoom,
   addUpdateParticipant,
   removeParticipant,
   removeRole,
   SnackbarAlert,
-} from "../reducers/roomSlice";
-import { subscribeToRoleChanges, ROLES } from "../utils/supabaseSDK/roles";
-import ParticipantsCollection from "../components/ParticipantsCollection";
-import Chat from "../components/Chat";
-import { updateParticipantRoles } from "../utils/helpers";
-import setRemoteStreamsRef from "../utils/room";
-import { epochToISO8601 } from "../utils/time";
-import { getGuestMuted } from "../utils/supabaseSDK/room";
-import useChat from "../hooks/useChat";
-import useRoomSetup from "../hooks/useRoomSetup";
-import ShareScreen from "../components/ShareScreen";
-import { Colors } from "../themes/colors";
+} from "../../reducers/roomSlice";
+import { subscribeToRoleChanges, ROLES } from "../../utils/supabaseSDK/roles";
+import ParticipantsCollection from "../../components/ParticipantsCollection";
+import Chat from "../../components/Chat";
+import { updateParticipantRoles } from "../../utils/helpers";
+import setRemoteStreamsRef from "../../utils/room";
+import { epochToISO8601 } from "../../utils/time";
+import { getGuestMuted } from "../../utils/supabaseSDK/room";
+import useChat from "../../hooks/useChat";
+import useRoomSetup from "../../hooks/useRoomSetup";
+import ShareScreen from "../../components/ShareScreen";
+import { Colors } from "../../themes/colors";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
-import Audio from "../components/Audio";
-import Video from "../components/Video";
-import Button from "../components/Button";
+import Audio from "../../components/Audio";
+import Video from "../../components/Video";
+import Button from "../../components/Button";
 import ChatIcon from "@mui/icons-material/Chat";
-import participants from "../assets/participants.svg";
-import VideoRecorder from "../components/VideoRecorder";
-import { getDolbyKey } from "../utils/supabaseSDK/environment";
-import Spinner from "../components/Spinner";
+import participants from "../../assets/participants.svg";
+import VideoRecorder from "../../components/VideoRecorder";
+import { getDolbyKey } from "../../utils/supabaseSDK/environment";
+import Spinner from "../../components/Spinner";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -637,7 +637,6 @@ function Room() {
 
 export default Room;
 
-// Mejorable
 const Container = styled.div`
   display: grid;
   grid-template-rows: 1fr 60px;
