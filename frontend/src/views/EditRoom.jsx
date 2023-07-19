@@ -17,10 +17,11 @@ import Button from "../components/Button";
 import { Colors } from "../themes/colors";
 import edit from "../assets/edit.svg";
 import deleteGray from "../assets/deleteGray.svg";
-import deletePurple from "../assets/deletePurple.svg";
+import deletePurple from "../assets/delete-purple.svg";
 import { addUpdateParticipant, removeRole } from "../reducers/roomSlice";
 import { DropdownMenu } from "../components/DropdownMenu";
 import Snackbar from "../components/SnackbarComponent";
+import Icon from "../components/Icon";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -222,11 +223,11 @@ function EditRoom() {
                 width="fit-content"
                 height="fit-content"
               >
-                <img
+                <Icon
+                  icon={edit}
+                  name="edit title room"
                   width="17px"
                   height="17px"
-                  src={edit}
-                  alt="edit title room"
                 />
               </Button>
             </>
@@ -300,12 +301,12 @@ function EditRoom() {
                       <ListItem
                         key={e}
                         secondaryAction={
-                          <img
+                          <Icon
+                            icon={deletePurple}
+                            name="delete"
                             width="17px"
-                            src={deletePurple}
-                            alt="delete"
                             onClick={() => {
-                              handleDeleteRole(e, "presenters");
+                              handleDeleteRole(e, "hosts");
                             }}
                           />
                         }
@@ -317,12 +318,12 @@ function EditRoom() {
                       <ListItem
                         key={e}
                         secondaryAction={
-                          <img
+                          <Icon
+                            icon={deleteGray}
+                            name="delete"
                             width="17px"
-                            src={deleteGray}
-                            alt="delete"
                             onClick={() => {
-                              handleDeleteRole(e, "presenters");
+                              handleDeleteRole(e, "hosts");
                             }}
                           />
                         }
@@ -346,7 +347,7 @@ function EditRoom() {
                       <ListItem
                         key={e}
                         secondaryAction={
-                          <img
+                          <Icon
                             width="17px"
                             src={deletePurple}
                             alt="delete"
@@ -363,10 +364,10 @@ function EditRoom() {
                       <ListItem
                         key={e}
                         secondaryAction={
-                          <img
+                          <Icon
+                            icon={deleteGray}
+                            name="delete"
                             width="17px"
-                            src={deleteGray}
-                            alt="delete"
                             onClick={() => {
                               handleDeleteRole(e, "presenters");
                             }}

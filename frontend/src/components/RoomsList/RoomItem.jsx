@@ -10,7 +10,8 @@ import { deleteRoom } from "../../actions";
 import { ROLES } from "../../utils/supabaseSDK/roles";
 import { onDeleteRoomMessage } from "../../utils/supabaseSDK/chat";
 import ConfirmationToast from "../ConfirmationToast/ConfirmationToast";
-import deletePurple from "../../assets/deletePurple.svg";
+import deletePurple from "../../assets/delete-purple.svg";
+import Icon from "../Icon";
 
 export const RoomItem = ({ currentUser, room }) => {
   const { id, name, providerId, createdBy } = room;
@@ -69,9 +70,9 @@ export const RoomItem = ({ currentUser, room }) => {
                   border: `2px solid ${Colors.purple}`,
                 }}
               >
-                <img
-                  src={deletePurple}
-                  alt="delete room"
+                <Icon
+                  icon={deletePurple}
+                  name="delete room"
                   width="15px"
                   height="15px"
                 />

@@ -22,6 +22,7 @@ import close from "../assets/close.svg";
 import videoRecord from "../assets/videoRecord.svg";
 import { getProvider } from "../utils/supabaseSDK/environment";
 import Button from "../components/Button";
+import Icon from "../components/Icon";
 function RoomControls(props) {
   const navigate = useNavigate();
   const [videoActive, setVideoActive] = useState(true);
@@ -133,7 +134,12 @@ function RoomControls(props) {
                 border: `2px solid ${Colors.purple}`,
               }}
             >
-              <img src={videoRecord} alt="record" width="27px" height="27px" />
+              <Icon
+                icon={videoRecord}
+                name="record"
+                width="27px"
+                height="27px"
+              />
             </Button>
           </StyledDiv>
         </Tooltip>
@@ -157,14 +163,20 @@ function RoomControls(props) {
             }}
           >
             {!localTracks.video || !videoActive ? (
-              <StyledImg
-                src={noCamera}
-                alt="camera off"
+              <Icon
+                icon={noCamera}
+                name="camera off"
                 width="26px"
                 height="26px"
+                customStyles={{ marginTop: "2px" }}
               />
             ) : (
-              <img src={camera} alt="camera on" width="23.2px" height="24px" />
+              <Icon
+                icon={camera}
+                name="camera on"
+                width="23.2px"
+                height="24px"
+              />
             )}
           </Button>
         </StyledDiv>
@@ -190,26 +202,27 @@ function RoomControls(props) {
             localTracks.audio.muted ||
             !isEnableToUnmute ? (
               isEnableToUnmute ? (
-                <img
-                  src={noMic}
-                  alt="microphone off"
+                <Icon
+                  icon={noMic}
+                  name="microphone off"
                   height="26px"
                   width="26px"
                 />
               ) : (
-                <img
-                  src={noMicRed}
-                  alt="microphone disabled"
+                <Icon
+                  icon={noMicRed}
+                  name="microphone disabled"
                   height="26px"
                   width="26px"
                 />
               )
             ) : (
-              <StyledImg
-                src={mic}
-                alt="microphone on"
+              <Icon
+                icon={mic}
+                name="microphone on"
                 height="28px"
                 width="28px"
+                customStyles={{ marginTop: "2px" }}
               />
             )}
           </Button>
@@ -287,7 +300,7 @@ function RoomControls(props) {
             }}
             onClick={endCall}
           >
-            <img src={close} alt="close" height="25px" width="25px" />
+            <Icon icon={close} name="close" height="25px" width="25px" />
           </Button>
         </StyledDiv>
       </Tooltip>
@@ -329,10 +342,6 @@ const Container = styled(ButtonGroup)`
 
 const StyledDiv = styled.div`
   padding: 5px;
-`;
-
-const StyledImg = styled.img`
-  margin-top: 2px;
 `;
 
 export default RoomControls;

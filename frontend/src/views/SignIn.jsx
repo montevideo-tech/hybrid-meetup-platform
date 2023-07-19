@@ -22,7 +22,8 @@ import Logo from "../assets/logo2.svg";
 import envelope from "../assets/envelope.svg";
 import lock from "../assets/lock.svg";
 import eye from "../assets/eye.svg";
-import eyeSlash from "../assets/eyeSlash.svg";
+import eyeSlash from "../assets/eye-slash.svg";
+import Icon from "../components/Icon";
 
 function SignIn() {
   const navigate = useNavigate();
@@ -62,7 +63,12 @@ function SignIn() {
           exit="exit"
         >
           <StyledForm component="form" onSubmit={handleSubmit(onSubmit)}>
-            <img src={Logo} alt="hybridly" height="38.18px" width="160.85px" />
+            <Icon
+              icon={Logo}
+              name="hybridly"
+              height="38.18px"
+              width="160.85px"
+            />
             <Title variant="h5">Connect Your Account</Title>
             <Label
               htmlFor="email"

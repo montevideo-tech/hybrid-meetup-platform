@@ -1,11 +1,12 @@
 import React from "react";
-import pauseRecord from "../assets/Pause.svg";
-import closePurple from "../assets/closePurple.svg";
+import pauseRecord from "../assets/pause.svg";
+import closePurple from "../assets/close-purple.svg";
 import styled from "styled-components";
-import Button from "../components/Button";
-import videoRecordRed from "../assets/videoRecordRed.svg";
 import theme from "../themes/theme";
 import { Colors } from "../themes/colors";
+import videoRecordRed from "../assets/videoRecordRed.svg";
+import Button from "../components/Button";
+import Icon from "../components/Icon";
 
 function VideoRecorder({ isRecording, stopRecording }) {
   return (
@@ -21,11 +22,11 @@ function VideoRecorder({ isRecording, stopRecording }) {
               border: "2px solid red",
             }}
           >
-            <img
+            <Icon
+              icon={videoRecordRed}
+              name="video record"
               width="15px"
               height="15px"
-              src={videoRecordRed}
-              alt="Video Record"
             />
           </Button>
           <Button
@@ -36,7 +37,12 @@ function VideoRecorder({ isRecording, stopRecording }) {
               padding: "5px",
             }}
           >
-            <img width="18px" height="18px" src={pauseRecord} alt="Pause" />
+            <Icon
+              icon={pauseRecord}
+              name="pause recording"
+              width="18px"
+              height="18px"
+            />
             <StyledText>Stop recording</StyledText>
           </Button>
           <StyledTimer>00:00</StyledTimer>
@@ -49,11 +55,11 @@ function VideoRecorder({ isRecording, stopRecording }) {
               marginLeft: "5px",
             }}
           >
-            <img
+            <Icon
+              icon={closePurple}
+              name="stop recording"
               width="15px"
               height="15px"
-              src={closePurple}
-              alt="Stop recording"
             />
           </Button>
         </Div>

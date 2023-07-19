@@ -36,6 +36,7 @@ import ChatIcon from "@mui/icons-material/Chat";
 import participants from "../assets/participants.svg";
 import VideoRecorder from "../components/VideoRecorder";
 import { getDolbyKey } from "../utils/supabaseSDK/environment";
+import Icon from "../components/Icon";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -579,9 +580,9 @@ function Room() {
             <>
               <NumberParticipantsContainer>
                 <span>Hybridly Meeting</span>
-                <img
-                  src={participants}
-                  alt="number of participans"
+                <Icon
+                  icon={participants}
+                  name="number of participans"
                   width="21.25px"
                   height="16px"
                 />
