@@ -18,12 +18,13 @@ import Button from "../components/Button";
 import { signUp } from "../actions";
 import { Colors } from "../themes/colors";
 import logo2 from "../assets/logo2.svg";
-import orangeUser from "../assets/orangeUser.svg";
+import user from "../assets/orange-user.svg";
 import envelope from "../assets/envelope.svg";
 import lock from "../assets/lock.svg";
 import eye from "../assets/eye.svg";
-import eyeSlash from "../assets/eyeSlash.svg";
-import CircularProgress from "@mui/material/CircularProgress";
+import eyeSlash from "../assets/eye-slash.svg";
+import Icon from "../components/Icon";
+import Spinner from "../components/Spinner";
 
 function SignUp() {
   const navigate = useNavigate();
@@ -87,7 +88,12 @@ function SignUp() {
             className="form"
             onSubmit={handleSubmit(onSubmit)}
           >
-            <img src={logo2} alt="hybridly" height="38.18px" width="160.85px" />
+            <Icon
+              icon={logo2}
+              name="hybridly"
+              height="38.18px"
+              width="160.85px"
+            />
             <Title>Create an Account</Title>
             <Label
               htmlFor="name"
@@ -96,7 +102,7 @@ function SignUp() {
               Name
             </Label>
             <InputContainer>
-              <StartIcon src={orangeUser} alt="lock" />
+              <StartIcon src={user} alt="lock" />
               <StyledInput
                 id="name"
                 label="Name"
@@ -190,11 +196,7 @@ function SignUp() {
               type="submit"
               disabled={Object.keys(errors).length > 0}
             >
-              {loading ? (
-                <CircularProgress color="inherit" size={20} />
-              ) : (
-                "Sign up"
-              )}
+              {loading ? <Spinner size={20} /> : "Sign up"}
             </Button>
             <LoginContainer>
               <span>Already have an account?</span>

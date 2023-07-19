@@ -1,10 +1,11 @@
 import { Link as RouterLink } from "react-router-dom";
 import logo from "../../assets/logo.svg";
+import Icon from "../Icon";
 
 export const Hybridly = () => {
   return (
     <RouterLink to="/">
-      <img src={logo} alt="hybridly-logo" />
+      <Icon icon={logo} name="hybridly logo" />
     </RouterLink>
   );
 };

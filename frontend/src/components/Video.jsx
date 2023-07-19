@@ -9,8 +9,8 @@ import { ROLES } from "../utils/supabaseSDK/roles";
 import Button from "../components/Button";
 import mic from "../assets/mic.svg";
 import noMic from "../assets/no-mic.svg";
-import deletePurple from "../assets/deletePurple.svg";
-
+import deletePurple from "../assets/delete-purple.svg";
+import Icon from "../components/Icon";
 function Video(props) {
   const videoRef = useRef();
   const {
@@ -103,9 +103,9 @@ function Video(props) {
             border: `2px solid ${Colors.lightPurple}`,
           }}
         >
-          <img
-            src={deletePurple}
-            alt="remove participant"
+          <Icon
+            icon={deletePurple}
+            name="remove participant"
             width="18px"
             height="18px"
           />
@@ -130,9 +130,9 @@ function Video(props) {
           }
         >
           {isAudioMuted ? (
-            <img src={noMic} alt="disable microphone" />
+            <Icon icon={noMic} name="disable microphone" />
           ) : (
-            <img src={mic} alt="microphone" />
+            <Icon icon={mic} name="microphone" />
           )}
         </Button>
       )}

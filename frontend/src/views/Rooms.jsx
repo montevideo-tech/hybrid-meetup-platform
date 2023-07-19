@@ -14,6 +14,7 @@ import close from "../assets/close.svg";
 import Snackbar from "../components/SnackbarComponent";
 import Spinner from "../components/Spinner";
 import { getRoomsData, getUsersData } from "../utils/supabaseSDK/shared";
+import Icon from "../components/Icon";
 
 function Rooms() {
   const [roomsList, setRoomsList] = useState([]);
@@ -205,7 +206,7 @@ function Rooms() {
             alignItems: "center",
           }}
         >
-          <img src={close} alt="close" />
+          <Icon icon={close} name="close" />
         </Button>
       </StyledForm>
     ) : (
