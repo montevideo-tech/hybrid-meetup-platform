@@ -10,6 +10,7 @@ import { Input } from "../themes/componentsStyles";
 import Card from "../components/Card";
 import Button from "../components/Button";
 import send from "../assets/send.svg";
+import Icon from "../components/Icon";
 
 function Chat(props) {
   const [content, setContent] = useState("");
@@ -105,7 +106,7 @@ function Chat(props) {
             border: "none",
           }}
         >
-          <img src={send} alt="send" />
+          <Icon icon={send} name="send message" />
         </Button>
       </StyledChatForm>
     </Card>

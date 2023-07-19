@@ -4,6 +4,7 @@ import Menu from "@mui/material/Menu";
 import { Colors } from "../themes/colors";
 import arrow from "../assets/arrow.svg";
 import Button from "../components/Button";
+import Icon from "../components/Icon";
 
 export function DropdownMenu(props) {
   const { label, iconWidth, children, buttonStyles } = props;
@@ -37,7 +38,7 @@ export function DropdownMenu(props) {
         }
       >
         {label}
-        <img alt="arrow" width={iconWidth} src={arrow} />
+        <Icon icon={arrow} name="open" width={iconWidth} />
       </Button>
       <StyledMenu
         id="menu-appbar"
