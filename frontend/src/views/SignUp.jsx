@@ -24,7 +24,7 @@ import lock from "../assets/lock.svg";
 import eye from "../assets/eye.svg";
 import eyeSlash from "../assets/eye-slash.svg";
 import Icon from "../components/Icon";
-import CircularProgress from "@mui/material/CircularProgress";
+import Spinner from "../components/Spinner";
 
 function SignUp() {
   const navigate = useNavigate();
@@ -196,11 +196,7 @@ function SignUp() {
               type="submit"
               disabled={Object.keys(errors).length > 0}
             >
-              {loading ? (
-                <CircularProgress color="inherit" size={20} />
-              ) : (
-                "Sign up"
-              )}
+              {loading ? <Spinner size={20} /> : "Sign up"}
             </Button>
             <LoginContainer>
               <span>Already have an account?</span>

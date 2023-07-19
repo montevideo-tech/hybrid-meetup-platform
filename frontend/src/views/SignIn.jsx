@@ -24,7 +24,7 @@ import lock from "../assets/lock.svg";
 import eye from "../assets/eye.svg";
 import eyeSlash from "../assets/eye-slash.svg";
 import Icon from "../components/Icon";
-import CircularProgress from "@mui/material/CircularProgress";
+import Spinner from "../components/Spinner";
 
 function SignIn() {
   const navigate = useNavigate();
@@ -132,11 +132,7 @@ function SignIn() {
               type="submit"
               disabled={Object.keys(errors).length > 0}
             >
-              {loading ? (
-                <CircularProgress color="inherit" size={20} />
-              ) : (
-                "Log in"
-              )}
+              {loading ? <Spinner size={20} /> : "Log in"}
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
