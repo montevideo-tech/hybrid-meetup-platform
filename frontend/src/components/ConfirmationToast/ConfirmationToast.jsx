@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { Colors } from "../../themes/colors";
+import Spinner from "../Spinner";
 import Button from "../Button";
-import CircularProgress from "@mui/material/CircularProgress";
 
 export default function ConfirmationToast(props) {
   const { text, confirmationText, onConfirmation, onCancel } = props;
@@ -31,11 +31,7 @@ export default function ConfirmationToast(props) {
               justifyContent: "center",
             }}
           >
-            {loading ? (
-              <CircularProgress color="inherit" size={20} />
-            ) : (
-              confirmationText
-            )}
+            {loading ? <Spinner color="inherit" size={20} /> : confirmationText}
           </Button>
           <Button secondary onClick={onCancel}>
             Cancel

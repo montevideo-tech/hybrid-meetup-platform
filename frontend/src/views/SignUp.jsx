@@ -8,12 +8,12 @@ import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import Alert from "@mui/material/Alert";
 import {
-  Card,
   Input,
   Label,
   StyledLink,
   formVariants,
 } from "../themes/componentsStyles";
+import Card from "../components/Card";
 import Button from "../components/Button";
 import { signUp } from "../actions";
 import { Colors } from "../themes/colors";
@@ -24,9 +24,11 @@ import lock from "../assets/lock.svg";
 import eye from "../assets/eye.svg";
 import eyeSlash from "../assets/eye-slash.svg";
 import Icon from "../components/Icon";
+import CircularProgress from "@mui/material/CircularProgress";
 
 function SignUp() {
   const navigate = useNavigate();
+
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Name is required"),
     email: Yup.string().required("Email is required").email("Email is invalid"),
@@ -49,17 +51,21 @@ function SignUp() {
 
   const [alert, setAlert] = useState({ type: "success", message: null });
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
 
   const onSubmit = (data) => {
+    setLoading(true);
     const onSuccess = () => {
+      setLoading(false);
       setAlert({ type: "success", message: "Please verify your email" });
       setTimeout(() => {
         navigate("/signIn");
       }, 3000);
     };
     const onError = (error) => {
+      setLoading(false);
       setAlert({
         type: "error",
         message: `An error occurred: ${error.response.data.error} `,
@@ -70,7 +76,7 @@ function SignUp() {
 
   return (
     <Container>
-      <Card $customStyles={{ padding: "2%" }}>
+      <Card customStyles={{ padding: "2%" }}>
         <motion.div
           variants={formVariants}
           initial="initial"
@@ -190,7 +196,11 @@ function SignUp() {
               type="submit"
               disabled={Object.keys(errors).length > 0}
             >
-              Sign up
+              {loading ? (
+                <CircularProgress color="inherit" size={20} />
+              ) : (
+                "Sign up"
+              )}
             </Button>
             <LoginContainer>
               <span>Already have an account?</span>

@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useLoaderData, useNavigate } from "react-router-dom";
-import { List, ListItem, MenuItem, CircularProgress } from "@mui/material";
+import { List, ListItem, MenuItem } from "@mui/material";
 import styled from "styled-components";
 import { giveUserRoleOnRoom } from "../actions";
 import {
@@ -12,7 +12,8 @@ import {
 import { fetchUsers, getRoomName } from "../utils/supabaseSDK/editRoom";
 import { updateParticipantRoles } from "../utils/helpers";
 import { handleSaveRoomName } from "../utils/supabaseSDK/room";
-import { Card, Input } from "../themes/componentsStyles";
+import { Input } from "../themes/componentsStyles";
+import Card from "../components/Card";
 import Button from "../components/Button";
 import { Colors } from "../themes/colors";
 import edit from "../assets/edit.svg";
@@ -22,6 +23,7 @@ import { addUpdateParticipant, removeRole } from "../reducers/roomSlice";
 import { DropdownMenu } from "../components/DropdownMenu";
 import Snackbar from "../components/SnackbarComponent";
 import Icon from "../components/Icon";
+import Spinner from "../components/Spinner";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -190,10 +192,10 @@ function EditRoom() {
   return (
     <Container>
       <Card
-        $customStyles={{
+        width="70%"
+        customStyles={{
           flexDirection: "column",
           alignItems: "start",
-          width: "70%",
           padding: "40px",
         }}
       >
@@ -272,7 +274,7 @@ function EditRoom() {
               alignItems: "center",
             }}
           >
-            {loading ? <CircularProgress color="secondary" size={20} /> : "Add"}
+            {loading ? <Spinner color="secondary" size={20} /> : "Add"}
           </Button>
           {!isValidUser && (
             <Snackbar

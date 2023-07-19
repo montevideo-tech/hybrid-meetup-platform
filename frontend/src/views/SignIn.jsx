@@ -11,10 +11,10 @@ import Alert from "@mui/material/Alert";
 import {
   StyledLink,
   formVariants,
-  Card,
   Input,
   Label,
 } from "../themes/componentsStyles";
+import Card from "../components/Card";
 import Button from "../components/Button";
 import { signInWithEmail } from "../actions";
 import { Colors } from "../themes/colors";
@@ -24,6 +24,7 @@ import lock from "../assets/lock.svg";
 import eye from "../assets/eye.svg";
 import eyeSlash from "../assets/eye-slash.svg";
 import Icon from "../components/Icon";
+import CircularProgress from "@mui/material/CircularProgress";
 
 function SignIn() {
   const navigate = useNavigate();
@@ -41,11 +42,16 @@ function SignIn() {
   });
   const [alert, setAlert] = useState({ type: "success", message: null });
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const onSubmit = async (data) => {
+    setLoading(true);
     const onSuccess = () => {
+      setLoading(false);
       navigate("/rooms");
     };
     const onError = (error) => {
+      setLoading(false);
       setAlert({
         type: "error",
         message: `An error occurred while signing in: ${error}`,
@@ -55,7 +61,7 @@ function SignIn() {
   };
   return (
     <Container>
-      <Card $customStyles={{ padding: "2%" }}>
+      <Card customStyles={{ padding: "2%" }}>
         <motion.div
           variants={formVariants}
           initial="initial"
@@ -126,7 +132,11 @@ function SignIn() {
               type="submit"
               disabled={Object.keys(errors).length > 0}
             >
-              Log In
+              {loading ? (
+                <CircularProgress color="inherit" size={20} />
+              ) : (
+                "Log in"
+              )}
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Input } from "../themes/componentsStyles";
 import Button from "../components/Button";
-import { CircularProgress } from "@mui/material";
 import { Colors } from "../themes/colors";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,6 +12,7 @@ import RoomsListSkeleton from "../components/RoomsList/RoomsListSkeleton";
 import { store } from "../store";
 import close from "../assets/close.svg";
 import Snackbar from "../components/SnackbarComponent";
+import Spinner from "../components/Spinner";
 import { getRoomsData, getUsersData } from "../utils/supabaseSDK/shared";
 import Icon from "../components/Icon";
 
@@ -217,7 +217,7 @@ function Rooms() {
         width="190px"
         height="45px"
       >
-        {creatingRoom ? <CircularProgress size={20} /> : "Create new room +"}
+        {creatingRoom ? <Spinner size={20} /> : "Create new room +"}
       </Button>
     );
 
