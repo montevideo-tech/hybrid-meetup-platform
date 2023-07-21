@@ -10,19 +10,19 @@ import {
   HeadsetOff as HeadsetOffIcon,
 } from "@mui/icons-material";
 import { LocalParticipant } from "@mux/spaces-web";
-import { ROLES } from "../utils/supabaseSDK/roles";
-import { setGuestMuted } from "../utils/supabaseSDK/room";
-import { Colors } from "../themes/colors";
-import camera from "../assets/camera.svg";
-import noCamera from "../assets/no-camera.svg";
-import mic from "../assets/mic.svg";
-import noMic from "../assets/no-mic.svg";
-import noMicRed from "../assets/no-mic-red.svg";
-import close from "../assets/close.svg";
-import videoRecord from "../assets/videoRecord.svg";
-import { getProvider } from "../utils/supabaseSDK/environment";
-import Button from "../components/Button";
-import Icon from "../components/Icon";
+import { ROLES } from "../../../utils/supabaseSDK/roles";
+import { setGuestMuted } from "../../../utils/supabaseSDK/room";
+import { Colors } from "../../../themes/colors";
+import camera from "../../../assets/camera.svg";
+import noCamera from "../../../assets/no-camera.svg";
+import mic from "../../../assets/mic.svg";
+import noMic from "../../../assets/no-mic.svg";
+import noMicRed from "../../../assets/no-mic-red.svg";
+import close from "../../../assets/close.svg";
+import videoRecord from "../../../assets/videoRecord.svg";
+import { getProvider } from "../../../utils/supabaseSDK/environment";
+import Button from "../../../components/Button";
+import Icon from "../../../components/Icon";
 function RoomControls(props) {
   const navigate = useNavigate();
   const [videoActive, setVideoActive] = useState(true);
