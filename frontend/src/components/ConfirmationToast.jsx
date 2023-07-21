@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Colors } from "../../themes/colors";
-import Spinner from "../Spinner";
-import Button from "../Button";
+import { Colors } from "../themes/colors";
+import Spinner from "./Spinner";
+import Button from "./Button";
 
 export default function ConfirmationToast(props) {
   const { text, confirmationText, onConfirmation, onCancel } = props;

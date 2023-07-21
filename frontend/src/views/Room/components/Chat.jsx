@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { useLoaderData } from "react-router-dom";
-import { onSendMessage, onDeleteMessage } from "../utils/supabaseSDK/chat";
+import { onSendMessage, onDeleteMessage } from "../../../utils/supabaseSDK/chat";
 import Filter from "bad-words";
 import styled from "styled-components";
-import { Colors } from "../themes/colors";
+import { Colors } from "../../../themes/colors";
 import { DeleteOutline as DeleteOutlineIcon } from "@mui/icons-material";
-import Input from "../components/Input";
-import Card from "../components/Card";
-import Button from "../components/Button";
-import Icon from "../components/Icon";
-import send from "../assets/send.svg";
+import Card from "../../../components/Card";
+import Button from "../../../components/Button";
+import send from "../../../assets/send.svg";
+import Icon from "../../../components/Icon";
+import Input from "../../../components/Input";
 
 function Chat(props) {
   const [content, setContent] = useState("");

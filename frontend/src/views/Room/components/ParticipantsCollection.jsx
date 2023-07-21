@@ -1,10 +1,10 @@
 import React, { useMemo, ReactNode } from "react";
 import { LocalParticipant } from "@mux/spaces-web";
 import PropTypes from "prop-types";
-import { MAX_PARTICIPANTS_PER_PAGE } from "../lib/constants";
-import Audio from "./Audio";
+import { MAX_PARTICIPANTS_PER_PAGE } from "../../../lib/constants";
+import Audio from "../../../components/Audio";
 import Video from "./Video";
-import { ROLES } from "../utils/supabaseSDK/roles";
+import { ROLES } from "../../../utils/supabaseSDK/roles";
 import styled from "styled-components";
 
 function ParticipantsCollection(props) {

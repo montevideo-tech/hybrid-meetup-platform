@@ -1,16 +1,16 @@
 import React, { useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { Colors } from "../themes/colors";
+import { Colors } from "../../../themes/colors";
 import { Box } from "@mui/material";
 import ParticipantInfo from "./ParticipantInfo";
-import logo from "../assets/MVDTSC.png";
-import { ROLES } from "../utils/supabaseSDK/roles";
-import Button from "../components/Button";
-import mic from "../assets/mic.svg";
-import noMic from "../assets/no-mic.svg";
-import deletePurple from "../assets/delete-purple.svg";
-import Icon from "../components/Icon";
+import logo from "../../../assets/MVDTSC.png";
+import { ROLES } from "../../../utils/supabaseSDK/roles";
+import Button from "../../../components/Button";
+import mic from "../../../assets/mic.svg";
+import noMic from "../../../assets/no-mic.svg";
+import deletePurple from "../../../assets/delete-purple.svg";
+import Icon from "../../../components/Icon";
 function Video(props) {
   const videoRef = useRef();
   const {
