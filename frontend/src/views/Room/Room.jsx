@@ -425,7 +425,6 @@ function Room() {
     }
     if (providerName !== "") {
       try {
-        console.log("Provider name" + providerName);
         const newRoom =
           providerName === "MUX"
             ? new MuxWebRoom(MuxJWT)

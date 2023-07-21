@@ -6,11 +6,11 @@ import Filter from "bad-words";
 import styled from "styled-components";
 import { Colors } from "../../../themes/colors";
 import { DeleteOutline as DeleteOutlineIcon } from "@mui/icons-material";
-import { Input } from "../../../themes/componentsStyles";
 import Card from "../../../components/Card";
 import Button from "../../../components/Button";
 import send from "../../../assets/send.svg";
 import Icon from "../../../components/Icon";
+import Input from "../../../components/Input";
 
 function Chat(props) {
   const [content, setContent] = useState("");
@@ -76,15 +76,7 @@ function Chat(props) {
         </ChatContentWrapper>
       </ChatContent>
       <StyledChatForm onSubmit={handleSubmit}>
-        <StyledInput
-          $customStyles={{
-            width: "100%",
-            fontWeight: "400",
-            fontSize: "0.75rem",
-            lineHeight: "1.125rem",
-            border: `1px solid ${Colors.purple}`,
-            padding: "0 40px 0 12px",
-          }}
+        <Input
           type="text"
           placeholder="Message"
           value={content}
@@ -92,7 +84,15 @@ function Chat(props) {
           multiline
           minRows={1}
           maxRows={3}
-          inputProps={{ maxLength: 150 }}
+          maxLength={150}
+          focus="1pxPurple"
+          width="100%"
+          customStyles={{
+            fontSize: "0.75rem",
+            lineHeight: "18px",
+            border: `1px solid ${Colors.purple}`,
+            fontWeight: "400",
+          }}
         />
         <Button
           type="submit"
@@ -149,13 +149,6 @@ const ChatContent = styled.div`
 
 const ChatContentWrapper = styled.div`
   flex-grow: 1;
-`;
-
-const StyledInput = styled(Input)`
-  :focus-visible {
-    border: 1px solid ${Colors.purple};
-    box-shadow: 0 0 1px ${Colors.purple};
-  }
 `;
 
 export default Chat;

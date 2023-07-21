@@ -12,7 +12,7 @@ import {
 import { fetchUsers, getRoomName } from "../utils/supabaseSDK/editRoom";
 import { updateParticipantRoles } from "../utils/helpers";
 import { handleSaveRoomName } from "../utils/supabaseSDK/room";
-import { Input } from "../themes/componentsStyles";
+import Input from "../components/Input";
 import Card from "../components/Card";
 import Button from "../components/Button";
 import { Colors } from "../themes/colors";
@@ -236,19 +236,18 @@ function EditRoom() {
           )}
         </TitleRoomContainer>
         <StyledContainer>
-          <StyledInput
+          <Input
             placeholder="Email"
             label="Email"
+            width="calc(100% - 30px)"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            $customStyles={{ padding: "0 20px" }}
           />
           <DropdownMenu
             label={roleToAdd}
             iconWidth="20px"
             buttonStyles={{
-              padding: "0 16px",
-              minWidth: "max-content",
+              padding: "0 15px",
               height: "100%",
               display: "flex",
               alignItems: "center",
@@ -257,6 +256,7 @@ function EditRoom() {
               color: Colors.davyGray,
               textTransform: "capitalize",
             }}
+            labelStyles={{ opacity: "50%" }}
           >
             <MenuItem onClick={() => setRoleToAdd("presenter")}>
               Presenter
@@ -429,12 +429,6 @@ const StyledContainer = styled.div`
   grid-template-columns: 400px auto 100px 150px;
   height: 40px;
   width: 100%;
-`;
-
-const StyledInput = styled(Input)`
-  ::placeholder {
-    opacity: 100%;
-  }
 `;
 
 const ListsContainer = styled.div`
