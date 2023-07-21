@@ -25,7 +25,7 @@ export function DropdownMenu(props) {
         aria-controls="menu-appbar"
         aria-haspopup="true"
         secondary
-        onHover="opacity: 100%"
+        hoverStyles="opacity: 100%"
         customStyles={
           ({
             display: "grid",

@@ -8,7 +8,7 @@ function Button(props) {
     width,
     height,
     customStyles,
-    onHover,
+    hoverStyles,
     disabledStyles,
     children,
   } = props;
@@ -20,7 +20,7 @@ function Button(props) {
       $width={width}
       $height={height}
       $customStyles={customStyles}
-      $onHover={onHover}
+      $hoverStyles={hoverStyles}
       $disabledStyles={disabledStyles}
       {...props}
     >
@@ -39,7 +39,7 @@ const StyledButton = styled.button`
   transition: 0.4s;
   width: ${({ $width }) => ($width ? $width : "136px")};
   height: ${({ $height }) => ($height ? $height : "35px")};
-  ${({ $primary, $secondary, $onHover }) =>
+  ${({ $primary, $secondary, $hoverStyles }) =>
     $primary
       ? `
         background-color: ${Colors.purple};
@@ -49,7 +49,11 @@ const StyledButton = styled.button`
         line-height: 21px;
 
         &:hover{
-          ${$onHover ? $onHover : `background-color: ${Colors.darkPurple}`} 
+          ${
+            $hoverStyles
+              ? $hoverStyles
+              : `background-color: ${Colors.darkPurple}`
+          } 
         }
         `
       : $secondary
@@ -61,7 +65,7 @@ const StyledButton = styled.button`
         line-height: 24px;
 
         &:hover{
-          ${$onHover ? $onHover : "opacity: 80%"}
+          ${$hoverStyles ? $hoverStyles : "opacity: 80%"}
         }
         `
       : `
@@ -73,7 +77,7 @@ const StyledButton = styled.button`
         padding: 0;
 
         &:hover{
-          ${$onHover ? $onHover : "opacity: 80%"}
+          ${$hoverStyles ? $hoverStyles : "opacity: 80%"}
         }
         `}
 
