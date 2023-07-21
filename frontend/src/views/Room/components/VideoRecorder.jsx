@@ -2,7 +2,6 @@ import React from "react";
 import pauseRecord from "../../../assets/pause.svg";
 import closePurple from "../../../assets/close-purple.svg";
 import styled from "styled-components";
-import theme from "../../../themes/theme";
 import { Colors } from "../../../themes/colors";
 import videoRecordRed from "../../../assets/videoRecordRed.svg";
 import Button from "../../../components/Button";
@@ -76,7 +75,7 @@ const StyledDiv = styled.div`
   z-index: 100;
   font-family: "Poppins";
   background-color: ${(props) =>
-    props.$primary ? theme.palette.primary.main : theme.palette.secondary.main};
+    props.$primary ? Colors.purple : Colors.lightPurple};
 `;
 
 const Div = styled.div`
@@ -85,7 +84,7 @@ const Div = styled.div`
   border-radius: 35px;
   font-family: "Poppins";
   background-color: ${(props) =>
-    props.$primary ? theme.palette.primary.main : theme.palette.secondary.main};
+    props.$primary ? Colors.purple : Colors.lightPurple};
   align-items: center;
 `;
 
