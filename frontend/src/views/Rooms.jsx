@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Input } from "../themes/componentsStyles";
+import Input from "../components/Input";
 import Button from "../components/Button";
 import { Colors } from "../themes/colors";
 import styled from "styled-components";
@@ -176,11 +176,12 @@ function Rooms() {
   const renderCreateRoomButton = () =>
     showNameInput ? (
       <StyledForm>
-        <StyledInput
+        <Input
           placeholder="Name of new room"
           value={newRoomName}
           onChange={(e) => setNewRoomName(e.target.value)}
-          $customStyles={{ padding: "0 20px", height: "41px", width: "408px" }}
+          height="41px"
+          width="408px"
         />
         <Button
           onClick={onSubmit}
@@ -258,17 +259,6 @@ const StyledForm = styled.form`
   display: grid;
   grid-template-columns: 1fr 0.2fr 0.1fr;
   column-gap: 10px;
-`;
-
-const StyledInput = styled(Input)`
-  ::placeholder {
-    opacity: 100%;
-  }
-
-  :focus-visible {
-    border: 2px solid ${Colors.purple};
-    box-shadow: 0 0 2px ${Colors.purple};
-  }
 `;
 
 export default Rooms;

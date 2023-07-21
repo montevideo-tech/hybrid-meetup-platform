@@ -7,7 +7,7 @@ import Button from "../components/Button";
 import Icon from "../components/Icon";
 
 export function DropdownMenu(props) {
-  const { label, iconWidth, children, buttonStyles } = props;
+  const { label, labelStyles, iconWidth, children, buttonStyles } = props;
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClose = () => {
@@ -31,13 +31,13 @@ export function DropdownMenu(props) {
             display: "grid",
             gridTemplateColumns: "repeat(2, auto)",
             columnGap: "5px",
-            color: `${Colors.davyGray}`,
+            color: Colors.davyGray,
             textTransform: "capitalize",
           },
           { ...buttonStyles })
         }
       >
-        {label}
+        <StyledSpan $labelStyles={labelStyles}>{label}</StyledSpan>
         <Icon icon={arrow} name="open" width={iconWidth} />
       </Button>
       <StyledMenu
@@ -60,6 +60,13 @@ export function DropdownMenu(props) {
     </>
   );
 }
+
+const StyledSpan = styled.span`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  ${({ $labelStyles }) => $labelStyles}
+`;
 
 const StyledMenu = styled(Menu)`
   .MuiPopover-paper {
