@@ -85,7 +85,8 @@ function Chat(props) {
           minRows={1}
           maxRows={3}
           maxLength={150}
-          focus="1pxPurple"
+          focusStyles={`border: 1px solid ${Colors.purple}; 
+          box-shadow: 0 0 1px ${Colors.purple}`}
           width="100%"
           customStyles={{
             fontSize: "0.75rem",

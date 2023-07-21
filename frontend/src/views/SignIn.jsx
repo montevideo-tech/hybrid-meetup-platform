@@ -92,7 +92,8 @@ function SignIn() {
                 error={!!errors.email}
                 helperText={errors.email?.message}
                 width="250px"
-                focus="orange"
+                focusStyles={`border: 2px solid ${Colors.orange};
+                box-shadow: 0 0 2px ${Colors.orange};`}
                 customStyles={{ padding: "0 40px" }}
               />
             </InputContainer>
@@ -124,7 +125,8 @@ function SignIn() {
                 error={!!errors.password}
                 helperText={errors.password?.message}
                 width="250px"
-                focus="orange"
+                focusStyles={`border: 2px solid ${Colors.orange};
+                box-shadow: 0 0 2px ${Colors.orange};`}
                 customStyles={{ padding: "0 40px" }}
               />
             </InputContainer>
