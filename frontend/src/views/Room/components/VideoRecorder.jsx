@@ -1,12 +1,12 @@
 import React from "react";
-import pauseRecord from "../assets/pause.svg";
-import closePurple from "../assets/close-purple.svg";
+import pauseRecord from "../../../assets/pause.svg";
+import closePurple from "../../../assets/close-purple.svg";
 import styled from "styled-components";
-import theme from "../themes/theme";
-import { Colors } from "../themes/colors";
-import videoRecordRed from "../assets/videoRecordRed.svg";
-import Button from "../components/Button";
-import Icon from "../components/Icon";
+import theme from "../../../themes/theme";
+import { Colors } from "../../../themes/colors";
+import videoRecordRed from "../../../assets/videoRecordRed.svg";
+import Button from "../../../components/Button";
+import Icon from "../../../components/Icon";
 
 function VideoRecorder({ isRecording, stopRecording }) {
   return (
