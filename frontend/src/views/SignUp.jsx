@@ -106,7 +106,8 @@ function SignUp() {
                 error={!!errors.name}
                 helperText={errors.name?.message}
                 placeholder="name"
-                focus="orange"
+                focusStyles={`border: 2px solid ${Colors.orange};
+                box-shadow: 0 0 2px ${Colors.orange};`}
                 width="250px"
                 customStyles={{ padding: "0 40px" }}
               />
@@ -123,7 +124,8 @@ function SignUp() {
                 error={!!errors.email}
                 helperText={errors.email?.message}
                 placeholder="email address"
-                focus="orange"
+                focusStyles={`border: 2px solid ${Colors.orange};
+                box-shadow: 0 0 2px ${Colors.orange};`}
                 width="250px"
                 customStyles={{ padding: "0 40px" }}
               />
@@ -148,7 +150,8 @@ function SignUp() {
                 error={!!errors.password}
                 helperText={errors.password?.message}
                 placeholder="password"
-                focus="orange"
+                focusStyles={`border: 2px solid ${Colors.orange};
+                box-shadow: 0 0 2px ${Colors.orange};`}
                 width="250px"
                 customStyles={{ padding: "0 40px" }}
               />
@@ -173,7 +176,8 @@ function SignUp() {
                 error={!!errors.confirmPassword}
                 helperText={errors.confirmPassword?.message}
                 placeholder="password"
-                focus="orange"
+                focusStyles={`border: 2px solid ${Colors.orange};
+                box-shadow: 0 0 2px ${Colors.orange};`}
                 width="250px"
                 customStyles={{ padding: "0 40px" }}
               />

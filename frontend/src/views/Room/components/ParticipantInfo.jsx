@@ -37,12 +37,10 @@ function ParticipantInfo(props) {
 
 ParticipantInfo.propTypes = {
   name: PropTypes.string,
-  parentHeight: PropTypes.number,
 };
 
 ParticipantInfo.defaultProps = {
   name: "",
-  parentHeight: 40,
 };
 
 export default ParticipantInfo;

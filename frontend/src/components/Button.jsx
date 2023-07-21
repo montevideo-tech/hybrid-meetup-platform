@@ -9,7 +9,7 @@ function Button(props) {
     height,
     customStyles,
     onHover,
-    onDisabled,
+    disabledStyles,
     children,
   } = props;
 
@@ -21,7 +21,7 @@ function Button(props) {
       $height={height}
       $customStyles={customStyles}
       $onHover={onHover}
-      $onDisabled={onDisabled}
+      $disabledStyles={disabledStyles}
       {...props}
     >
       {children}
@@ -79,11 +79,11 @@ const StyledButton = styled.button`
 
   // the following styles override all the above ones, leave them here
   ${({ $customStyles }) => $customStyles} 
-  ${({ $onDisabled }) =>
+  ${({ $disabledStyles }) =>
     `&:disabled {
         ${
-          $onDisabled
-            ? $onDisabled
+          $disabledStyles
+            ? $disabledStyles
             : `background-color: ${Colors.lightGray}; border: none; color: ${Colors.davyGray}; cursor: auto;`
         }
       }`}

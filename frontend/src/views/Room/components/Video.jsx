@@ -41,11 +41,13 @@ function Video(props) {
       videoRef.current.srcObject = stream;
     }
   }, [stream]);
+
   const boxHeight = isSharingScreen
     ? "150px"
     : isAlone
-    ? "calc((100vh - 170px))"
+    ? "calc(100vh - 170px)"
     : "calc((100vh - 204px)/2)";
+
   const boxWidth = isScreenShared
     ? "auto"
     : isSharingScreen
@@ -123,7 +125,7 @@ function Video(props) {
             right: "10px",
             border: `2px solid ${Colors.lightPurple}`,
           }}
-          onDisabled={
+          disabledStyles={
             (`border: 2px solid ${Colors.lightPurple}`,
             "backgroundColor: transparent",
             "cursor: auto")
