@@ -6,8 +6,7 @@ import * as Yup from "yup";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import Alert from "@mui/material/Alert";
-import { Label, StyledLink, formVariants } from "../themes/componentsStyles";
+import { Alert, Link } from "@mui/material";
 import Input from "../components/Input";
 import Card from "../components/Card";
 import Button from "../components/Button";
@@ -74,7 +73,11 @@ function SignUp() {
     <Container>
       <Card customStyles={{ padding: "2%" }}>
         <motion.div
-          variants={formVariants}
+          variants={{
+            initial: { opacity: 0, y: 100 },
+            animate: { opacity: 1, y: 0, transition: { duration: 0.7 } },
+            exit: { opacity: 0, y: -100, transition: { duration: 0.7 } },
+          }}
           initial="initial"
           animate="animate"
           exit="exit"
@@ -91,12 +94,7 @@ function SignUp() {
               width="160.85px"
             />
             <Title>Create an Account</Title>
-            <Label
-              htmlFor="name"
-              $customStyles={{ alignSelf: "start", marginLeft: "15px" }}
-            >
-              Name
-            </Label>
+            <Label htmlFor="name">Name</Label>
             <InputContainer>
               <StartIcon src={user} alt="lock" />
               <Input
@@ -114,12 +112,7 @@ function SignUp() {
               />
             </InputContainer>
             {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
-            <Label
-              htmlFor="email"
-              $customStyles={{ alignSelf: "start", marginLeft: "15px" }}
-            >
-              Email address
-            </Label>
+            <Label htmlFor="email">Email address</Label>
             <InputContainer>
               <StartIcon src={envelope} alt="lock" />
               <Input
@@ -138,12 +131,7 @@ function SignUp() {
             {errors.email && (
               <ErrorMessage>{errors.email.message}</ErrorMessage>
             )}
-            <Label
-              htmlFor="password"
-              $customStyles={{ alignSelf: "start", marginLeft: "15px" }}
-            >
-              Password
-            </Label>
+            <Label htmlFor="password">Password</Label>
             <InputContainer>
               <StartIcon src={lock} alt="lock" />
               <EndIcon
@@ -168,12 +156,7 @@ function SignUp() {
             {errors.password && (
               <ErrorMessage>{errors.password.message}</ErrorMessage>
             )}
-            <Label
-              htmlFor="confirmPassword"
-              $customStyles={{ alignSelf: "start", marginLeft: "15px" }}
-            >
-              Confirm password
-            </Label>
+            <Label htmlFor="confirmPassword">Confirm password</Label>
             <InputContainer>
               <StartIcon src={lock} alt="lock" />
               <EndIcon
@@ -257,6 +240,17 @@ const InputContainer = styled.div`
   padding-bottom: 4%;
 `;
 
+const Label = styled.label`
+  font-family: "Poppins";
+  font-style: italic;
+  font-weight: 500;
+  font-size: 0.75rem;
+  line-height: 18px;
+  color: ${Colors.davyGray};
+  align-self: start;
+  margin-left: 15px;
+`;
+
 const StartIcon = styled.img`
   position: absolute;
   padding: 11px 0 0 15px;
@@ -283,6 +277,10 @@ const LoginContainer = styled.div`
     margin-right: 2px;
     color: ${Colors.davyGray};
   }
+`;
+
+const StyledLink = styled(Link)`
+  color: ${Colors.purple};
 `;
 
 const ErrorMessage = styled.div`

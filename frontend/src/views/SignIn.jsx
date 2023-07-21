@@ -6,9 +6,7 @@ import * as Yup from "yup";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import Grid from "@mui/material/Grid";
-import Alert from "@mui/material/Alert";
-import { StyledLink, formVariants, Label } from "../themes/componentsStyles";
+import { Grid, Alert, Link } from "@mui/material";
 import Input from "../components/Input";
 import Card from "../components/Card";
 import Button from "../components/Button";
@@ -60,7 +58,11 @@ function SignIn() {
     <Container>
       <Card customStyles={{ padding: "2%" }}>
         <motion.div
-          variants={formVariants}
+          variants={{
+            initial: { opacity: 0, y: 100 },
+            animate: { opacity: 1, y: 0, transition: { duration: 0.7 } },
+            exit: { opacity: 0, y: -100, transition: { duration: 0.7 } },
+          }}
           initial="initial"
           animate="animate"
           exit="exit"
@@ -73,12 +75,7 @@ function SignIn() {
               width="160.85px"
             />
             <Title variant="h5">Connect Your Account</Title>
-            <Label
-              htmlFor="email"
-              $customStyles={{ alignSelf: "start", marginLeft: "15px" }}
-            >
-              Email Address
-            </Label>
+            <Label htmlFor="email">Email Address</Label>
             <InputContainer>
               <StartIcon src={envelope} alt="lock" />
               <Input
@@ -99,12 +96,7 @@ function SignIn() {
             {errors.email && (
               <ErrorMessage>{errors.email.message}</ErrorMessage>
             )}
-            <Label
-              htmlFor="password"
-              $customStyles={{ alignSelf: "start", marginLeft: "15px" }}
-            >
-              Password
-            </Label>
+            <Label htmlFor="password">Password</Label>
             <InputContainer>
               <StartIcon src={lock} alt="lock" />
               <EndIcon
@@ -200,6 +192,10 @@ const LoginContainer = styled.div`
   }
 `;
 
+const StyledLink = styled(Link)`
+  color: ${Colors.purple};
+`;
+
 const ErrorMessage = styled.div`
   font-family: "Poppins";
   font-size: 0.75rem;
@@ -211,6 +207,17 @@ const InputContainer = styled.div`
   align-self: center;
   justify-self: center;
   margin-bottom: 4%;
+`;
+
+const Label = styled.label`
+  font-family: "Poppins";
+  font-style: italic;
+  font-weight: 500;
+  font-size: 0.75rem;
+  line-height: 18px;
+  color: ${Colors.davyGray};
+  align-self: start;
+  margin-left: 15px;
 `;
 
 const StartIcon = styled.img`
