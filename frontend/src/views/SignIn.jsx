@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -8,12 +8,8 @@ import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import Grid from "@mui/material/Grid";
 import Alert from "@mui/material/Alert";
-import {
-  StyledLink,
-  formVariants,
-  Input,
-  Label,
-} from "../themes/componentsStyles";
+import { StyledLink, formVariants, Label } from "../themes/componentsStyles";
+import Input from "../components/Input";
 import Card from "../components/Card";
 import Button from "../components/Button";
 import { signInWithEmail } from "../actions";
@@ -43,6 +39,7 @@ function SignIn() {
   const [alert, setAlert] = useState({ type: "success", message: null });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const inputRef = useRef(null);
 
   const onSubmit = async (data) => {
     setLoading(true);
@@ -84,15 +81,19 @@ function SignIn() {
             </Label>
             <InputContainer>
               <StartIcon src={envelope} alt="lock" />
-              <StyledInput
+              <Input
+                ref={inputRef}
+                autoFocus
                 id="email"
                 name="email"
-                autoFocus
                 className="email"
+                placeholder="email address"
                 {...register("email")}
                 error={!!errors.email}
                 helperText={errors.email?.message}
-                placeholder="email address"
+                width="250px"
+                focus="orange"
+                customStyles={{ padding: "0 40px" }}
               />
             </InputContainer>
             {errors.email && (
@@ -111,7 +112,8 @@ function SignIn() {
                 src={showPassword ? eye : eyeSlash}
                 alt="view password"
               />
-              <StyledInput
+              <Input
+                ref={inputRef}
                 name="password"
                 label="Password"
                 placeholder="password"
@@ -121,6 +123,9 @@ function SignIn() {
                 {...register("password")}
                 error={!!errors.password}
                 helperText={errors.password?.message}
+                width="250px"
+                focus="orange"
+                customStyles={{ padding: "0 40px" }}
               />
             </InputContainer>
             {errors.password && (
@@ -221,13 +226,4 @@ const EndIcon = styled.img`
   margin: 11px 0 0 297px;
   width: 20px;
   height: 20px;
-`;
-
-const StyledInput = styled(Input)`
-  width: 250px;
-  :focus-visible {
-    outline: none !important;
-    border: 2px solid ${Colors.orange};
-    box-shadow: 0 0 2px ${Colors.orange};
-  }
 `;

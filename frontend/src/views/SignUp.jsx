@@ -7,12 +7,8 @@ import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import Alert from "@mui/material/Alert";
-import {
-  Input,
-  Label,
-  StyledLink,
-  formVariants,
-} from "../themes/componentsStyles";
+import { Label, StyledLink, formVariants } from "../themes/componentsStyles";
+import Input from "../components/Input";
 import Card from "../components/Card";
 import Button from "../components/Button";
 import { signUp } from "../actions";
@@ -103,15 +99,18 @@ function SignUp() {
             </Label>
             <InputContainer>
               <StartIcon src={user} alt="lock" />
-              <StyledInput
+              <Input
+                autoFocus
                 id="name"
                 label="Name"
                 name="name"
-                autoFocus
                 {...register("name")}
                 error={!!errors.name}
                 helperText={errors.name?.message}
                 placeholder="name"
+                focus="orange"
+                width="250px"
+                customStyles={{ padding: "0 40px" }}
               />
             </InputContainer>
             {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
@@ -123,7 +122,7 @@ function SignUp() {
             </Label>
             <InputContainer>
               <StartIcon src={envelope} alt="lock" />
-              <StyledInput
+              <Input
                 id="email"
                 name="email"
                 autoFocus
@@ -131,6 +130,9 @@ function SignUp() {
                 error={!!errors.email}
                 helperText={errors.email?.message}
                 placeholder="email address"
+                focus="orange"
+                width="250px"
+                customStyles={{ padding: "0 40px" }}
               />
             </InputContainer>
             {errors.email && (
@@ -149,7 +151,7 @@ function SignUp() {
                 src={showPassword ? eye : eyeSlash}
                 alt="view password"
               />
-              <StyledInput
+              <Input
                 id="password"
                 name="password"
                 label="Email Address"
@@ -158,6 +160,9 @@ function SignUp() {
                 error={!!errors.password}
                 helperText={errors.password?.message}
                 placeholder="password"
+                focus="orange"
+                width="250px"
+                customStyles={{ padding: "0 40px" }}
               />
             </InputContainer>
             {errors.password && (
@@ -176,7 +181,7 @@ function SignUp() {
                 src={showPassword ? eye : eyeSlash}
                 alt="view password"
               />
-              <StyledInput
+              <Input
                 id="confirmPassword"
                 name="confirmPassword"
                 label="Confirm password"
@@ -185,6 +190,9 @@ function SignUp() {
                 error={!!errors.confirmPassword}
                 helperText={errors.confirmPassword?.message}
                 placeholder="password"
+                focus="orange"
+                width="250px"
+                customStyles={{ padding: "0 40px" }}
               />
             </InputContainer>
             {errors.confirmPassword && (
@@ -282,13 +290,4 @@ const ErrorMessage = styled.div`
   font-size: 0.75rem;
   color: red;
   margin-top: -10px;
-`;
-
-const StyledInput = styled(Input)`
-  width: 250px;
-  :focus-visible {
-    outline: none !important;
-    border: 2px solid ${Colors.orange};
-    box-shadow: 0 0 2px ${Colors.orange};
-  }
 `;
