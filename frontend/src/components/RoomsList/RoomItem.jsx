@@ -9,7 +9,7 @@ import styled from "styled-components";
 import { deleteRoom } from "../../actions";
 import { ROLES } from "../../utils/supabaseSDK/roles";
 import { onDeleteRoomMessage } from "../../utils/supabaseSDK/chat";
-import ConfirmationToast from "../ConfirmationToast/ConfirmationToast";
+import ConfirmationToast from "../ConfirmationToast";
 import deletePurple from "../../assets/delete-purple.svg";
 import Icon from "../Icon";
 
