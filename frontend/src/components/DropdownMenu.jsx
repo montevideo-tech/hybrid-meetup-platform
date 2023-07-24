@@ -6,7 +6,7 @@ import arrow from "../assets/arrow.svg";
 import Button from "../components/Button";
 import Icon from "../components/Icon";
 
-export function DropdownMenu(props) {
+function DropdownMenu(props) {
   const { label, labelStyles, iconWidth, children, buttonStyles } = props;
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -60,6 +60,8 @@ export function DropdownMenu(props) {
     </>
   );
 }
+
+export default DropdownMenu;
 
 const StyledSpan = styled.span`
   display: flex;
