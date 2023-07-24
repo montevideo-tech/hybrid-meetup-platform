@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from "react";
-import Input from "../components/Input";
-import Button from "../components/Button";
-import { Colors } from "../themes/colors";
+import Input from "../../components/Input";
+import Button from "../../components/Button";
+import { Colors } from "../../themes/colors";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import { supabase } from "../lib/api";
-import { createRoom, addRoomToDb, giveUserRoleOnRoom } from "../actions";
-import { ROLES } from "../utils/supabaseSDK/roles";
-import RoomsList from "../components/RoomsList/RoomsList";
-import RoomsListSkeleton from "../components/RoomsList/RoomsListSkeleton";
-import { store } from "../store";
-import close from "../assets/close.svg";
-import Snackbar from "../components/SnackbarComponent";
-import Spinner from "../components/Spinner";
-import { getRoomsData, getUsersData } from "../utils/supabaseSDK/shared";
-import Icon from "../components/Icon";
+import { supabase } from "../../lib/api";
+import { createRoom, addRoomToDb, giveUserRoleOnRoom } from "../../actions";
+import { ROLES } from "../../utils/supabaseSDK/roles";
+import RoomsList from "../../components/RoomsList/RoomsList";
+import RoomsListSkeleton from "../../components/RoomsList/RoomsListSkeleton";
+import { store } from "../../store";
+import close from "../../assets/close.svg";
+import Snackbar from "../../components/SnackbarComponent";
+import Spinner from "../../components/Spinner";
+import { getRoomsData, getUsersData } from "../../utils/supabaseSDK/shared";
+import Icon from "../../components/Icon";
 
 function Rooms() {
   const [roomsList, setRoomsList] = useState([]);

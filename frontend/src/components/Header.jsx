@@ -6,7 +6,7 @@ import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import { logout } from "../reducers/userSlice";
 import { Hybridly } from "../components/hybridly/Hybridly";
-import { DropdownMenu } from "./DropdownMenu";
+import DropdownMenu from "./DropdownMenu";
 import { MenuItem } from "@mui/material";
 import { Colors } from "../themes/colors";
 import line from "../assets/line.svg";
