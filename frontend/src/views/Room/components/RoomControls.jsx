@@ -1,5 +1,4 @@
 import { React, useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { ButtonGroup, Tooltip } from "@mui/material";
@@ -9,7 +8,6 @@ import {
   HeadsetMic as HeadsetMicIcon,
   HeadsetOff as HeadsetOffIcon,
 } from "@mui/icons-material";
-import { LocalParticipant } from "@mux/spaces-web";
 import { ROLES } from "../../../utils/supabaseSDK/roles";
 import { setGuestMuted } from "../../../utils/supabaseSDK/room";
 import { Colors } from "../../../themes/colors";
@@ -307,30 +305,6 @@ function RoomControls(props) {
     </Container>
   );
 }
-
-RoomControls.propTypes = {
-  localTracks: PropTypes.object,
-  updateScreenShare: PropTypes.func.isRequired,
-  updateLocalTracksMuted: PropTypes.func.isRequired,
-  leaveRoom: PropTypes.func.isRequired,
-  disabled: PropTypes.bool,
-  isSharingScreen: PropTypes.bool,
-  permissionRole: PropTypes.string,
-  isEnableToUnmute: PropTypes.bool,
-  localParticipant: LocalParticipant,
-  setIsBlockedRemotedGuest: PropTypes.func.isRequired,
-  isBlockedRemotedGuest: PropTypes.bool,
-};
-
-RoomControls.defaultProps = {
-  localTracks: { audio: null, video: null },
-  disabled: true,
-  isSharingScreen: false,
-  permissionRole: "GUEST",
-  isEnableToUnmute: true,
-  localParticipant: null,
-  isBlockedRemotedGuest: false,
-};
 
 const Container = styled(ButtonGroup)`
   display: flex;
