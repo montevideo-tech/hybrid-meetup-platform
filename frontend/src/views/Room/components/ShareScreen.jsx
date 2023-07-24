@@ -19,11 +19,6 @@ function ShareScreen(props) {
   );
 }
 
-ShareScreen.defaultProps = {
-  children: [],
-  height: "500px",
-};
-
 export default ShareScreen;
 
 const Container = styled.div`

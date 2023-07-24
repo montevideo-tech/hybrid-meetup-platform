@@ -141,20 +141,6 @@ function Video(props) {
   );
 }
 
-Video.defaultProps = {
-  stream: undefined,
-  isStreamLocal: false,
-  isAudioMuted: false,
-  isVideoMuted: false,
-  isSpeaking: false,
-  size: 100,
-  name: "",
-  onClick: () => {},
-  onClickMute: () => {},
-  style: {},
-  permissionRole: ROLES.GUEST,
-};
-
 export default Video;
 
 const StyledImg = styled.img`

@@ -45,20 +45,6 @@ function ParticipantLayout(props) {
   );
 }
 
-ParticipantLayout.propTypes = {
-  children: ReactNode,
-  width: PropTypes.number,
-  height: PropTypes.number,
-  gap: PropTypes.number,
-};
-
-ParticipantLayout.defaultProps = {
-  children: undefined,
-  width: 886,
-  height: 609,
-  gap: 10,
-};
-
 export default ParticipantLayout;
 
 const Container = styled.div`

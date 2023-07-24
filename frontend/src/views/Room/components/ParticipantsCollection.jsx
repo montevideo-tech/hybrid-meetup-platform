@@ -76,18 +76,6 @@ function ParticipantsCollection(props) {
   );
 }
 
-ParticipantsCollection.defaultProps = {
-  children: [],
-  width: 886,
-  height: 609,
-  gap: 10,
-  participantsPerPage: MAX_PARTICIPANTS_PER_PAGE,
-  participantsCount: 1,
-  localParticipant: null,
-  permissionRole: ROLES.GUEST,
-  isEnableToUnmute: true,
-};
-
 const Content = styled.div`
   ${({ $colums, $twoParticipant }) => `
     display: grid;
