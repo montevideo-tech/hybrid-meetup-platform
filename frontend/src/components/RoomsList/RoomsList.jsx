@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 
 import { Grid, Typography } from "@mui/material";
 
@@ -22,13 +21,5 @@ function RoomsList(props) {
     </Grid>
   );
 }
-
-RoomsList.propTypes = {
-  list: PropTypes.array,
-};
-
-RoomsList.defaultProps = {
-  list: [],
-};
 
 export default RoomsList;

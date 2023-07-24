@@ -306,6 +306,16 @@ function RoomControls(props) {
   );
 }
 
+RoomControls.defaultProps = {
+  localTracks: { audio: null, video: null },
+  disabled: true,
+  isSharingScreen: false,
+  permissionRole: "GUEST",
+  isEnableToUnmute: true,
+  localParticipant: null,
+  isBlockedRemotedGuest: false,
+};
+
 const Container = styled(ButtonGroup)`
   display: flex;
   flex-direction: row;

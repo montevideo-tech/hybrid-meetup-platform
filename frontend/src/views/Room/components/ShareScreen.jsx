@@ -1,5 +1,4 @@
-import React, { ReactNode } from "react";
-import PropTypes from "prop-types";
+import React from "react";
 import Video from "./Video";
 import styled from "styled-components";
 
@@ -19,11 +18,6 @@ function ShareScreen(props) {
     </Container>
   );
 }
-
-ShareScreen.propTypes = {
-  children: ReactNode,
-  height: PropTypes.string,
-};
 
 ShareScreen.defaultProps = {
   children: [],
