@@ -78,30 +78,6 @@ function ParticipantsCollection(props) {
   );
 }
 
-ParticipantsCollection.propTypes = {
-  children: ReactNode,
-  width: PropTypes.number,
-  height: PropTypes.number,
-  gap: PropTypes.number,
-  participantsPerPage: PropTypes.number,
-  participantsCount: PropTypes.number,
-  localParticipant: LocalParticipant,
-  permissionRole: PropTypes.string,
-  isEnableToUnmute: PropTypes.bool,
-};
-
-ParticipantsCollection.defaultProps = {
-  children: [],
-  width: 886,
-  height: 609,
-  gap: 10,
-  participantsPerPage: MAX_PARTICIPANTS_PER_PAGE,
-  participantsCount: 1,
-  localParticipant: null,
-  permissionRole: ROLES.GUEST,
-  isEnableToUnmute: true,
-};
-
 const Content = styled.div`
   ${({ $colums, $twoParticipant }) => `
     display: grid;

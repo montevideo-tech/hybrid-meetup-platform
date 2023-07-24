@@ -407,7 +407,6 @@ function Room() {
   };
 
   const joinRoom = async () => {
-    // mejorable
     const dolbyApiKey = await getDolbyKey();
     const MuxJWT = await roomJWTprovider(
       roomId,
