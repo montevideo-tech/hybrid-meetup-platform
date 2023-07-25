@@ -1,18 +1,33 @@
 import { useEffect } from "react";
 import { getProvider } from "../utils/supabaseSDK/environment";
-import { cleanRoom } from "../reducers/roomSlice";
+import { cleanRoom, initProvider } from "../reducers/roomSlice";
+import { useSelector } from "react-redux";
 
 const useRoomSetup = (
-  providerName,
   localParticipant,
   localTracks,
   setLocalVideoStream,
   setLocalAudioStream,
   setLocalName,
-  setProviderName,
   leaveRoom,
   dispatch,
 ) => {
+  const providerName = useSelector((state) => state?.room?.provider);
+
+  // initialize room
+  useEffect(() => {
+    const setProvider = async () => {
+      const provider = await getProvider();
+      dispatch(initProvider(provider));
+    };
+
+    setProvider();
+    return () => {
+      dispatch(cleanRoom());
+      leaveRoom();
+    };
+  }, []);
+
   useEffect(() => {
     if (providerName === "MUX") {
       if (localParticipant?.provider?.videoTracks?.entries().next()?.value) {
@@ -21,6 +36,7 @@ const useRoomSetup = (
           localParticipant?.provider?.videoTracks?.entries().next()?.value[1]
             .track,
         );
+        console.log("Local Video Stream", localVideoStream);
         setLocalVideoStream(localVideoStream);
       }
       if (localParticipant?.provider?.audioTracks?.entries().next()?.value) {
@@ -41,20 +57,5 @@ const useRoomSetup = (
     localParticipant?.provider?.videoTracks?.entries().next().done,
     localTracks,
   ]);
-
-  // initialize room
-  useEffect(() => {
-    const setProvider = async () => {
-      const provider = await getProvider();
-      setProviderName(provider);
-    };
-
-    setProvider();
-    return () => {
-      dispatch(cleanRoom());
-      leaveRoom();
-    };
-  }, []);
 };
-
 export default useRoomSetup;
