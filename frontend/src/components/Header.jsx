@@ -6,12 +6,13 @@ import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import { logout } from "../reducers/userSlice";
 import { Hybridly } from "../components/hybridly/Hybridly";
-import { Button } from "../themes/componentsStyles";
-import { DropdownMenu } from "./DropdownMenu";
+import DropdownMenu from "./DropdownMenu";
 import { MenuItem } from "@mui/material";
 import { Colors } from "../themes/colors";
 import line from "../assets/line.svg";
 import user from "../assets/user.svg";
+import Button from "../components/Button";
+import Icon from "../components/Icon";
 
 export function Header() {
   const [auth, setAuth] = useState(null);
@@ -41,7 +42,7 @@ export function Header() {
             <Hybridly />
             {auth?.email && auth?.token ? (
               <DropdownMenu
-                label={<img alt="user" src={user} />}
+                label={<Icon name="user" icon={user} />}
                 buttonStyles={{
                   width: "100px",
                   height: "45px",
@@ -53,15 +54,15 @@ export function Header() {
               >
                 <EmailContainer>
                   <span>{currentUser.email}</span>
-                  <img alt="line" src={line} />
+                  <Icon name="line" icon={line} />
                 </EmailContainer>
                 <MenuItem>
                   <Button
                     onClick={handleSignOut}
-                    $primary
-                    $customStyles={{
-                      width: "100%",
-                      height: "25px",
+                    primary
+                    width="100%"
+                    height="25px"
+                    customStyles={{
                       fontWeight: "600",
                       fontSize: "0.65rem",
                       lineHeight: "12px",
@@ -75,9 +76,10 @@ export function Header() {
             ) : (
               <Button
                 onClick={() => navigate("/signIn")}
-                $customStyles={{
-                  width: "100px",
-                  height: "45px",
+                secondary
+                width="100px"
+                height="45px"
+                customStyles={{
                   textTransform: "uppercase",
                 }}
               >

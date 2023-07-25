@@ -1,10 +1,10 @@
 import React, { useMemo, ReactNode } from "react";
 import { LocalParticipant } from "@mux/spaces-web";
 import PropTypes from "prop-types";
-import { MAX_PARTICIPANTS_PER_PAGE } from "../lib/constants";
-import Audio from "./Audio";
+import { MAX_PARTICIPANTS_PER_PAGE } from "../../../lib/constants";
+import Audio from "../../../components/Audio";
 import Video from "./Video";
-import { ROLES } from "../utils/supabaseSDK/roles";
+import { ROLES } from "../../../utils/supabaseSDK/roles";
 import styled from "styled-components";
 
 function ParticipantsCollection(props) {
@@ -77,30 +77,6 @@ function ParticipantsCollection(props) {
     </>
   );
 }
-
-ParticipantsCollection.propTypes = {
-  children: ReactNode,
-  width: PropTypes.number,
-  height: PropTypes.number,
-  gap: PropTypes.number,
-  participantsPerPage: PropTypes.number,
-  participantsCount: PropTypes.number,
-  localParticipant: LocalParticipant,
-  permissionRole: PropTypes.string,
-  isEnableToUnmute: PropTypes.bool,
-};
-
-ParticipantsCollection.defaultProps = {
-  children: [],
-  width: 886,
-  height: 609,
-  gap: 10,
-  participantsPerPage: MAX_PARTICIPANTS_PER_PAGE,
-  participantsCount: 1,
-  localParticipant: null,
-  permissionRole: ROLES.GUEST,
-  isEnableToUnmute: true,
-};
 
 const Content = styled.div`
   ${({ $colums, $twoParticipant }) => `

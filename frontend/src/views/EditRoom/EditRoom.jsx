@@ -1,25 +1,29 @@
 import { React, useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useLoaderData, useNavigate } from "react-router-dom";
-import { List, ListItem, MenuItem, CircularProgress } from "@mui/material";
+import { List, ListItem, MenuItem } from "@mui/material";
 import styled from "styled-components";
-import { giveUserRoleOnRoom } from "../actions";
+import { giveUserRoleOnRoom } from "../../actions";
 import {
   deleteRole,
   subscribeToRoleChanges,
   ROLES,
-} from "../utils/supabaseSDK/roles";
-import { fetchUsers, getRoomName } from "../utils/supabaseSDK/editRoom";
-import { updateParticipantRoles } from "../utils/helpers";
-import { handleSaveRoomName } from "../utils/supabaseSDK/room";
-import { Card, Button, Input } from "../themes/componentsStyles";
-import { Colors } from "../themes/colors";
-import edit from "../assets/edit.svg";
-import deleteGray from "../assets/deleteGray.svg";
-import deletePurple from "../assets/deletePurple.svg";
-import { addUpdateParticipant, removeRole } from "../reducers/roomSlice";
-import { DropdownMenu } from "../components/DropdownMenu";
-import Snackbar from "../components/SnackbarComponent";
+} from "../../utils/supabaseSDK/roles";
+import { fetchUsers, getRoomName } from "../../utils/supabaseSDK/editRoom";
+import { updateParticipantRoles } from "../../utils/helpers";
+import { handleSaveRoomName } from "../../utils/supabaseSDK/room";
+import { Colors } from "../../themes/colors";
+import edit from "../../assets/edit.svg";
+import deleteGray from "../../assets/deleteGray.svg";
+import deletePurple from "../../assets/delete-purple.svg";
+import { addUpdateParticipant, removeRole } from "../../reducers/roomSlice";
+import Input from "../../components/Input";
+import Card from "../../components/Card";
+import Button from "../../components/Button";
+import DropdownMenu from "../../components/DropdownMenu";
+import Snackbar from "../../components/SnackbarComponent";
+import Icon from "../../components/Icon";
+import Spinner from "../../components/Spinner";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -188,10 +192,10 @@ function EditRoom() {
   return (
     <Container>
       <Card
-        $customStyles={{
+        width="70%"
+        customStyles={{
           flexDirection: "column",
           alignItems: "start",
-          width: "70%",
           padding: "40px",
         }}
       >
@@ -205,6 +209,7 @@ function EditRoom() {
                 autoFocus
               />
               <Button
+                primary
                 onClick={() =>
                   handleSaveRoomName(setEditingRoomName, roomName, roomId)
                 }
@@ -215,36 +220,43 @@ function EditRoom() {
           ) : (
             <>
               <Subtitle>{roomName}</Subtitle>
-              <img
-                width="17px"
-                height="17px"
-                src={edit}
-                alt="edit title room"
+              <Button
                 onClick={handleEditRoomName}
-              />
+                width="fit-content"
+                height="fit-content"
+              >
+                <Icon
+                  icon={edit}
+                  name="edit title room"
+                  width="17px"
+                  height="17px"
+                />
+              </Button>
             </>
           )}
         </TitleRoomContainer>
         <StyledContainer>
-          <StyledInput
+          <Input
             placeholder="Email"
             label="Email"
+            width="calc(100% - 30px)"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            $customStyles={{ padding: "0 20px" }}
           />
           <DropdownMenu
             label={roleToAdd}
             iconWidth="20px"
             buttonStyles={{
-              minWidth: "max-content",
+              padding: "0 15px",
               height: "100%",
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
               justifySelf: "center",
-              padding: "0 16px",
+              color: Colors.davyGray,
+              textTransform: "capitalize",
             }}
+            labelStyles={{ opacity: "50%" }}
           >
             <MenuItem onClick={() => setRoleToAdd("presenter")}>
               Presenter
@@ -253,16 +265,16 @@ function EditRoom() {
           <Button
             onClick={onClickAdd}
             disabled={!isValidEmail}
-            $primary
-            $customStyles={{
+            primary
+            height="100%"
+            width="100%"
+            customStyles={{
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              height: "100%",
-              width: "100%",
             }}
           >
-            {loading ? <CircularProgress color="secondary" size={20} /> : "Add"}
+            {loading ? <Spinner color="secondary" size={20} /> : "Add"}
           </Button>
           {!isValidUser && (
             <Snackbar
@@ -272,9 +284,10 @@ function EditRoom() {
             />
           )}
           <Button
-            $primary
+            primary
             onClick={() => navigate(`/rooms/${roomId}`)}
-            $customStyles={{ height: "100%", width: "100%" }}
+            height="100%"
+            width="100%"
           >
             Go to Room
           </Button>
@@ -290,12 +303,12 @@ function EditRoom() {
                       <ListItem
                         key={e}
                         secondaryAction={
-                          <img
+                          <Icon
+                            icon={deletePurple}
+                            name="delete"
                             width="17px"
-                            src={deletePurple}
-                            alt="delete"
                             onClick={() => {
-                              handleDeleteRole(e, "presenters");
+                              handleDeleteRole(e, "hosts");
                             }}
                           />
                         }
@@ -307,12 +320,12 @@ function EditRoom() {
                       <ListItem
                         key={e}
                         secondaryAction={
-                          <img
+                          <Icon
+                            icon={deleteGray}
+                            name="delete"
                             width="17px"
-                            src={deleteGray}
-                            alt="delete"
                             onClick={() => {
-                              handleDeleteRole(e, "presenters");
+                              handleDeleteRole(e, "hosts");
                             }}
                           />
                         }
@@ -336,7 +349,7 @@ function EditRoom() {
                       <ListItem
                         key={e}
                         secondaryAction={
-                          <img
+                          <Icon
                             width="17px"
                             src={deletePurple}
                             alt="delete"
@@ -353,10 +366,10 @@ function EditRoom() {
                       <ListItem
                         key={e}
                         secondaryAction={
-                          <img
+                          <Icon
+                            icon={deleteGray}
+                            name="delete"
                             width="17px"
-                            src={deleteGray}
-                            alt="delete"
                             onClick={() => {
                               handleDeleteRole(e, "presenters");
                             }}
@@ -416,12 +429,6 @@ const StyledContainer = styled.div`
   grid-template-columns: 400px auto 100px 150px;
   height: 40px;
   width: 100%;
-`;
-
-const StyledInput = styled(Input)`
-  ::placeholder {
-    opacity: 100%;
-  }
 `;
 
 const ListsContainer = styled.div`

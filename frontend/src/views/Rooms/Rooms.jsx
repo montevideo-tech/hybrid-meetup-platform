@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { Button, Input } from "../themes/componentsStyles";
-import { CircularProgress } from "@mui/material";
-import { Colors } from "../themes/colors";
+import Input from "../../components/Input";
+import Button from "../../components/Button";
+import { Colors } from "../../themes/colors";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import { supabase } from "../lib/api";
-import { createRoom, addRoomToDb, giveUserRoleOnRoom } from "../actions";
-import { ROLES } from "../utils/supabaseSDK/roles";
-import RoomsList from "../components/RoomsList/RoomsList";
-import RoomsListSkeleton from "../components/RoomsList/RoomsListSkeleton";
-import { store } from "../store";
-import close from "../assets/close.svg";
-import Snackbar from "../components/SnackbarComponent";
-import { getRoomsData, getUsersData } from "../utils/supabaseSDK/shared";
+import { supabase } from "../../lib/api";
+import { createRoom, addRoomToDb, giveUserRoleOnRoom } from "../../actions";
+import { ROLES } from "../../utils/supabaseSDK/roles";
+import RoomsList from "../../components/RoomsList/RoomsList";
+import RoomsListSkeleton from "../../components/RoomsList/RoomsListSkeleton";
+import { store } from "../../store";
+import close from "../../assets/close.svg";
+import Snackbar from "../../components/SnackbarComponent";
+import Spinner from "../../components/Spinner";
+import { getRoomsData, getUsersData } from "../../utils/supabaseSDK/shared";
+import Icon from "../../components/Icon";
 
 function Rooms() {
   const [roomsList, setRoomsList] = useState([]);
@@ -174,46 +176,49 @@ function Rooms() {
   const renderCreateRoomButton = () =>
     showNameInput ? (
       <StyledForm>
-        <StyledInput
+        <Input
           placeholder="Name of new room"
           value={newRoomName}
           onChange={(e) => setNewRoomName(e.target.value)}
-          $customStyles={{ padding: "0 20px", height: "41px", width: "408px" }}
+          height="41px"
+          width="408px"
         />
         <Button
-          $primary
-          $customStyles={{ width: "100px", height: "45px" }}
-          type="submit"
-          disabled={loadingRooms || creatingRoom || !newRoomName}
           onClick={onSubmit}
+          disabled={loadingRooms || creatingRoom || !newRoomName}
+          type="submit"
+          primary
+          width="100px"
+          height="45px"
         >
           Done
         </Button>
         <Button
-          $primary
-          $customStyles={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            width: "45px",
-            height: "45px",
-          }}
-          disabled={loadingRooms || creatingRoom}
           onClick={() => {
             setShowNameInput(false);
             setNewRoomName("");
           }}
+          primary
+          width="45px"
+          height="45px"
+          customStyles={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
         >
-          <img src={close} alt="close" />
+          <Icon icon={close} name="close" />
         </Button>
       </StyledForm>
     ) : (
       <Button
         onClick={() => setShowNameInput(true)}
         disabled={loadingRooms || creatingRoom}
-        $customStyles={{ width: "190px", height: "45px" }}
+        secondary
+        width="190px"
+        height="45px"
       >
-        {creatingRoom ? <CircularProgress size={20} /> : "Create new room +"}
+        {creatingRoom ? <Spinner size={20} /> : "Create new room +"}
       </Button>
     );
 
@@ -221,10 +226,8 @@ function Rooms() {
     <Container>
       <ContainerWithTitleAndButton>
         <Title>Choose your room</Title>
-
         {user?.role === "admin" && renderCreateRoomButton()}
       </ContainerWithTitleAndButton>
-
       {loadingRooms ? <RoomsListSkeleton /> : <RoomsList list={roomsList} />}
       {errorState && <Snackbar message={errorState} severity="error" />}
     </Container>
@@ -256,17 +259,6 @@ const StyledForm = styled.form`
   display: grid;
   grid-template-columns: 1fr 0.2fr 0.1fr;
   column-gap: 10px;
-`;
-
-const StyledInput = styled(Input)`
-  ::placeholder {
-    opacity: 100%;
-  }
-
-  :focus-visible {
-    border: 2px solid ${Colors.purple};
-    box-shadow: 0 0 2px ${Colors.purple};
-  }
 `;
 
 export default Rooms;

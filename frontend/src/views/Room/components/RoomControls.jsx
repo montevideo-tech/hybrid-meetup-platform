@@ -1,5 +1,4 @@
 import { React, useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { ButtonGroup, Tooltip } from "@mui/material";
@@ -9,18 +8,19 @@ import {
   HeadsetMic as HeadsetMicIcon,
   HeadsetOff as HeadsetOffIcon,
 } from "@mui/icons-material";
-import { LocalParticipant } from "@mux/spaces-web";
-import { ROLES } from "../utils/supabaseSDK/roles";
-import { setGuestMuted } from "../utils/supabaseSDK/room";
-import { Button } from "../themes/componentsStyles";
-import camera from "../assets/camera.svg";
-import noCamera from "../assets/no-camera.svg";
-import mic from "../assets/mic.svg";
-import noMic from "../assets/no-mic.svg";
-import noMicRed from "../assets/no-mic-red.svg";
-import close from "../assets/close.svg";
-import videoRecord from "../assets/videoRecord.svg";
-import { getProvider } from "../utils/supabaseSDK/environment";
+import { ROLES } from "../../../utils/supabaseSDK/roles";
+import { setGuestMuted } from "../../../utils/supabaseSDK/room";
+import { Colors } from "../../../themes/colors";
+import camera from "../../../assets/camera.svg";
+import noCamera from "../../../assets/no-camera.svg";
+import mic from "../../../assets/mic.svg";
+import noMic from "../../../assets/no-mic.svg";
+import noMicRed from "../../../assets/no-mic-red.svg";
+import close from "../../../assets/close.svg";
+import videoRecord from "../../../assets/videoRecord.svg";
+import { getProvider } from "../../../utils/supabaseSDK/environment";
+import Button from "../../../components/Button";
+import Icon from "../../../components/Icon";
 function RoomControls(props) {
   const navigate = useNavigate();
   const [videoActive, setVideoActive] = useState(true);
@@ -124,16 +124,20 @@ function RoomControls(props) {
         <Tooltip title={!isRecording ? "Start recording" : "Stop recording"}>
           <StyledDiv>
             <Button
-              $customStyles={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                width: "50px",
-                height: "50px",
-              }}
               onClick={startRecording}
+              width="50px"
+              height="50px"
+              customStyles={{
+                backgroundColor: Colors.lightPurple,
+                border: `2px solid ${Colors.purple}`,
+              }}
             >
-              <img src={videoRecord} alt="record" width="27px" height="27px" />
+              <Icon
+                icon={videoRecord}
+                name="record"
+                width="27px"
+                height="27px"
+              />
             </Button>
           </StyledDiv>
         </Tooltip>
@@ -147,25 +151,30 @@ function RoomControls(props) {
       >
         <StyledDiv>
           <Button
-            $customStyles={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "50px",
-              height: "50px",
-            }}
             disabled={!localTracks.video}
             onClick={() => toggleMuteTrack(localTracks.video)}
+            width="50px"
+            height="50px"
+            customStyles={{
+              backgroundColor: Colors.lightPurple,
+              border: `2px solid ${Colors.purple}`,
+            }}
           >
             {!localTracks.video || !videoActive ? (
-              <StyledImg
-                src={noCamera}
-                alt="camera off"
+              <Icon
+                icon={noCamera}
+                name="camera off"
                 width="26px"
                 height="26px"
+                customStyles={{ marginTop: "2px" }}
               />
             ) : (
-              <img src={camera} alt="camera on" width="23.2px" height="24px" />
+              <Icon
+                icon={camera}
+                name="camera on"
+                width="23.2px"
+                height="24px"
+              />
             )}
           </Button>
         </StyledDiv>
@@ -178,40 +187,40 @@ function RoomControls(props) {
       >
         <StyledDiv>
           <Button
-            $customStyles={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "50px",
-              height: "50px",
-            }}
             disabled={!localTracks.audio || !isEnableToUnmute}
             onClick={() => toggleMuteTrack(localTracks.audio)}
+            width="50px"
+            height="50px"
+            customStyles={{
+              backgroundColor: Colors.lightPurple,
+              border: `2px solid ${Colors.purple}`,
+            }}
           >
             {!localTracks.audio ||
             localTracks.audio.muted ||
             !isEnableToUnmute ? (
               isEnableToUnmute ? (
-                <img
-                  src={noMic}
-                  alt="microphone off"
+                <Icon
+                  icon={noMic}
+                  name="microphone off"
                   height="26px"
                   width="26px"
                 />
               ) : (
-                <img
-                  src={noMicRed}
-                  alt="microphone disabled"
+                <Icon
+                  icon={noMicRed}
+                  name="microphone disabled"
                   height="26px"
                   width="26px"
                 />
               )
             ) : (
-              <StyledImg
-                src={mic}
-                alt="microphone on"
+              <Icon
+                icon={mic}
+                name="microphone on"
                 height="28px"
                 width="28px"
+                customStyles={{ marginTop: "2px" }}
               />
             )}
           </Button>
@@ -231,18 +240,18 @@ function RoomControls(props) {
         >
           <StyledDiv>
             <Button
+              onClick={() => shareScreen()}
               disabled={
                 participantSharingScreen &&
                 participantSharingScreen !== localParticipant.displayName
               }
-              $customStyles={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                width: "50px",
-                height: "50px",
+              width="50px"
+              height="50px"
+              customStyles={{
+                backgroundColor: Colors.lightPurple,
+                color: Colors.purple,
+                border: `2px solid ${Colors.purple}`,
               }}
-              onClick={() => shareScreen()}
             >
               {!isSharingScreen ? <ScreenShareIcon /> : <StopScreenShareIcon />}
             </Button>
@@ -257,14 +266,14 @@ function RoomControls(props) {
         >
           <StyledDiv>
             <Button
-              $customStyles={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                width: "50px",
-                height: "50px",
-              }}
               onClick={() => blockMuteAllParticipants()}
+              width="50px"
+              height="50px"
+              customStyles={{
+                backgroundColor: Colors.lightPurple,
+                color: Colors.purple,
+                border: `2px solid ${Colors.purple}`,
+              }}
             >
               {!isBlockedRemotedGuest ? (
                 <HeadsetMicIcon />
@@ -279,47 +288,23 @@ function RoomControls(props) {
       <Tooltip title="Leave room">
         <StyledDiv>
           <Button
-            $primary
-            $customStyles={{
+            primary
+            width="50px"
+            height="50px"
+            customStyles={{
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              width: "50px",
-              height: "50px",
             }}
             onClick={endCall}
           >
-            <img src={close} alt="close" height="25px" width="25px" />
+            <Icon icon={close} name="close" height="25px" width="25px" />
           </Button>
         </StyledDiv>
       </Tooltip>
     </Container>
   );
 }
-
-RoomControls.propTypes = {
-  localTracks: PropTypes.object,
-  updateScreenShare: PropTypes.func.isRequired,
-  updateLocalTracksMuted: PropTypes.func.isRequired,
-  leaveRoom: PropTypes.func.isRequired,
-  disabled: PropTypes.bool,
-  isSharingScreen: PropTypes.bool,
-  permissionRole: PropTypes.string,
-  isEnableToUnmute: PropTypes.bool,
-  localParticipant: LocalParticipant,
-  setIsBlockedRemotedGuest: PropTypes.func.isRequired,
-  isBlockedRemotedGuest: PropTypes.bool,
-};
-
-RoomControls.defaultProps = {
-  localTracks: { audio: null, video: null },
-  disabled: true,
-  isSharingScreen: false,
-  permissionRole: "GUEST",
-  isEnableToUnmute: true,
-  localParticipant: null,
-  isBlockedRemotedGuest: false,
-};
 
 const Container = styled(ButtonGroup)`
   display: flex;
@@ -331,10 +316,6 @@ const Container = styled(ButtonGroup)`
 
 const StyledDiv = styled.div`
   padding: 5px;
-`;
-
-const StyledImg = styled.img`
-  margin-top: 1.7px;
 `;
 
 export default RoomControls;

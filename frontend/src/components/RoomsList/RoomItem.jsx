@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Colors } from "../../themes/colors";
-import { Button } from "../../themes/componentsStyles";
+import Button from "../Button";
 import { Grid, Card, CardContent, CardActions } from "@mui/material";
-import { Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
+import { Edit as EditIcon } from "@mui/icons-material";
 import styled from "styled-components";
 import { deleteRoom } from "../../actions";
 import { ROLES } from "../../utils/supabaseSDK/roles";
 import { onDeleteRoomMessage } from "../../utils/supabaseSDK/chat";
-import ConfirmationToast from "../ConfirmationToast/ConfirmationToast";
+import ConfirmationToast from "../ConfirmationToast";
+import deletePurple from "../../assets/delete-purple.svg";
+import Icon from "../Icon";
 
 export const RoomItem = ({ currentUser, room }) => {
   const { id, name, providerId, createdBy } = room;
@@ -52,41 +54,43 @@ export const RoomItem = ({ currentUser, room }) => {
           </CardContent>
           {currentUser?.role === ROLES.USER ? (
             <StyledCardActions>
-              <Button $primary onClick={() => navigate(`/rooms/${providerId}`)}>
+              <Button primary onClick={() => navigate(`/rooms/${providerId}`)}>
                 Join room
               </Button>
             </StyledCardActions>
           ) : (
             <StyledCardActions>
               <Button
-                aria-label="delete"
-                size="medium"
-                component={RouterLink}
                 onClick={() => setShowToast(true)}
-                $customStyles={{
-                  width: "35px",
+                width="35px"
+                customStyles={{
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  border: `2px solid ${Colors.purple}`,
                 }}
               >
-                <DeleteIcon fontSize="medium" />
+                <Icon
+                  icon={deletePurple}
+                  name="delete room"
+                  width="15px"
+                  height="15px"
+                />
               </Button>
               <Button
-                aria-label="edit"
-                size="medium"
-                component={RouterLink}
                 onClick={() => navigate(`/rooms/${providerId}/edit`)}
-                $customStyles={{
-                  width: "35px",
+                width="35px"
+                customStyles={{
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  border: `2px solid ${Colors.purple}`,
+                  color: Colors.purple,
                 }}
               >
-                <EditIcon fontSize="medium" />
+                <EditIcon fontSize="small" />
               </Button>
-              <Button $primary onClick={() => navigate(`/rooms/${providerId}`)}>
+              <Button primary onClick={() => navigate(`/rooms/${providerId}`)}>
                 Join room
               </Button>
             </StyledCardActions>

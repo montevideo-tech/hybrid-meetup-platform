@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Typography } from "@mui/material";
 import styled from "styled-components";
-import { Colors } from "../themes/colors";
+import { Colors } from "../../../themes/colors";
 
 function ParticipantInfo(props) {
   const { name, parentHeight } = props;
@@ -37,12 +37,10 @@ function ParticipantInfo(props) {
 
 ParticipantInfo.propTypes = {
   name: PropTypes.string,
-  parentHeight: PropTypes.number,
 };
 
 ParticipantInfo.defaultProps = {
   name: "",
-  parentHeight: 40,
 };
 
 export default ParticipantInfo;

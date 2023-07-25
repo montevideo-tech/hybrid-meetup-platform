@@ -1,16 +1,16 @@
 import React, { useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { Colors } from "../themes/colors";
+import { Colors } from "../../../themes/colors";
 import { Box } from "@mui/material";
 import ParticipantInfo from "./ParticipantInfo";
-import logo from "../assets/MVDTSC.png";
-import { ROLES } from "../utils/supabaseSDK/roles";
-import { Button } from "../themes/componentsStyles";
-import mic from "../assets/mic.svg";
-import noMic from "../assets/no-mic.svg";
-import deletePurple from "../assets/deletePurple.svg";
-
+import logo from "../../../assets/MVDTSC.png";
+import { ROLES } from "../../../utils/supabaseSDK/roles";
+import Button from "../../../components/Button";
+import mic from "../../../assets/mic.svg";
+import noMic from "../../../assets/no-mic.svg";
+import deletePurple from "../../../assets/delete-purple.svg";
+import Icon from "../../../components/Icon";
 function Video(props) {
   const videoRef = useRef();
   const {
@@ -41,11 +41,13 @@ function Video(props) {
       videoRef.current.srcObject = stream;
     }
   }, [stream]);
+
   const boxHeight = isSharingScreen
     ? "150px"
     : isAlone
-    ? "calc((100vh - 170px))"
+    ? "calc(100vh - 170px)"
     : "calc((100vh - 204px)/2)";
+
   const boxWidth = isScreenShared
     ? "auto"
     : isSharingScreen
@@ -94,33 +96,47 @@ function Video(props) {
       {permissionRole === ROLES.HOST && (
         <Button
           onClick={() => onClick(name)}
-          $customStyles={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+          width="40px"
+          height="40px"
+          customStyles={{
             position: "absolute",
             top: 10,
             right: 70,
-            width: "40px",
-            height: "40px",
             border: `2px solid ${Colors.lightPurple}`,
-            backgroundColor: "transparent",
           }}
         >
-          <img src={deletePurple} alt="delete" width="18px" height="18px" />
+          <Icon
+            icon={deletePurple}
+            name="remove participant"
+            width="18px"
+            height="18px"
+          />
         </Button>
       )}
       {(isAudioMuted || permissionRole === ROLES.HOST) && (
-        <StyledButton
+        <Button
           onClick={() => onClickMute(name, isAudioMuted)}
           disabled={permissionRole !== ROLES.HOST}
+          width="40px"
+          height="40px"
+          customStyles={{
+            position: "absolute",
+            top: "10px",
+            right: "10px",
+            border: `2px solid ${Colors.lightPurple}`,
+          }}
+          disabledStyles={
+            (`border: 2px solid ${Colors.lightPurple}`,
+            "backgroundColor: transparent",
+            "cursor: auto")
+          }
         >
           {isAudioMuted ? (
-            <img src={noMic} alt="disable microphone" />
+            <Icon icon={noMic} name="disable microphone" />
           ) : (
-            <img src={mic} alt="microphone" />
+            <Icon icon={mic} name="microphone" />
           )}
-        </StyledButton>
+        </Button>
       )}
     </Box>
   );
@@ -168,21 +184,4 @@ const StyledVideo = styled.video`
   height: 100%;
   object-fit: cover;
   border-radius: 5px;
-`;
-
-const StyledButton = styled(Button)`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 40px;
-  height: 40px;
-  border: 2px solid ${Colors.lightPurple};
-  background-color: transparent;
-  :disabled {
-    border: 2px solid ${Colors.lightPurple};
-    background-color: transparent;
-  }
 `;

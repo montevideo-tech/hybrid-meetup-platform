@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { useLoaderData } from "react-router-dom";
-import { onSendMessage, onDeleteMessage } from "../utils/supabaseSDK/chat";
+import { onSendMessage, onDeleteMessage } from "../../../utils/supabaseSDK/chat";
 import Filter from "bad-words";
 import styled from "styled-components";
-import { Colors } from "../themes/colors";
+import { Colors } from "../../../themes/colors";
 import { DeleteOutline as DeleteOutlineIcon } from "@mui/icons-material";
-import { Card, Input, Button } from "../themes/componentsStyles";
-import send from "../assets/send.svg";
+import Card from "../../../components/Card";
+import Button from "../../../components/Button";
+import send from "../../../assets/send.svg";
+import Icon from "../../../components/Icon";
+import Input from "../../../components/Input";
 
 function Chat(props) {
   const [content, setContent] = useState("");
@@ -37,10 +40,10 @@ function Chat(props) {
   };
   return (
     <Card
-      $customStyles={{
-        width: "calc(100% - 20px)",
+      width="calc(100% - 20px)"
+      height="calc(100% - 20px)"
+      customStyles={{
         maxHeight: "65vh",
-        height: "calc(100% - 20px)",
         flexDirection: "column",
         borderRadius: "15px",
         border: "none",
@@ -57,7 +60,7 @@ function Chat(props) {
                 <span>{m.content}</span>
               </TextChat>
               {isUserAdmin && (
-                <DeleteButton
+                <Button
                   onClick={() => {
                     onDeleteMessage(m.id);
                   }}
@@ -66,22 +69,14 @@ function Chat(props) {
                     fontSize="small"
                     sx={{ color: Colors.red }}
                   />
-                </DeleteButton>
+                </Button>
               )}
             </MessageChat>
           ))}
         </ChatContentWrapper>
       </ChatContent>
       <StyledChatForm onSubmit={handleSubmit}>
-        <StyledInput
-          $customStyles={{
-            width: "100%",
-            fontWeight: "400",
-            fontSize: "0.75rem",
-            lineHeight: "1.125rem",
-            border: `1px solid ${Colors.purple}`,
-            padding: "0 40px 0 12px",
-          }}
+        <Input
           type="text"
           placeholder="Message"
           value={content}
@@ -89,20 +84,30 @@ function Chat(props) {
           multiline
           minRows={1}
           maxRows={3}
-          inputProps={{ maxLength: 150 }}
+          maxLength={150}
+          focusStyles={`border: 1px solid ${Colors.purple}; 
+          box-shadow: 0 0 1px ${Colors.purple}`}
+          width="100%"
+          customStyles={{
+            fontSize: "0.75rem",
+            lineHeight: "18px",
+            border: `1px solid ${Colors.purple}`,
+            fontWeight: "400",
+          }}
         />
         <Button
           type="submit"
-          $customStyles={{
+          secondary
+          width="fit-content"
+          height="fit-content"
+          customStyles={{
             position: "absolute",
             marginTop: "5px",
             marginLeft: "calc(250px - 60px)",
             border: "none",
-            height: "fit-content",
-            width: "fit-content",
           }}
         >
-          <img src={send} alt="send" />
+          <Icon icon={send} name="send message" />
         </Button>
       </StyledChatForm>
     </Card>
@@ -112,13 +117,7 @@ function Chat(props) {
 const MessageChat = styled.div`
   display: flex;
   justify-content: space-around;
-`;
-
-const DeleteButton = styled.button`
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  background-color: transparent;
+  align-items: center;
 `;
 
 const TextChat = styled.p`
@@ -151,13 +150,6 @@ const ChatContent = styled.div`
 
 const ChatContentWrapper = styled.div`
   flex-grow: 1;
-`;
-
-const StyledInput = styled(Input)`
-  :focus-visible {
-    border: 1px solid ${Colors.purple};
-    box-shadow: 0 0 1px ${Colors.purple};
-  }
 `;
 
 export default Chat;
