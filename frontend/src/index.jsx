@@ -7,19 +7,17 @@ import theme from "./themes/theme";
 import "./index.css";
 import { store } from "./store";
 import IsAdmin from "./components/IsAdmin";
-import Root from "./views/Root";
-import SignIn from "./views/SignIn";
-import SignUp from "./views/SignUp";
-import Room from "./views/Room/Room";
-import { roomLoader } from "./views/Room/Room";
-import Rooms from "./views/Rooms";
-import ErrorPage from "./views/ErrorPage";
-import RoomNotFound from "./views/RoomNotFound";
-import EditRoom from "./views/EditRoom";
+import Root from "./views/Root/Root";
+import SignIn from "./views/SignIn/SignIn";
+import SignUp from "./views/SignUp/SignUp";
+import Room, { roomLoader } from "./views/Room/Room";
+import Rooms from "./views/Rooms/Rooms";
+import ErrorPage from "./views/ErrorPage/ErrorPage";
+import RoomNotFound from "./views/RoomNotFound/RoomNotFound";
+import EditRoom from "./views/EditRoom/EditRoom";
+import LandingPage from "./views/LandingPage/LandingPage";
 import { Header } from "./components/Header";
-
 import AuthRoute from "./components/AuthRoute";
-import LandingPage from "./views/LandingPage";
 
 const router = createBrowserRouter([
   {

@@ -1,9 +1,9 @@
 import React from "react";
 import styled from "styled-components";
-import { Colors } from "../themes/colors";
-import meeting from "../assets/meeting.png";
+import { Colors } from "../../themes/colors";
+import meeting from "../../assets/meeting.png";
 import { useNavigate } from "react-router-dom";
-import Button from "../components/Button";
+import Button from "../../components/Button";
 
 function LandingPage() {
   const navigate = useNavigate();

@@ -3,27 +3,27 @@ import { useSelector, useDispatch } from "react-redux";
 import { useLoaderData, useNavigate } from "react-router-dom";
 import { List, ListItem, MenuItem } from "@mui/material";
 import styled from "styled-components";
-import { giveUserRoleOnRoom } from "../actions";
+import { giveUserRoleOnRoom } from "../../actions";
 import {
   deleteRole,
   subscribeToRoleChanges,
   ROLES,
-} from "../utils/supabaseSDK/roles";
-import { fetchUsers, getRoomName } from "../utils/supabaseSDK/editRoom";
-import { updateParticipantRoles } from "../utils/helpers";
-import { handleSaveRoomName } from "../utils/supabaseSDK/room";
-import Input from "../components/Input";
-import Card from "../components/Card";
-import Button from "../components/Button";
-import { Colors } from "../themes/colors";
-import edit from "../assets/edit.svg";
-import deleteGray from "../assets/deleteGray.svg";
-import deletePurple from "../assets/delete-purple.svg";
-import { addUpdateParticipant, removeRole } from "../reducers/roomSlice";
-import { DropdownMenu } from "../components/DropdownMenu";
-import Snackbar from "../components/SnackbarComponent";
-import Icon from "../components/Icon";
-import Spinner from "../components/Spinner";
+} from "../../utils/supabaseSDK/roles";
+import { fetchUsers, getRoomName } from "../../utils/supabaseSDK/editRoom";
+import { updateParticipantRoles } from "../../utils/helpers";
+import { handleSaveRoomName } from "../../utils/supabaseSDK/room";
+import { Colors } from "../../themes/colors";
+import edit from "../../assets/edit.svg";
+import deleteGray from "../../assets/deleteGray.svg";
+import deletePurple from "../../assets/delete-purple.svg";
+import { addUpdateParticipant, removeRole } from "../../reducers/roomSlice";
+import Input from "../../components/Input";
+import Card from "../../components/Card";
+import Button from "../../components/Button";
+import DropdownMenu from "../../components/DropdownMenu";
+import Snackbar from "../../components/SnackbarComponent";
+import Icon from "../../components/Icon";
+import Spinner from "../../components/Spinner";
 
 export async function roomLoader({ params }) {
   return params.roomId;
