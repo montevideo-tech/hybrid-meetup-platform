@@ -21,6 +21,7 @@ import setRemoteStreamsRef from "../../utils/room";
 import { epochToISO8601 } from "../../utils/time";
 import useChat from "../../hooks/useChat";
 import useRoomSetup from "../../hooks/useRoomSetup";
+import useLocalParticipantActions from "../../hooks/useLocalParticipantActions";
 import ShareScreen from "./components/ShareScreen";
 import { Colors } from "../../themes/colors";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
@@ -32,7 +33,6 @@ import participants from "../../assets/participants.svg";
 import VideoRecorder from "./components/VideoRecorder";
 import Icon from "../../components/Icon";
 import Spinner from "../../components/Spinner";
-import useJoinRoom from "../../hooks/useJoinRoom";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -398,7 +398,7 @@ function Room() {
     }
   };
 
-  useJoinRoom(
+  useLocalParticipantActions(
     roomRef,
     dispatch,
     navigate,

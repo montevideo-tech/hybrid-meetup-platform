@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { joinRoom } from "../utils/localParticipant";
 import { useLoaderData } from "react-router-dom";
 
-const useJoinRoom = (
+const useLocalParticipantActions = (
   roomRef,
   dispatch,
   navigate,
@@ -59,4 +59,4 @@ const useJoinRoom = (
   }, [providerName]);
 };
 
-export default useJoinRoom;
+export default useLocalParticipantActions;
