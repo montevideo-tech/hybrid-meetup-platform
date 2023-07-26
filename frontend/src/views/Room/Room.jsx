@@ -6,15 +6,12 @@ import MuiAlert from "@mui/material/Alert";
 import styled from "styled-components";
 import useUserPermission from "../../hooks/useUserPermission";
 import RoomControls from "./components/RoomControls";
-import { Room as DolbyWebRoom } from "../../lib/providers/dolby";
 import { Room as MuxWebRoom } from "../../lib/providers/mux";
 import { roomJWTprovider } from "../../actions";
 import {
-  initRoom,
   addUpdateParticipant,
   removeParticipant,
   removeRole,
-  SnackbarAlert,
 } from "../../reducers/roomSlice";
 import { subscribeToRoleChanges, ROLES } from "../../utils/supabaseSDK/roles";
 import ParticipantsCollection from "./components/ParticipantsCollection";
@@ -22,9 +19,9 @@ import Chat from "./components/Chat";
 import { updateParticipantRoles } from "../../utils/helpers";
 import setRemoteStreamsRef from "../../utils/room";
 import { epochToISO8601 } from "../../utils/time";
-import { getGuestMuted } from "../../utils/supabaseSDK/room";
 import useChat from "../../hooks/useChat";
 import useRoomSetup from "../../hooks/useRoomSetup";
+import useLocalParticipantActions from "../../hooks/useLocalParticipantActions";
 import ShareScreen from "./components/ShareScreen";
 import { Colors } from "../../themes/colors";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
@@ -34,7 +31,6 @@ import Button from "../../components/Button";
 import ChatIcon from "@mui/icons-material/Chat";
 import participants from "../../assets/participants.svg";
 import VideoRecorder from "./components/VideoRecorder";
-import { getDolbyKey } from "../../utils/supabaseSDK/environment";
 import Icon from "../../components/Icon";
 import Spinner from "../../components/Spinner";
 
@@ -56,6 +52,7 @@ function Room() {
   const roomRef = useRef();
   const remoteStreamsRef = useRef(new Map());
   const currentUser = useSelector((state) => state.user);
+  const providerName = useSelector((state) => state?.room?.provider);
   const isUserAdmin = currentUser?.role === ROLES.ADMIN;
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -72,7 +69,6 @@ function Room() {
   const [localAudioStream, setLocalAudioStream] = useState(undefined);
   const [localName, setLocalName] = useState(undefined);
   const [isRecording, setIsRecording] = useState(false);
-  const [providerName, setProviderName] = useState("");
 
   const startRecording = () => {
     setIsRecording(!isRecording);
@@ -100,13 +96,11 @@ function Room() {
   );
 
   useRoomSetup(
-    providerName,
     localParticipant,
     localTracks,
     setLocalVideoStream,
     setLocalAudioStream,
     setLocalName,
-    setProviderName,
     leaveRoom,
     dispatch,
   );
@@ -222,7 +216,6 @@ function Room() {
   };
 
   const subscribeToRemoteStreams = async (r) => {
-    // mejorable
     const { remoteParticipants } = r;
     if (remoteParticipants) {
       const rps = Array.from(remoteParticipants.values());
@@ -291,7 +284,6 @@ function Room() {
     // this avoid having two different streams for the audio/video tracks of the
     // same participant.
 
-    // mejorable
     if (remoteStreamsRef.current.has(remoteParticipant.id)) {
       const streamData = remoteStreamsRef.current.get(remoteParticipant.id);
       streamData[`${track.kind}Muted`] = track.muted;
@@ -406,90 +398,31 @@ function Room() {
     }
   };
 
-  const joinRoom = async () => {
-    const dolbyApiKey = await getDolbyKey();
-    const MuxJWT = await roomJWTprovider(
-      roomId,
-      currentUser.email,
-      null,
-      null,
-      () => {
-        setRoomNotFound(true);
-      },
-    );
-    const guestMuted = await getGuestMuted();
-    setIsBlockedRemotedGuest(guestMuted);
-    if (currentUser.role !== ROLES.ADMIN) {
-      setIsEnableToUnmute(!guestMuted);
-    }
-    if (providerName !== "") {
-      try {
-        const newRoom =
-          providerName === "MUX"
-            ? new MuxWebRoom(MuxJWT)
-            : new DolbyWebRoom(dolbyApiKey, currentUser.email);
-        const newParticipant = await newRoom.join();
-        setLocalParticipant(newParticipant);
-        if (newParticipant) {
-          dispatch(
-            initRoom({
-              id: roomId,
-              participants: [{ name: currentUser.username, role: ROLES.GUEST }],
-            }),
-          );
-
-          // add event handler for TrackStarted event
-          newRoom.on("RemoveRemoteParticipant", (resp) =>
-            handleRemoveParticipant(resp, newParticipant),
-          );
-          newRoom.on("ParticipantTrackSubscribed", handleTrackStarted);
-          newRoom.on("ParticipantTrackUpdated", handleTrackUpdated);
-          newRoom.on("ParticipantJoined", handleParticipantJoined);
-          newRoom.on("ParticipantLeft", handleParticipantLeft);
-
-          setRoom(newRoom);
-          roomRef.current = newRoom;
-          const propsTracks = {
-            constraints: {
-              video: true,
-              audio: true,
-            },
-          };
-          const tracks = await newParticipant.publishTracks(propsTracks);
-          const stream = new MediaStream();
-          const newLocalTracks = { ...localTracks };
-          tracks.forEach((track) => {
-            stream.addTrack(track.mediaStreamTrack);
-            newLocalTracks[track.kind] = track;
-          });
-          setLocalTracks(newLocalTracks);
-          subscribeToRemoteStreams(newRoom);
-          subscribeToRoleChanges(roomId, handleRoleChange);
-
-          newRoom.on("BlockMuteRemoteParticipant", (resp) =>
-            handleBlockMuteRemote(resp, newParticipant, newLocalTracks),
-          );
-          newRoom.on("BlockMuteAllRemoteParticipants", (resp) =>
-            handleBlockMuteAllGuests(resp, newLocalTracks),
-          );
-        } else {
-          const error = "A duplicate session has been detected";
-          dispatch(SnackbarAlert({ error }));
-          navigate("/rooms");
-          setErrorJoiningRoom(true);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  };
-
-  useEffect(() => {
-    joinRoom();
-  }, [providerName]);
+  useLocalParticipantActions(
+    roomRef,
+    dispatch,
+    navigate,
+    localTracks,
+    setRoomNotFound,
+    setIsBlockedRemotedGuest,
+    setIsEnableToUnmute,
+    setLocalParticipant,
+    setRoom,
+    setLocalTracks,
+    setErrorJoiningRoom,
+    handleRemoveParticipant,
+    handleTrackStarted,
+    handleTrackUpdated,
+    handleParticipantJoined,
+    handleParticipantLeft,
+    handleRoleChange,
+    handleBlockMuteRemote,
+    handleBlockMuteAllGuests,
+    subscribeToRemoteStreams,
+    subscribeToRoleChanges,
+  );
 
   const updateScreenShare = async () => {
-    // Mejorable
     if (!isSharingScreen) {
       const JWT = await roomJWTprovider(
         roomId,
@@ -547,10 +480,11 @@ function Room() {
     setLocalTracks({ ...localTracks });
   };
 
-  const OnClickChatButton = () => {
+  const onClickChatButton = () => {
     setChatOpen(!chatOpen);
     setUnreadMessages(0);
   };
+
   return (
     <>
       {isRecording && (
@@ -609,7 +543,7 @@ function Room() {
               <Button
                 width="50px"
                 height="50px"
-                onClick={OnClickChatButton}
+                onClick={onClickChatButton}
                 customStyles={{
                   backgroundColor: Colors.lightPurple,
                   border: `2px solid ${Colors.purple}`,
