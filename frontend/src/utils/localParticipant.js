@@ -54,7 +54,6 @@ export async function joinRoom(
           ? new MuxWebRoom(MuxJWT)
           : new DolbyWebRoom(dolbyApiKey, currentUser.email);
       const newParticipant = await newRoom.join();
-      console.log("Local Participant", newParticipant);
       setLocalParticipant(newParticipant);
       if (newParticipant) {
         dispatch(

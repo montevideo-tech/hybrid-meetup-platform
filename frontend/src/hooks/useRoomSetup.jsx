@@ -36,7 +36,6 @@ const useRoomSetup = (
           localParticipant?.provider?.videoTracks?.entries().next()?.value[1]
             .track,
         );
-        console.log("Local Video Stream", localVideoStream);
         setLocalVideoStream(localVideoStream);
       }
       if (localParticipant?.provider?.audioTracks?.entries().next()?.value) {

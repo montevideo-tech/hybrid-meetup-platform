@@ -15,7 +15,6 @@ export const roomSlice = createSlice({
     },
     initProvider: {
       reducer: (state, action) => {
-        console.log(action.payload);
         state.provider = action.payload;
       },
       prepare: (provider) => {
