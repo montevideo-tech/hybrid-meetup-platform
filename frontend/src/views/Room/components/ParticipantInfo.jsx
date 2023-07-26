@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { Typography } from "@mui/material";
 import styled from "styled-components";
 import { Colors } from "../../../themes/colors";
@@ -34,14 +33,6 @@ function ParticipantInfo(props) {
     </Container>
   );
 }
-
-ParticipantInfo.propTypes = {
-  name: PropTypes.string,
-};
-
-ParticipantInfo.defaultProps = {
-  name: "",
-};
 
 export default ParticipantInfo;
 

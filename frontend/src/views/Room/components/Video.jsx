@@ -1,5 +1,4 @@
 import React, { useRef, useEffect } from "react";
-import PropTypes from "prop-types";
 import styled from "styled-components";
 import { Colors } from "../../../themes/colors";
 import { Box } from "@mui/material";
@@ -141,34 +140,6 @@ function Video(props) {
     </Box>
   );
 }
-
-Video.propTypes = {
-  stream: PropTypes.object,
-  isStreamLocal: PropTypes.bool,
-  isAudioMuted: PropTypes.bool,
-  isVideoMuted: PropTypes.bool,
-  isSpeaking: PropTypes.bool,
-  size: PropTypes.number,
-  name: PropTypes.string,
-  onClick: PropTypes.func,
-  onClickMute: PropTypes.func,
-  style: PropTypes.shape({}),
-  permissionRole: PropTypes.string,
-};
-
-Video.defaultProps = {
-  stream: undefined,
-  isStreamLocal: false,
-  isAudioMuted: false,
-  isVideoMuted: false,
-  isSpeaking: false,
-  size: 100,
-  name: "",
-  onClick: () => {},
-  onClickMute: () => {},
-  style: {},
-  permissionRole: ROLES.GUEST,
-};
 
 export default Video;
 
