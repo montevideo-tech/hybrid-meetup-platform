@@ -53,9 +53,12 @@ export async function joinRoom(
         providerName === "MUX"
           ? new MuxWebRoom(MuxJWT)
           : new DolbyWebRoom(dolbyApiKey, currentUser.email);
-      const newParticipant = await newRoom.join();
-      setLocalParticipant(newParticipant);
-      if (newParticipant) {
+      const result = await newRoom.join();
+      if (result.error) {
+        throw result.error;
+      } else {
+        const newParticipant = result.participant;
+        setLocalParticipant(newParticipant);
         dispatch(
           initRoom({
             id: roomId,
@@ -97,14 +100,14 @@ export async function joinRoom(
         newRoom.on("BlockMuteAllRemoteParticipants", (resp) =>
           handleBlockMuteAllGuests(resp, newLocalTracks),
         );
-      } else {
-        const error = "A duplicate session has been detected";
-        dispatch(SnackbarAlert({ error }));
-        navigate("/rooms");
-        setErrorJoiningRoom(true);
       }
     } catch (error) {
       console.error(error);
+      if (error === "A duplicate session has been detected") {
+        dispatch(SnackbarAlert({ error }));
+      }
+      navigate("/rooms");
+      setErrorJoiningRoom(true);
     }
   }
 }
