@@ -18,7 +18,6 @@ import ParticipantsCollection from "./components/ParticipantsCollection";
 import Chat from "./components/Chat";
 import { updateParticipantRoles } from "../../utils/helpers";
 import setRemoteStreamsRef from "../../utils/room";
-import { epochToISO8601 } from "../../utils/time";
 import useChat from "../../hooks/useChat";
 import useRoomSetup from "../../hooks/useRoomSetup";
 import useLocalParticipantActions from "../../hooks/useLocalParticipantActions";
@@ -33,6 +32,7 @@ import participants from "../../assets/participants.svg";
 import VideoRecorder from "./components/VideoRecorder";
 import Icon from "../../components/Icon";
 import Spinner from "../../components/Spinner";
+import { useRemoteParticipantActions } from "../../hooks/useRemoteParticipantActions";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -56,10 +56,8 @@ function Room() {
   const isUserAdmin = currentUser?.role === ROLES.ADMIN;
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [isEnableToUnmute, setIsEnableToUnmute] = useState(true);
   const [isBlockedRemotedGuest, setIsBlockedRemotedGuest] = useState(false);
-  const [dateTimeJoined] = useState(epochToISO8601(Date.now()));
-  const [messages, setMessages] = useState([]);
+
   const [participantSharingScreen, setParticipantSharingScreen] =
     useState(null);
   const [chatOpen, setChatOpen] = useState(true);
@@ -86,14 +84,7 @@ function Room() {
     }
   };
 
-  useChat(
-    roomId,
-    dateTimeJoined,
-    setMessages,
-    chatOpen,
-    setUnreadMessages,
-    messages,
-  );
+  const { messages } = useChat(roomId, chatOpen, setUnreadMessages);
 
   useRoomSetup(
     localParticipant,
@@ -104,6 +95,9 @@ function Room() {
     leaveRoom,
     dispatch,
   );
+
+  const { isEnableToUnmute, setIsEnableToUnmute } =
+    useRemoteParticipantActions();
 
   const divRef = useRef(null);
   useEffect(() => {
