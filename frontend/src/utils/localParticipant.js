@@ -53,11 +53,10 @@ export async function joinRoom(
         providerName === "MUX"
           ? new MuxWebRoom(MuxJWT)
           : new DolbyWebRoom(dolbyApiKey, currentUser.email);
-      const result = await newRoom.join();
-      if (result.error) {
-        throw result.error;
+      const newParticipant = await newRoom.join();
+      if (newParticipant.error) {
+        throw newParticipant.error;
       } else {
-        const newParticipant = result.participant;
         setLocalParticipant(newParticipant);
         dispatch(
           initRoom({
