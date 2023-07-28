@@ -155,9 +155,9 @@ export class Room extends EventEmitter {
       const localParticipant = new LocalParticipant(
         VoxeetSDK.session.participant,
       );
-      return localParticipant;
+      return { participant: localParticipant, error: null };
     } catch (error) {
-      console.error(error);
+      return { participant: null, error: error.message };
     }
   }
 
