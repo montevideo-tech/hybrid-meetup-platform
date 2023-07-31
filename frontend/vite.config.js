@@ -14,5 +14,8 @@ export default defineConfig(() => {
       outDir: "build",
     },
     plugins: [react()],
+    test: {
+      environment: "jsdom",
+    },
   };
 });
