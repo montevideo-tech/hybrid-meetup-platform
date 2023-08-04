@@ -11,7 +11,11 @@ function LandingPage() {
     <Container>
       <Headline>
         <Title>
-          <TitleParts $fontStyle="normal" $color={Colors.davyGray}>
+          <TitleParts
+            data-test="landing-page-title-parts"
+            $fontStyle="normal"
+            $color={Colors.davyGray}
+          >
             A hybrid event platform with
           </TitleParts>
           <TitleParts
