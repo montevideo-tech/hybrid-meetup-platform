@@ -1,10 +1,10 @@
 import { vi, describe, test, expect } from "vitest";
 import { screen, render } from "@testing-library/react";
-import LandingPage from "./LandingPage";
+import SignUp from "./SignUp";
 
-vi.mock("react-router-dom");
+// vi.mock("react-router-dom");
 describe("LandingPage Test", () => {
-  render(LandingPage());
+  render(SignUp());
   test("Render landing page first line", () => {
     expect(screen.getByText("A hybrid event platform with")).toBeDefined();
   });
