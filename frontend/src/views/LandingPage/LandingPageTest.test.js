@@ -3,12 +3,12 @@ import { screen, render } from "@testing-library/react";
 import LandingPage from "./LandingPage";
 
 vi.mock("react-router-dom");
-describe("LandingPage Test", () => {
+describe("LandingPage", () => {
   render(LandingPage());
-  test("Render landing page first line", () => {
+  test("Should render correctly first line of the title", () => {
     expect(screen.getByText("A hybrid event platform with")).toBeDefined();
   });
-  test("Rendender landing page second line", () => {
+  test("Should render correctly secondly line of the title", () => {
     expect(screen.getByText("adaptable WebRTC providers")).toBeDefined();
   });
 });
