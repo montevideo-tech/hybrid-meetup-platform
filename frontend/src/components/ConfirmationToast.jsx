@@ -8,10 +8,12 @@ export default function ConfirmationToast(props) {
   const { text, confirmationText, onConfirmation, onCancel } = props;
   const [loading, setLoading] = useState(false);
 
-  const onClick = () => {
+  const onClick = async () => {
     try {
-      onConfirmation();
       setLoading(true);
+      await onConfirmation();
+      setLoading(false);
+      onCancel();
     } catch (error) {
       setLoading(false);
     }
@@ -59,7 +61,7 @@ const Toast = styled.div`
   border: 2px solid ${Colors.purple};
   background: ${Colors.lightPurple};
   border-radius: 30px;
-  width: 350px;
+  width: fit-content;
   height: 250px;
   padding: 10px;
   display: grid;
@@ -69,9 +71,10 @@ const Toast = styled.div`
 `;
 
 const Text = styled.div`
+  max-width: 450px;
   font-family: "Poppins", sans-serif;
   font-weight: 600;
-  font-size: 25px;
+  font-size: 1.3rem;
   line-height: 38px;
   color: ${Colors.purple};
   text-align: center;
