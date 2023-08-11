@@ -33,6 +33,7 @@ import VideoRecorder from "./components/VideoRecorder";
 import Icon from "../../components/Icon";
 import Spinner from "../../components/Spinner";
 import { useRemoteParticipantActions } from "../../hooks/useRemoteParticipantActions";
+import ConfirmationToast from "../../components/ConfirmationToast";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -57,7 +58,6 @@ function Room() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isBlockedRemotedGuest, setIsBlockedRemotedGuest] = useState(false);
-
   const [participantSharingScreen, setParticipantSharingScreen] =
     useState(null);
   const [chatOpen, setChatOpen] = useState(true);
@@ -67,6 +67,8 @@ function Room() {
   const [localAudioStream, setLocalAudioStream] = useState(undefined);
   const [localName, setLocalName] = useState(undefined);
   const [isRecording, setIsRecording] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [participantName, setParticipantName] = useState();
 
   const startRecording = () => {
     setIsRecording(!isRecording);
@@ -140,8 +142,13 @@ function Room() {
     );
   };
 
-  const onClickRemove = (r) => {
-    localParticipant.removeRemoteParticipant(r);
+  const onClickRemove = (p) => {
+    setParticipantName(p);
+    setShowToast(true);
+  };
+
+  const handleRemove = () => {
+    localParticipant.removeRemoteParticipant(participantName);
   };
 
   const onClickMute = (r, isMuted) => {
@@ -557,6 +564,14 @@ function Room() {
         </Container>
       ) : (
         <StyledContainer>{!errorJoiningRoom && <Spinner />}</StyledContainer>
+      )}
+      {showToast && (
+        <ConfirmationToast
+          text={`Are you sure you want to remove ${participantName}?`}
+          confirmationText="Remove"
+          onCancel={() => setShowToast(false)}
+          onConfirmation={handleRemove}
+        />
       )}
     </>
   );

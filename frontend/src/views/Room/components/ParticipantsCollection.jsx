@@ -1,9 +1,8 @@
-import React, { useMemo } from "react";
-import { MAX_PARTICIPANTS_PER_PAGE } from "../../../lib/constants";
+import React, { useMemo, useState } from "react";
 import Audio from "../../../components/Audio";
 import Video from "./Video";
-import { ROLES } from "../../../utils/supabaseSDK/roles";
 import styled from "styled-components";
+import ConfirmationToast from "../../../components/ConfirmationToast";
 
 function ParticipantsCollection(props) {
   const {
@@ -18,9 +17,16 @@ function ParticipantsCollection(props) {
   const currentParticipants = useMemo(() => {
     return children;
   }, [children]);
+  const [showToast, setShowToast] = useState(false);
+  const [participantName, setParticipantName] = useState();
 
-  const onClickRemove = (r) => {
-    localParticipant.removeRemoteParticipant(r);
+  const onClickRemove = (p) => {
+    setParticipantName(p);
+    setShowToast(true);
+  };
+
+  const handleRemoveParticipant = () => {
+    localParticipant.removeRemoteParticipant(participantName);
   };
 
   const onClickMute = (r, isMuted) => {
@@ -72,6 +78,14 @@ function ParticipantsCollection(props) {
           />
         )}
       </Content>
+      {showToast && (
+        <ConfirmationToast
+          text={`Are you sure you want to remove ${participantName}?`}
+          confirmationText="Remove"
+          onCancel={() => setShowToast(false)}
+          onConfirmation={handleRemoveParticipant}
+        />
+      )}
     </>
   );
 }
