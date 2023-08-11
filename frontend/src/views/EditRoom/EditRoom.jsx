@@ -196,7 +196,6 @@ function EditRoom() {
         customStyles={{
           flexDirection: "column",
           alignItems: "start",
-          padding: "40px",
         }}
       >
         <Title>Edit room</Title>
@@ -242,6 +241,7 @@ function EditRoom() {
             width="calc(100% - 30px)"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            customStyles={{ gridArea: "email" }}
           />
           <DropdownMenu
             label={roleToAdd}
@@ -249,12 +249,14 @@ function EditRoom() {
             buttonStyles={{
               padding: "0 15px",
               height: "100%",
+              width: "100%",
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
               justifySelf: "center",
               color: Colors.davyGray,
               textTransform: "capitalize",
+              gridArea: "role",
             }}
             labelStyles={{ opacity: "50%" }}
           >
@@ -272,6 +274,8 @@ function EditRoom() {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
+              gridArea: "add",
+              minWidth: "40px",
             }}
           >
             {loading ? <Spinner color="secondary" size={20} /> : "Add"}
@@ -288,6 +292,7 @@ function EditRoom() {
             onClick={() => navigate(`/rooms/${roomId}`)}
             height="100%"
             width="100%"
+            customStyles={{ gridArea: "room" }}
           >
             Go to Room
           </Button>
@@ -426,9 +431,15 @@ const Subtitle = styled.h2`
 const StyledContainer = styled.div`
   display: grid;
   column-gap: 15px;
-  grid-template-columns: 400px auto 100px 150px;
-  height: 40px;
+  grid-template-areas: "email role add room";
   width: 100%;
+  @media (max-width: 768px) {
+    grid-template-rows: repeat(2, 1fr);
+    grid-template-areas:
+      "email email email"
+      "role add room";
+    row-gap: 15px;
+  }
 `;
 
 const ListsContainer = styled.div`
@@ -439,17 +450,28 @@ const ListsContainer = styled.div`
   img {
     cursor: pointer;
   }
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(2, auto);
+  }
 `;
 
 const ListContainer = styled.div`
   ${(props) =>
     props.$presenter
       ? `
-      padding-left: 50px;
-      border-left: 2px solid ${Colors.purple}
+      padding-left: 5%;
+      border-left: 2px solid ${Colors.purple};
+      @media (max-width: 1024px) {
+        border-left: none;
+        padding-left: 0;
+      }
   `
       : `
-      padding-right: 50px;
+      padding-right: 5%;
+      @media (max-width: 1024px) {
+        padding-right: 0;
+      }
   `}
 `;
 
