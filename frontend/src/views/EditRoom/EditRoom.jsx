@@ -24,6 +24,8 @@ import DropdownMenu from "../../components/DropdownMenu";
 import Snackbar from "../../components/SnackbarComponent";
 import Icon from "../../components/Icon";
 import Spinner from "../../components/Spinner";
+import done from "../../assets/done-purple.svg";
+import cancel from "../../assets/close-purple.svg";
 
 export async function roomLoader({ params }) {
   return params.roomId;
@@ -35,6 +37,7 @@ function EditRoom() {
   const roomId = useLoaderData();
   const navigate = useNavigate();
   const [roomName, setRoomName] = useState("");
+  const [roomInputName, setRoomInputName] = useState("");
   const [editingRoomName, setEditingRoomName] = useState(false);
   const [email, setEmail] = useState("");
   const [roleToAdd, setRoleToAdd] = useState("Role");
@@ -47,6 +50,7 @@ function EditRoom() {
   const [roles, setRoles] = useState({ hosts: [], presenters: [] });
 
   const handleEditRoomName = () => {
+    setRoomInputName(roomName);
     setEditingRoomName(true);
   };
 
@@ -189,6 +193,10 @@ function EditRoom() {
     fetchUsers(setUsers);
   }, []);
 
+  useEffect(() => {
+    setRoomInputName(roomName);
+  }, [roomName]);
+
   return (
     <Container>
       <Card
@@ -201,21 +209,35 @@ function EditRoom() {
         <Title>Edit room</Title>
         <TitleRoomContainer>
           {editingRoomName ? (
-            <>
+            <StyledForm
+              onSubmit={(e) => {
+                e.preventDefault();
+                setRoomName(roomInputName);
+                handleSaveRoomName(setEditingRoomName, roomInputName, roomId);
+              }}
+            >
               <Input
-                value={roomName}
-                onChange={(e) => setRoomName(e.target.value)}
+                value={roomInputName}
+                onChange={(e) => setRoomInputName(e.target.value)}
                 autoFocus
+                customStyles={{
+                  border: "none",
+                  borderBottom: `2px solid ${Colors.purple}`,
+                  borderRadius: 0,
+                }}
+                focusStyles={{}}
               />
-              <Button
-                primary
-                onClick={() =>
-                  handleSaveRoomName(setEditingRoomName, roomName, roomId)
-                }
-              >
-                Save
+              <Button type="submit" width="fit-content">
+                <Icon icon={done} name="done" />
               </Button>
-            </>
+              <Button
+                onClick={() => setEditingRoomName(false)}
+                width="fit-content"
+                customStyles={{ marginLeft: "5px" }}
+              >
+                <Icon icon={cancel} name="cancel" width="18px" />
+              </Button>
+            </StyledForm>
           ) : (
             <>
               <Subtitle>{roomName}</Subtitle>
@@ -419,6 +441,12 @@ const TitleRoomContainer = styled.div`
   border-bottom: 2px solid ${Colors.purple};
   margin-bottom: 35px;
   padding-bottom: 15px;
+`;
+
+const StyledForm = styled.form`
+  display: flex;
+  align-items: center;
+  width: 100%;
 `;
 
 const Subtitle = styled.h2`
