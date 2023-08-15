@@ -80,7 +80,7 @@ function ParticipantsCollection(props) {
       </Content>
       {showToast && (
         <ConfirmationToast
-          text={`Are you sure you want to remove ${participantName}?`}
+          text={`Are you sure you want to remove ${participantName} from the room?`}
           confirmationText="Remove"
           onCancel={() => setShowToast(false)}
           onConfirmation={handleRemoveParticipant}
