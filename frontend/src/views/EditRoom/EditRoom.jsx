@@ -48,6 +48,7 @@ function EditRoom() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [roles, setRoles] = useState({ hosts: [], presenters: [] });
+  const [emailDeleting, setEmailDeleting] = useState("");
 
   const handleEditRoomName = () => {
     setRoomInputName(roomName);
@@ -114,23 +115,29 @@ function EditRoom() {
   };
 
   const handleDeleteRole = async (e, r) => {
-    const currentHosts = roles.hosts;
-    const currentPresenters = roles.presenters;
-    await deleteRole(e);
-    const newRoles = {
-      hosts: [...currentHosts],
-      presenters: [...currentPresenters],
-    };
-    newRoles[r].every((element, index) => {
-      if (element === e) {
-        newRoles[r].splice(index, 1); // remove
-        return false; // break out of loop
-      }
-      return true; // keep looping
-    });
-    const participant = participants.find((object) => object.name === e);
-    dispatch(removeRole({ id: participant.id }));
-    setRoles(newRoles);
+    try {
+      setEmailDeleting(e);
+      const currentHosts = roles.hosts;
+      const currentPresenters = roles.presenters;
+      await deleteRole(e);
+      const newRoles = {
+        hosts: [...currentHosts],
+        presenters: [...currentPresenters],
+      };
+      newRoles[r].every((element, index) => {
+        if (element === e) {
+          newRoles[r].splice(index, 1); // remove
+          return false; // break out of loop
+        }
+        return true; // keep looping
+      });
+      const participant = participants.find((object) => object.name === e);
+      dispatch(removeRole({ id: participant.id }));
+      setRoles(newRoles);
+      setEmailDeleting("");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleRoleChange = (payload) => {
@@ -330,14 +337,18 @@ function EditRoom() {
                       <ListItem
                         key={e}
                         secondaryAction={
-                          <Icon
-                            icon={deletePurple}
-                            name="delete"
-                            width="17px"
-                            onClick={() => {
-                              handleDeleteRole(e, "hosts");
-                            }}
-                          />
+                          emailDeleting === e ? (
+                            <Spinner />
+                          ) : (
+                            <Icon
+                              icon={deletePurple}
+                              name="delete"
+                              width="17px"
+                              onClick={() => {
+                                handleDeleteRole(e, "hosts");
+                              }}
+                            />
+                          )
                         }
                         sx={{ padding: "8px 0" }}
                       >
@@ -347,14 +358,18 @@ function EditRoom() {
                       <ListItem
                         key={e}
                         secondaryAction={
-                          <Icon
-                            icon={deleteGray}
-                            name="delete"
-                            width="17px"
-                            onClick={() => {
-                              handleDeleteRole(e, "hosts");
-                            }}
-                          />
+                          emailDeleting === e ? (
+                            <Spinner />
+                          ) : (
+                            <Icon
+                              icon={deleteGray}
+                              name="delete"
+                              width="17px"
+                              onClick={() => {
+                                handleDeleteRole(e, "hosts");
+                              }}
+                            />
+                          )
                         }
                         sx={{ padding: "8px 0" }}
                       >
@@ -376,14 +391,18 @@ function EditRoom() {
                       <ListItem
                         key={e}
                         secondaryAction={
-                          <Icon
-                            width="17px"
-                            src={deletePurple}
-                            alt="delete"
-                            onClick={() => {
-                              handleDeleteRole(e, "presenters");
-                            }}
-                          />
+                          emailDeleting === e ? (
+                            <Spinner />
+                          ) : (
+                            <Icon
+                              width="17px"
+                              src={deletePurple}
+                              alt="delete"
+                              onClick={() => {
+                                handleDeleteRole(e, "presenters");
+                              }}
+                            />
+                          )
                         }
                         sx={{ padding: "8px 0" }}
                       >
@@ -393,14 +412,18 @@ function EditRoom() {
                       <ListItem
                         key={e}
                         secondaryAction={
-                          <Icon
-                            icon={deleteGray}
-                            name="delete"
-                            width="17px"
-                            onClick={() => {
-                              handleDeleteRole(e, "presenters");
-                            }}
-                          />
+                          emailDeleting === e ? (
+                            <Spinner />
+                          ) : (
+                            <Icon
+                              icon={deleteGray}
+                              name="delete"
+                              width="17px"
+                              onClick={() => {
+                                handleDeleteRole(e, "presenters");
+                              }}
+                            />
+                          )
                         }
                         sx={{ padding: "8px 0" }}
                       >
