@@ -213,10 +213,16 @@ function Rooms() {
     ) : (
       <Button
         onClick={() => setShowNameInput(true)}
-        disabled={loadingRooms || creatingRoom}
+        disabled={loadingRooms}
         secondary
-        width="190px"
+        width="fit-content"
         height="45px"
+        customStyles={{
+          padding: "0 15px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
       >
         {creatingRoom ? <Spinner size={20} /> : "Create new room +"}
       </Button>

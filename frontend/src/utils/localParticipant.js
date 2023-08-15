@@ -104,8 +104,8 @@ export async function joinRoom(
       console.error(error);
       if (error === "A duplicate session has been detected") {
         dispatch(SnackbarAlert({ error }));
+        navigate("/rooms");
       }
-      navigate("/rooms");
       setErrorJoiningRoom(true);
     }
   }

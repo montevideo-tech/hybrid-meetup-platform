@@ -99,7 +99,7 @@ export const RoomItem = ({ currentUser, room }) => {
       </Grid>
       {showToast && (
         <ConfirmationToast
-          text={`Are you sure you want to delete ${name}?`}
+          text={`Are you sure you want to delete the room "${name}"?`}
           confirmationText="Delete"
           onCancel={() => setShowToast(false)}
           onConfirmation={handleDeleteRoom}
