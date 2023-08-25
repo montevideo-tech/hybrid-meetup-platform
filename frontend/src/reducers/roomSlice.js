@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { ROLES } from "../utils/roles";
+import { ROLES } from "../utils/supabaseSDK/roles";
 
 export const roomSlice = createSlice({
   name: "currentRoom",
@@ -12,6 +12,14 @@ export const roomSlice = createSlice({
     initRoom: (state, action) => {
       state.id = action.payload.id;
       state.participants = action.payload.participants;
+    },
+    initProvider: {
+      reducer: (state, action) => {
+        state.provider = action.payload;
+      },
+      prepare: (provider) => {
+        return { payload: provider };
+      },
     },
     updateParticipants: (state, action) => {
       state.participants = action.payload.participants;
@@ -60,7 +68,7 @@ export const roomSlice = createSlice({
     },
     SnackbarAlert: (state, action) => {
       state.snackbarAlert = action.payload.error;
-    }
+    },
   },
 });
 
@@ -72,6 +80,7 @@ export const {
   removeParticipant,
   removeRole,
   cleanRoom,
+  initProvider,
   SnackbarAlert,
 } = roomSlice.actions;
 

@@ -13,7 +13,19 @@ npm install
 npm start
 ```
 
+### Run unit tests
+
+```
+npm install
+npm run test
+```
+
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+
+## Select provider
+
+in the .env file select in the environment variable whether to use Mux or Dolbi.
+in the variable `VITE_WEBRTC_PROVIDER_NAME`, assign 'MUX' or 'DOLBY'.
 
 ## Working with MUX Spaces
 
@@ -26,3 +38,11 @@ Set the following env variable to the signed JWT:
 - `VITE_MUX_SPACE_JWT`
 
 You can find the docs for the MUX Spaces SDK [here](https://devdocs.mux.com/spaces-web/latest/modules.html).
+
+## Working with DOLBY Spaces
+
+Follow the DOLBY docs [here](https://docs.dolby.io/).
+
+In the dashboard get the authentication token and add it in the following environment variable:
+
+- `VITE_DOLBY_API_KEY`

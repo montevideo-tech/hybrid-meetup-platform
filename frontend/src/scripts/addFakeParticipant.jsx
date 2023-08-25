@@ -24,7 +24,6 @@ const getVideoTrackFromMP4 = async (videoNumber) => {
 
   // Extract the video track from the media stream
   const videoTrack = mediaStream.getVideoTracks()[0];
-  console.log("Video track:", videoTrack);
 
   return videoTrack;
 };
